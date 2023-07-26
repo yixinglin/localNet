@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.hsgt.mappers.CompetitorMapper">
+    <resultMap id="competitorMap" type="org.hsgt.entities.pricing.Competitor">
+        <id column="productId" property="productId"></id>
+        <id column="shopName" property="shopName"></id>
+        <result column="price" property="price1"></result>
+        <result column="price" property="price2"></result>
+        <result column="shipment" property="shippingGroup.unitCost"></result>
+        <result column="shippingGroupId" property="shippingGroup.id"></result>
+    </resultMap>
+
+    <select id="selectList" resultMap="competitorMap">
+        select * from t_competition order by shopName
+    </select>
+
+    <select id="selectById" resultMap="competitorMap" parameterType="org.hsgt.entities.pricing.Competitor">
+        select * from t_competition where productId=#{productId} and shopName=#{shopName}
+    </select>
+
+    <insert id="insert">
+        insert into t_competition
+        (productId, shopName, rank_, price, shipment, quantity, label, shippingGroupId) values
+        (#{productId},#{shopName},#{rank},#{price2}, #{shippingGroup.unitCost},
+        #{quantity},#{label}, #{shippingGroup.id})
+    </insert>
+
+    <update id="updateById" parameterType="org.hsgt.entities.pricing.Competitor">
+        update t_competition set
+            productId=#{productId}, shopName=#{shopName}, rank_=#{rank}, price=#{price2}, shipment=#{shippingGroup.unitCost},
+            quantity=#{quantity}, label=#{label} where productId=#{productId} and shopName=#{shopName}
+    </update>
+
+</mapper>

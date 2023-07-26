@@ -11,7 +11,7 @@ public class MetroShippingGroupBuilder {
     private ShippingGroup shippingGroup;
 
     public MetroShippingGroupBuilder() {
-
+        this.shippingGroup = new ShippingGroup();
     }
 
     // Build from database
@@ -22,7 +22,6 @@ public class MetroShippingGroupBuilder {
 
     // Build from API response
     public MetroShippingGroupBuilder web(JSONObject json) {
-        ShippingGroup shippingGroup = new ShippingGroup();
         shippingGroup.setGroupName(json.getString("shippingGroupName"));
         shippingGroup.setId(json.getString("shippingGroupId"));
         JSONObject cost = json.getJSONArray("shippingCosts").getJSONObject(0);
@@ -33,8 +32,6 @@ public class MetroShippingGroupBuilder {
             shippingGroup.setMaxShippingCost(cost.getJSONObject("threshold").getJSONObject("value").getFloat("amount"));
         }
         shippingGroup.setPlatform("metro");
-
-        this.shippingGroup = shippingGroup;
         return this;
     }
 

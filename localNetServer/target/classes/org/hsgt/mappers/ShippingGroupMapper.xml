@@ -16,7 +16,7 @@
     </select>
 
     <insert id="insert">
-        nsert into t_shippinggroup
+        insert into t_shippinggroup
         (id, name, unitCost, extraUnitCost, maxShippingCost,
         freeFrom, minTransportDays, maxTransportDays, destCountry, platform) values
         (#{id}, #{groupName}, #{unitCost}, #{extraUnitCost}, #{maxShippingCost},
@@ -24,8 +24,8 @@
     </insert>
 
     <update id="updateById">
-        update name=#{groupName}, unitCost=#{unitCost}, extraUnitCost=#{extraUnitCost},maxShippingCost=#{maxShippingCost},freeFrom=#{freeFrom},minTransportDays=#{minTransportDays},
-        maxTransportDays=#{maxTransportDays},destCountry=#{destCountry}
+        update t_shippinggroup set name=#{groupName}, unitCost=#{unitCost}, extraUnitCost=#{extraUnitCost},maxShippingCost=#{maxShippingCost},freeFrom=#{freeFrom},minTransportDays=#{minTransportDays},
+        maxTransportDays=#{maxTransportDays},destCountry=#{destCountry} where id=#{id}
     </update>
 
 </mapper>
