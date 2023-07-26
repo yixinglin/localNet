@@ -12,7 +12,7 @@ public class MetroOfferBuilder {
     private Offer offer;
 
     public MetroOfferBuilder() {
-
+        this.offer = new Offer();
     }
 
     /*
@@ -35,7 +35,6 @@ public class MetroOfferBuilder {
 
     // Build from API response
     public MetroOfferBuilder offer(JSONObject jsonOffer) {
-        offer = new Offer();
         offer.setId(jsonOffer.getString("mid"));
         offer.setProductKey(jsonOffer.getString("productKey"));
         offer.setProductName(jsonOffer.getString("productName"));
@@ -64,10 +63,6 @@ public class MetroOfferBuilder {
 
     // Build from database
     public MetroOfferBuilder shippingGroup(ShippingGroupMapper shippingGroupMapper) throws RuntimeException, NotFoundException {
-        if (this.offer == null) {
-            throw new RuntimeException("Please call metroOfferBuilder().offer(json) first!");
-        }
-
         String shippingGroupId = this.offer.getShippingGroup().getId();
         if (shippingGroupId == null) {
             // The shipping is free ;
@@ -91,10 +86,6 @@ public class MetroOfferBuilder {
 
     // Build from database
     public MetroOfferBuilder moreField(OfferMapper offerMapper) {
-        if (this.offer == null) {
-            throw new RuntimeException("Please call metroOfferBuilder().offer(json) first!");
-        }
-
         Offer offerDb = offerMapper.selectById(this.offer.getId());
         this.offer.setAmount(offerDb.getAmount());
         this.offer.setNote(offerDb.getNote());

@@ -5,7 +5,7 @@ import org.hsgt.entities.pricing.Offer;
 import org.hsgt.mappers.OfferMapper;
 import org.springframework.stereotype.Service;
 
-@Service
-public class OfferServiceImpl extends ServiceImpl<OfferMapper, Offer> implements OfferService {
-
-}
+//@Service
+//public class OfferServiceImpl extends ServiceImpl<OfferMapper, Offer> implements OfferService {
+//
+//}

@@ -1,4 +1,5 @@
 package org.hsgt;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.hsgt.entities.pricing.Offer;
 import org.hsgt.entities.common.ShippingGroup;
 import org.hsgt.mappers.OfferMapper;
@@ -13,8 +14,8 @@ import java.util.List;
 @SpringBootTest
 public class TestOfferMybatis {
 
-    @Autowired
-    OfferService offerService;
+//    @Autowired
+//    OfferService offerService;
 
     @Autowired
     OfferMapper offerMapper;
@@ -23,23 +24,34 @@ public class TestOfferMybatis {
     @Test
     public void testMyBatis() {
 
+        QueryWrapper<Offer> oWrapper = new QueryWrapper<>();
+        oWrapper.eq("note", "CLUNGENE (selbst) 5er");
         List<Offer> offers = offerMapper.selectList(null);
         Offer offer = offerMapper.selectById("AAA0000863162");
         System.out.println(offers);
 
-        List<Offer> offers2 = offerService.list();
-        System.out.println(offerService.count());
-        Offer offer3 = offers2.get(0);
+        Offer offer3 = offers.get(0);
         offer3.setId("AAAAAAAAAAAAA");
-        offerService.saveOrUpdate(offer3);
-        offer3.setProductKey("SDSASDASD");
-        offer3.setLowestPrice(200.2f);
-        offerService.saveOrUpdate(offer3);
-        offerService.removeById(offer3);
-         List<ShippingGroup> shippingGroups =  shippingGroupMapper.selectList(null);
-         ShippingGroup shippingGroup = shippingGroupMapper.selectById("49221d33-79a1-4488-8e96-add6db70d122");
+        offer3.setNote("SSSSSSSSSS");
+        offer3.setProductName("B");
+        // offerMapper.insert(offer3);
+        offerMapper.updateById(offer3);
 
-        System.out.println(shippingGroups.get(0));
+//        List<Offer> offers2 = offerService.list();
+//        System.out.println(offerService.count());
+//        offer3 = offers2.get(0);
+//        offer3.setId("AAAAAAAAAAAAA");
+//        offerMapper.updateById(offer3);
+//        offerService.saveOrUpdate(offer3);
+//        offer3.setProductKey("SDSASDASD");
+//        offer3.setLowestPrice(200.2f);
+//        offerService.saveOrUpdate(offer3);
+//        offerService.removeById(offer3);
+
+        List<ShippingGroup> shippingGroups =  shippingGroupMapper.selectList(null);
+        ShippingGroup shippingGroup = shippingGroupMapper.selectById("49221d33-79a1-4488-8e96-add6db70d122");
+
+ //       System.out.println(shippingGroups.get(0));
     }
 
 }
