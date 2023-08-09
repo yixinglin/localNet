@@ -17,7 +17,7 @@ public class Result {
         Result r = new Result();
         r.setCode(ResultCode.SUCCESS);
         r.setSuccess(true);
-        r.setMessage("成功");
+        r.setMessage("Success");
         return r;
     }
 
@@ -25,7 +25,7 @@ public class Result {
         Result r = new Result();
         r.setCode(ResultCode.ERROR);
         r.setSuccess(false);
-        r.setMessage("失败");
+        r.setMessage("Fail");
         return r;
     }
 

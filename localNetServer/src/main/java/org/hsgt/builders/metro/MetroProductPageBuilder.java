@@ -1,6 +1,5 @@
 package org.hsgt.builders.metro;
 
-import com.sun.deploy.net.MessageHeader;
 import org.hsgt.entities.common.ProductPage;
 import org.hsgt.entities.common.ShippingGroup;
 import org.hsgt.entities.pricing.Competitor;
@@ -94,7 +93,10 @@ public class MetroProductPageBuilder {
 
     private List<Competitor> sortCompetitors(List<Competitor> competitors) {
         int i=0;
-        List<Competitor> sortedCompetitors = competitors.stream().sorted(Comparator.comparing(Competitor::getPrice2)).collect(Collectors.toList());
+        // List<Competitor> sortedCompetitors = competitors.stream().sorted(Comparator.comparing(Competitor::getPrice2)).collect(Collectors.toList());
+        competitors.sort(Comparator.comparing(o -> o.getPrice2() + o.getShippingGroup().getUnitCost()));
+        List<Competitor> sortedCompetitors = competitors;
+
         Iterator<Competitor> iter = sortedCompetitors.iterator();
         while(iter.hasNext()) {
             iter.next().setRank(i++);

@@ -16,8 +16,6 @@ import java.util.Map;
 
 public abstract class HttpRequest {
 
-    // public Map getHttpHeaders(String method, String uri, String body) throws Exception;
-    @SuppressWarnings("unchecked")
     public HttpResponse methodGetRequest(String url, Map<String, String> headers) throws IOException, InterruptedException {
         HttpResponse httpResponse;
         HttpClient httpClient;
@@ -32,13 +30,12 @@ public abstract class HttpRequest {
             getMethod.setRequestHeader(key, jsonObject.getString(key));
         }
 
-        // Get请求超时60秒
+        // Set 60s timeout for the GET request.
         getMethod.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 60*1000);
-        // 设置重试机制，重试三秒
+        // Retry after 3 seconds
         getMethod.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, true));
         httpClient.executeMethod(getMethod);
         int stateCode = getMethod.getStatusCode();
-        // String resp = new String(getMethod.getResponseBody(), StandardCharsets.UTF_8);
         try(BufferedReader br = new BufferedReader(new InputStreamReader(getMethod.getResponseBodyAsStream()))) {
             StringBuffer stringBuffer = new StringBuffer();
             String line;

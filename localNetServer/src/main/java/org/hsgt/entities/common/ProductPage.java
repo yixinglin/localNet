@@ -9,10 +9,10 @@ import java.util.List;
 @Data
 public class ProductPage implements Serializable {
 
-    String id;  // product ID
-    String code; // GTIN or MID
-    String manufacturer;
-    String shopName;  // My shop name
-    String productName;
-    List<Competitor> competitors;  // Product pages of competitors
+    private String id;  // product ID
+    private String code; // GTIN or MID
+    private String manufacturer;
+    private String shopName;  // My shop name
+    private String productName;
+    private List<Competitor> competitors;  // Product pages of competitors
 }
