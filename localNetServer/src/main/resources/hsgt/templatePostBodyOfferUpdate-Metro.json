@@ -1,0 +1,37 @@
+{
+  "gtin": "11111111111111",
+  "sku": "11111",
+  "mpn": "mpn",
+  "manufacturer": null,
+  "mid": "AAA0000000001",
+  "quantity": 0,
+  "netPrice": {
+    "amount": 2.54,
+    "currency": "EUR"
+  },
+  "processingTime": 0,
+  "maxProcessingTime": 0,
+  "businessModel": "",
+  "freightForwarding": true,
+  "netVolumePrices": [
+    {
+      "price": {
+        "amount": 2.54,
+        "currency": "EUR"
+      },
+      "quantity": 2
+    }
+  ],
+  "destination": "DE_MAIN",
+  "origin": "DE_MAIN",
+  "services": [
+    {
+      "serviceId": "9485820e-4351-48d4-b529-f6794cf6f4d4",
+      "price": {
+        "amount": 2.54,
+        "currency": "EUR"
+      }
+    }
+  ],
+  "shippingGroupId": "9485820e-4351-48d4-b529-f6794cf6f4d4"
+}
