@@ -2,11 +2,11 @@ package org.hsgt.api;
 
 public class SellerApiFactory {
 
-    public static SellerApi createSellerApi(int channel, String apiKey) {
+    public static SellerApi createSellerApi(int channel, ApiKey apiKey) {
         SellerApi api;
         switch (channel) {
             case SellerApi.METRO:
-                api = new MetroSellerApi();
+                api = new MetroSellerApi(apiKey);
                 break;
             case SellerApi.KAUFLAND:
                 api = new KauflandSellerApi();

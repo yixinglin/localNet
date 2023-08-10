@@ -1,5 +1,6 @@
 package org.hsgt.builders;
 
+import org.hsgt.api.ApiKey;
 import org.hsgt.api.MetroMockSellerApi;
 import org.hsgt.api.SellerApi;
 import org.hsgt.api.SellerApiFactory;
@@ -13,7 +14,7 @@ public class MetroInvoiceBuilderTest {
 
     @Test
     public void parseInvoiceTest() {
-        SellerApi api = SellerApiFactory.createSellerApi(SellerApi.METRO_MOCKED, "");
+        SellerApi api = SellerApiFactory.createSellerApi(SellerApi.METRO_MOCKED, new ApiKey());
         String s = api.selectOrderById("6cf37f89-3534-44c5-b6d5-83d2a61e0719").getContent();
         // System.out.println(s);
         MetroInvoiceBuilder builder = new MetroInvoiceBuilder();

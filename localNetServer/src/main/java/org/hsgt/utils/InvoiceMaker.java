@@ -5,9 +5,12 @@ import com.deepoove.poi.plugin.table.LoopRowTableRenderPolicy;
 import lombok.Data;
 import org.hsgt.entities.orders.*;
 import org.utils.DocUtils;
+import org.utils.IoUtils;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -38,6 +41,8 @@ public class InvoiceMaker {
     }
 
     public InvoiceMaker makeInvoiceReplaceMap(Invoice invoice) {
+        IoUtils.makedir(Paths.get(this.tempDirectory));
+        IoUtils.makedir(Paths.get(this.targetPdfDirectory));
         this.outputDocxPath = Paths.get(this.targetPdfDirectory, invoice.getInvoiceNumber()+".docx");
         this.outputPdfPath = Paths.get(this.targetPdfDirectory, invoice.getInvoiceNumber()+".pdf");
         this.invoiceReplaceMap = makeReplaceMap(invoice);

@@ -5,7 +5,7 @@ import org.utils.IoUtils;
 
 public class MetroMockSellerApi extends HttpRequest implements SellerApi {
 
-    public static final String dataDir = "G:/workspace/java/hansagtV2/data";
+    public static final String dataDir = "../data";
 
     public MetroMockSellerApi() {
     }
@@ -20,6 +20,11 @@ public class MetroMockSellerApi extends HttpRequest implements SellerApi {
     }
 
     @Override
+    public HttpResponse selectOrders(int limit, int offset) {
+        return null;
+    }
+
+    @Override
     public HttpResponse selectAllOffers() {
         System.out.println("@@ MOCK: selectOffers");
         String content = IoUtils.readFile(this.dataDir + "/metro/offers.json");
@@ -29,12 +34,22 @@ public class MetroMockSellerApi extends HttpRequest implements SellerApi {
     }
 
     @Override
+    public HttpResponse selectOffers(int limit, int offset) {
+        return null;
+    }
+
+    @Override
     public HttpResponse selectAllShippingGroups() {
         System.out.println("@@ MOCK: selectShippingGroups");
         String content = IoUtils.readFile(this.dataDir + "/metro/shippingGroups.json");
         HttpResponse httpResponse = new HttpResponse(200, content);
         delay(300);
         return httpResponse;
+    }
+
+    @Override
+    public HttpResponse selectShippingGroups(int limit, int offset) {
+        return null;
     }
 
     @Override
