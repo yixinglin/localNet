@@ -5,6 +5,7 @@ import org.hsgt.api.SellerApi;
 import org.hsgt.api.SellerApiFactory;
 import org.hsgt.builders.metro.MetroInvoiceBuilder;
 import org.hsgt.entities.orders.Invoice;
+import org.hsgt.utils.InvoiceMaker;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
@@ -18,6 +19,9 @@ public class MetroInvoiceBuilderTest {
         MetroInvoiceBuilder builder = new MetroInvoiceBuilder();
         Invoice invoice = builder.parse(new JSONObject(s)).financing().build() ;
         System.out.println(invoice);
+
+        InvoiceMaker invoiceMaker = new InvoiceMaker();
+        invoiceMaker.makeInvoiceReplaceMap(invoice).toGermanStyle().toPdf();
     }
 
 
