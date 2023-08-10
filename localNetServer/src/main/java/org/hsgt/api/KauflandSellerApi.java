@@ -10,12 +10,27 @@ public class KauflandSellerApi extends HttpRequest implements SellerApi {
     }
 
     @Override
+    public HttpResponse selectOrders(int limit, int offset) {
+        return null;
+    }
+
+    @Override
     public HttpResponse selectAllOffers() {
         return null;
     }
 
     @Override
+    public HttpResponse selectOffers(int limit, int offset) {
+        return null;
+    }
+
+    @Override
     public HttpResponse selectAllShippingGroups() {
+        return null;
+    }
+
+    @Override
+    public HttpResponse selectShippingGroups(int limit, int offset) {
         return null;
     }
 

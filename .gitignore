@@ -1,2 +1,5 @@
-localNetServer/target
+localNetServer/target/*
 localNetServer/src/main/resources/hsgt/.cache/*
+.idea
+data
+

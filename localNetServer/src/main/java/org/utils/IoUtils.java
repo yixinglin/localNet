@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import org.json.JSONObject;
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -93,6 +94,12 @@ public class IoUtils {
             // String s = new Gson().toJson(bean);
             String s = new GsonBuilder().serializeNulls().create().toJson(bean);
             return new JSONObject(s);
+        }
+    }
+
+    public static void makedir(Path path) {
+        if (!Files.exists(path)) {
+            path.toFile().mkdirs();
         }
     }
 
