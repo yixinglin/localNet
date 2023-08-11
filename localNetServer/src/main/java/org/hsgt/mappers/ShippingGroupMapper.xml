@@ -18,14 +18,15 @@
     <insert id="insert">
         insert into t_shippinggroup
         (id, name, unitCost, extraUnitCost, maxShippingCost,
-        freeFrom, minTransportDays, maxTransportDays, destCountry, platform) values
+        freeFrom, minTransportDays, maxTransportDays, destCountry, platform, owner) values
         (#{id}, #{groupName}, #{unitCost}, #{extraUnitCost}, #{maxShippingCost},
-        #{freeFrom}, #{minTransportDays}, #{maxTransportDays}, #{destCountry}, #{platform})
+        #{freeFrom}, #{minTransportDays}, #{maxTransportDays}, #{destCountry}, #{platform}, #{owner})
     </insert>
 
     <update id="updateById">
-        update t_shippinggroup set name=#{groupName}, unitCost=#{unitCost}, extraUnitCost=#{extraUnitCost},maxShippingCost=#{maxShippingCost},freeFrom=#{freeFrom},minTransportDays=#{minTransportDays},
-        maxTransportDays=#{maxTransportDays},destCountry=#{destCountry} where id=#{id}
+        update t_shippinggroup set name=#{groupName}, unitCost=#{unitCost}, extraUnitCost=#{extraUnitCost},
+        maxShippingCost=#{maxShippingCost},freeFrom=#{freeFrom},minTransportDays=#{minTransportDays},
+        maxTransportDays=#{maxTransportDays},destCountry=#{destCountry}, owner=#{owner}, platform=#{platform} where id=#{id}
     </update>
 
 </mapper>

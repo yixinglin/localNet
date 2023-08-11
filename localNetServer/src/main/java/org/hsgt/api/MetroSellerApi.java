@@ -1,10 +1,10 @@
 package org.hsgt.api;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.hash.Hashing;
+import org.apache.commons.lang3.NotImplementedException;
 import org.net.HttpRequest;
 import org.net.HttpResponse;
-import org.utils.IoUtils;
+
 
 import java.util.*;
 
@@ -24,7 +24,7 @@ public class MetroSellerApi extends HttpRequest implements SellerApi {
     }
     @Override
     public HttpResponse selectAllOrders() {
-        return null;
+        throw new NotImplementedException("selectOfferById");
     }
 
     @Override
@@ -51,7 +51,7 @@ public class MetroSellerApi extends HttpRequest implements SellerApi {
 
     @Override
     public HttpResponse selectAllOffers() {
-        return null;
+        return this.selectOffers(1000, 0);
     }
 
     @Override
@@ -73,12 +73,21 @@ public class MetroSellerApi extends HttpRequest implements SellerApi {
 
     @Override
     public HttpResponse selectAllShippingGroups() {
-        return null;
+        String url = this.baseurl_inventory + "/openapi/v1/shipping-groups";
+        Map headers = this.getHttpHeaders("GET",  url,"");
+        HttpResponse resp;
+        try {
+            resp = this.methodGetRequest(url, headers);
+        } catch (Exception e) {
+            System.err.println(e);
+            throw new RuntimeException("selectAllShippingGroups");
+        }
+        return resp;
     }
 
     @Override
     public HttpResponse selectShippingGroups(int limit, int offset) {
-        return null;
+        return this.selectAllShippingGroups();
     }
 
     @Override
@@ -102,7 +111,7 @@ public class MetroSellerApi extends HttpRequest implements SellerApi {
 
     @Override
     public HttpResponse selectOfferById(String id) {
-        return null;
+        throw new NotImplementedException("selectOfferById");
     }
 
     @Override
@@ -143,8 +152,8 @@ public class MetroSellerApi extends HttpRequest implements SellerApi {
     }
 
     @Override
-    public HttpResponse updateOfferById(Object offer, String id) {
-        return null;
+    public HttpResponse updateOfferById(Object payload, String id) {
+        throw new NotImplementedException("selectOfferById");
     }
 
     @Override

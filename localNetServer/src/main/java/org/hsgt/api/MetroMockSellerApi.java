@@ -1,4 +1,5 @@
 package org.hsgt.api;
+import org.apache.commons.lang3.NotImplementedException;
 import org.net.HttpRequest;
 import org.net.HttpResponse;
 import org.utils.IoUtils;
@@ -6,8 +7,10 @@ import org.utils.IoUtils;
 public class MetroMockSellerApi extends HttpRequest implements SellerApi {
 
     public static final String dataDir = "../data";
+    private final ApiKey apiKey;
 
-    public MetroMockSellerApi() {
+    public MetroMockSellerApi(ApiKey apiKey) {
+        this.apiKey = apiKey;
     }
     
     @Override
@@ -21,7 +24,8 @@ public class MetroMockSellerApi extends HttpRequest implements SellerApi {
 
     @Override
     public HttpResponse selectOrders(int limit, int offset) {
-        return null;
+        System.out.println("@@ MOCK: selectOrders");
+        return this.selectAllOffers();
     }
 
     @Override
@@ -35,7 +39,7 @@ public class MetroMockSellerApi extends HttpRequest implements SellerApi {
 
     @Override
     public HttpResponse selectOffers(int limit, int offset) {
-        return null;
+        return this.selectAllOffers();
     }
 
     @Override
@@ -49,12 +53,12 @@ public class MetroMockSellerApi extends HttpRequest implements SellerApi {
 
     @Override
     public HttpResponse selectShippingGroups(int limit, int offset) {
-        return null;
+        return this.selectAllShippingGroups();
     }
 
     @Override
     public HttpResponse selectDocById(String id) {
-        return null;
+        throw new NotImplementedException("selectDocById");
     }
 
     @Override
@@ -68,7 +72,7 @@ public class MetroMockSellerApi extends HttpRequest implements SellerApi {
 
     @Override
     public HttpResponse selectOfferById(String id) {
-        return null;
+        throw new NotImplementedException("selectOfferById");
     }
 
     @Override
@@ -91,12 +95,12 @@ public class MetroMockSellerApi extends HttpRequest implements SellerApi {
     }
 
     @Override
-    public HttpResponse updateOfferById(Object offer, String id) {
+    public HttpResponse updateOfferById(Object payload, String id) {
         return null;
     }
 
     @Override
     public String accountName() {
-        return "metromockseller";
+        return this.apiKey.getAccountName();
     }
 }

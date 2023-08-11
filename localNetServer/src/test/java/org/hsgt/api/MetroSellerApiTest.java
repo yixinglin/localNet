@@ -1,7 +1,9 @@
 package org.hsgt.api;
 
+import org.hsgt.config.AccountConfig;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.net.HttpResponse;
 import org.utils.IoUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,15 +14,12 @@ class MetroSellerApiTest  {
     public MetroSellerApiTest() {
         String s = IoUtils.readFile("../data/config.json");
         JSONObject conf = new JSONObject(s);
-        ApiKey apiKey = new ApiKey();
-        apiKey.setClientKey(conf.getJSONObject("metro").getString("client"));
-        apiKey.setSecretKey(conf.getJSONObject("metro").getString("secret"));
-        apiKey.setAccountName(conf.getJSONObject("metro").getString("account"));
-        api = SellerApiFactory.createSellerApi(SellerApi.METRO, apiKey);
+        ApiKey apiKey = AccountConfig.generateApiKey(AccountConfig.METRO_KEY);
+        api = SellerApiFactory.createSellerApi(SellerApi.METRO, apiKey, true);
     }
-    @Test
-    void testSelectAllOrders() {
-    }
+//    @Test
+//    void testSelectAllOrders() {
+//    }
 
     @Test
     void testSelectOrders() {
@@ -40,6 +39,8 @@ class MetroSellerApiTest  {
 
     @Test
     void testSelectAllShippingGroups() {
+        String s = this.api.selectShippingGroups(10, 0).getContent();
+        System.out.println(s);
     }
 
     @Test
@@ -48,6 +49,8 @@ class MetroSellerApiTest  {
 
     @Test
     void testSelectOrderById() {
+        HttpResponse resp = this.api.selectOrderById("0af2e7eb-7ed9-4b67-ad00-214a2c25b1f6");
+        System.out.println(resp.getContent());
     }
 
     @Test

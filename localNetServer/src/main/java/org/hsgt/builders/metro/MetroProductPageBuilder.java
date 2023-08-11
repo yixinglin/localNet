@@ -5,12 +5,11 @@ import org.hsgt.entities.common.ShippingGroup;
 import org.hsgt.entities.pricing.Competitor;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 public class MetroProductPageBuilder {
 
@@ -19,7 +18,9 @@ public class MetroProductPageBuilder {
 
     public MetroProductPageBuilder(String myShopName) {
         this.productPage = new ProductPage();
-        this.productPage.setShopName(myShopName);
+        Competitor self = new Competitor();
+        self.setShopName(myShopName);
+        this.productPage.setSelf(self);
     }
 
     public MetroProductPageBuilder pageInfo(JSONObject page) {
@@ -61,7 +62,7 @@ public class MetroProductPageBuilder {
 
             /* Set the shipping group */
             ShippingGroup shippingGroup = new ShippingGroup();
-            shippingGroup.setOwner(productPage.getShopName());
+            shippingGroup.setOwner(competitor.getShopName());
             shippingGroup.setPlatform("metro");
             if (!offer.isNull("shippingGroup")) {
                 JSONObject sc = offer.getJSONObject("shippingGroup").getJSONObject("shippingCost");
@@ -69,6 +70,7 @@ public class MetroProductPageBuilder {
                 shippingGroup.setGroupName(offer.getJSONObject("shippingGroup").getString("name"));
                 shippingGroup.setUnitCost(sc.getJSONObject("unitCost").getFloat("net"));
                 shippingGroup.setExtraUnitCost(sc.getJSONObject("extraUnitCost").getFloat("net"));
+                shippingGroup.setPlatform("metro");
                 if (sc.getBoolean("thresholdEnabled") ) {
                     shippingGroup.setMaxShippingCost(sc.getJSONObject("thresholdAmount").getFloat("net"));
                 }
@@ -85,6 +87,9 @@ public class MetroProductPageBuilder {
                 }
             }
             competitorList.add(competitor);
+            if (competitor.getShopName().equals(this.productPage.getSelf().getShopName())) {
+                this.productPage.setSelf(competitor);
+            }
         }
 
         productPage.setCompetitors(this.sortCompetitors(competitorList));
@@ -105,6 +110,8 @@ public class MetroProductPageBuilder {
     }
 
     public ProductPage build() {
-        return this.productPage;
+        ProductPage ans = this.productPage;
+        this.productPage = new ProductPage();
+        return ans;
     }
 }

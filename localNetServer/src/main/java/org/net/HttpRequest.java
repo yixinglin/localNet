@@ -43,7 +43,7 @@ public abstract class HttpRequest {
                 stringBuffer.append(line);
             }
             String resp = stringBuffer.toString();
-            System.out.println(String.format("[%d] GET: %s", stateCode, url));
+            System.out.println(String.format("GET [%d]: %s", stateCode, url));
             httpResponse = new HttpResponse(stateCode, resp);
         }
         Thread.sleep(100);
@@ -76,7 +76,7 @@ public abstract class HttpRequest {
                 stringBuffer.append(line);
             }
             String resp = stringBuffer.toString();
-            System.out.println(String.format("[%d] POST: %s", stateCode, url));
+            System.out.println(String.format("POST [%d]: %s", stateCode, url));
             httpResponse =  new HttpResponse(stateCode, resp);
         }
 

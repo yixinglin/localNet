@@ -40,6 +40,7 @@ public class MetroOfferBuilder {
         offer.setProductName(jsonOffer.getString("productName"));
         offer.setQuantity(jsonOffer.getInt("quantity"));
         offer.setPrice(jsonOffer.getJSONObject("netPrice").getFloat("amount"));
+        offer.setNote("");
         if (jsonOffer.isNull("manufacturer")) {
             offer.setManufacturer("unknown");
         } else {
@@ -53,6 +54,7 @@ public class MetroOfferBuilder {
             // The shipping costs money
             shippingGroupId = jsonOffer.getJSONObject("shippingGroup").getString("shippingGroupId");
             shippingGroup.setId(shippingGroupId);
+            shippingGroup.setGroupName("unknown");
         } else {
             // The shipping is free
         }
@@ -94,7 +96,9 @@ public class MetroOfferBuilder {
     }
 
     public Offer build() {
-        return offer;
+        Offer ans = offer;
+        offer = new Offer();
+        return ans;
     }
 
 

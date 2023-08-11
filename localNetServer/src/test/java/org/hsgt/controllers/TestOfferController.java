@@ -37,7 +37,7 @@ public class TestOfferController {
 
     @Test
     void testMetroOfferController() {
-        SellerApi metroApi = SellerApiFactory.createSellerApi(SellerApi.METRO_MOCKED, null);
+        SellerApi metroApi = SellerApiFactory.createSellerApi(SellerApi.METRO_MOCKED, null, false);
         String offerList = metroApi.selectAllOffers().getContent();
         String shippingGroupList = metroApi.selectAllShippingGroups().getContent();
         String productPage =  metroApi.selectProductPageById("5e284310-3551-40ba-981b-bb65161981e5").getContent();
@@ -80,7 +80,7 @@ public class TestOfferController {
 
     @Test
     void testMetroOfferController2() {
-        SellerApi metroApi = SellerApiFactory.createSellerApi(SellerApi.METRO_MOCKED, null);
+        SellerApi metroApi = SellerApiFactory.createSellerApi(SellerApi.METRO_MOCKED, null, false);
         String offerList = metroApi.selectAllOffers().getContent();
         String shippingGroupList = metroApi.selectAllShippingGroups().getContent();
         Offer mOffer1, mOffer2;
@@ -97,6 +97,15 @@ public class TestOfferController {
         c.setShopName("AAAAAAAAAAAAAAA");
         competitorMapper.insert(c);
         System.out.println("Finished");
+
+    }
+
+    @Autowired
+    MetroOfferController controller;
+    @Test
+    void testMetroOfferController3() {
+        List<Offer> s = controller.selectAll();
+        System.out.println(s);
 
     }
 }

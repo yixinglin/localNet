@@ -9,6 +9,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class MetroMockSellerApiTest extends MetroMockSellerApi {
 
 
+    public MetroMockSellerApiTest(ApiKey apiKey) {
+        super(apiKey);
+    }
+
     @Test
     void testSelectAllOrders() {
         System.out.println(selectAllOrders());

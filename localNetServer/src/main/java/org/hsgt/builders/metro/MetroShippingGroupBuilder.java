@@ -48,7 +48,9 @@ public class MetroShippingGroupBuilder {
     }
 
     public ShippingGroup build() {
-        return this.shippingGroup;
+        ShippingGroup ans = this.shippingGroup;
+        this.shippingGroup = new ShippingGroup();
+        return ans;
     }
 
 }

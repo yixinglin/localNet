@@ -143,7 +143,9 @@ public class MetroInvoiceBuilder {
     }
 
     public Invoice build() {
-        return this.invoice;
+        Invoice ans = this.invoice;
+        this.invoice = new Invoice();
+        return ans;
     }
 
 }

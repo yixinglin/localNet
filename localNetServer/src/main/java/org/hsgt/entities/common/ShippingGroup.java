@@ -7,7 +7,7 @@ import java.io.Serializable;
 public class ShippingGroup implements Serializable {
 
     // @TableId
-    private String id;  // Shipping Group ID
+    private String id="0";  // Shipping Group ID
     // @TableField("name")
     private String groupName="free";        // Shipping group name.
     private float unitCost= 0;         //  Shipping cost from
@@ -20,6 +20,6 @@ public class ShippingGroup implements Serializable {
     private int maxTransportDays=0; // Maximum transport time in working days
     private String destCountry;   // Destination country.
     private String platform;
-    private String owner="self";
+    private String owner;
 
 }
