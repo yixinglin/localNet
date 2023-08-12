@@ -22,21 +22,21 @@ public class UnitPriceStrategy extends Strategy {
     }
 
     @Override
-    public Competitor execute(Competitor self, List<Competitor> competitorList, Offer offer) {
+    public Competitor execute(Competitor self, List<Competitor> others, Offer offer) {
         Competitor newCompetitor = SerializationUtils.clone(self);
         // You have no competitors.
-        if (competitorList.isEmpty()) {
+        if (others.isEmpty()) {
             newCompetitor = null;
             this.setState(REJECTED_NO_COMPETITORS);
             return newCompetitor;
         }
 
         // Sort list by unit prices.
-        competitorList.sort(Comparator.comparing(o -> o.getPrice2()));
-        Competitor competitor = competitorList.get(0);      // The seller with minimum unit price.
+        others.sort(Comparator.comparing(o -> o.getPrice2()));
+        Competitor competitor = others.get(0);      // The seller with minimum unit price (exclude me).
 
         // If you are already No. 1
-        if (competitor.getShopName().equals(self.getShopName())) {
+        if (competitor.getPrice2() > self.getPrice2()) {
             newCompetitor = null;
             this.setState(REJECTED_PRICE_FULFILLED);
             return newCompetitor;

@@ -10,7 +10,10 @@
         <result column="price" property="price1"></result>
         <result column="price" property="price2"></result>
         <result column="shipment" property="shippingGroup.unitCost"></result>
-        <result column="shippingGroupId" property="shippingGroup.id"></result>
+        <association property="shippingGroup" javaType="org.hsgt.entities.common.ShippingGroup"
+                     column="shippingGroupId"
+                     select="org.hsgt.mappers.ShippingGroupMapper.selectById">
+        </association>
     </resultMap>
 
     <select id="selectList" resultMap="competitorMap">
@@ -19,6 +22,10 @@
 
     <select id="selectById" resultMap="competitorMap" parameterType="org.hsgt.entities.pricing.Competitor">
         select * from t_competition where productId=#{productId} and shopName=#{shopName}
+    </select>
+
+    <select id="findAllCompetitorByProductId" resultMap="competitorMap">
+        select * from t_competition where productId=#{productId}
     </select>
 
     <insert id="insert">

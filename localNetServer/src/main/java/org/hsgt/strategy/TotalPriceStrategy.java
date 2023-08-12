@@ -18,29 +18,32 @@ public class TotalPriceStrategy extends Strategy {
     }
 
     @Override
-    public Competitor execute(Competitor self, List<Competitor> competitorList, Offer offer) {
+    public Competitor execute(Competitor self, List<Competitor> others, Offer offer) {
         Competitor newCompetitor = SerializationUtils.clone(self);
         // You have no competitors.
-        if (competitorList.isEmpty()) {
+        if (others.isEmpty()) {
             newCompetitor = null;
             this.setState(REJECTED_NO_COMPETITORS);
             return newCompetitor;
         }
 
         // Sort list by total prices.
-        competitorList.sort(Comparator.comparing(o -> o.getPrice2() + o.getShippingGroup().getUnitCost()));
-        Competitor competitor = competitorList.get(0); // The seller with minimum total price.
+        others.sort(Comparator.comparing(o -> o.getPrice2() + o.getShippingGroup().getUnitCost()));
+        Competitor competitor = others.get(0); // The seller with minimum total price (exclude me).
 
         // If you are already No. 1
-        if (competitor.getShopName().equals(self.getShopName())) {
+        if (competitor.getPrice2() + competitor.getShippingGroup().getUnitCost() >
+            self.getPrice2() + self.getShippingGroup().getUnitCost()) {
             newCompetitor = null;
             this.setState(REJECTED_PRICE_FULFILLED);
             return newCompetitor;
         }
 
         // Reduce price values that are lower than that of the No.1 seller.
-        newCompetitor.setPrice1(competitor.getPrice1() - this.reduce);
-        newCompetitor.setPrice2(competitor.getPrice2() - this.reduce);
+        float newUnitPrice = competitor.getPrice2() + competitor.getShippingGroup().getUnitCost()
+                - self.getShippingGroup().getUnitCost() - this.reduce;
+        newCompetitor.setPrice1(newUnitPrice);
+        newCompetitor.setPrice2(newUnitPrice);
 
         // Validate the new price.
         if (!this.saftyValidation(newCompetitor, offer.getLowestPrice())) {

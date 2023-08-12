@@ -39,7 +39,15 @@ public class MetroVueTableUpdatePhaseTest {
             MatcherAssert.assertThat(sg, Matchers.notNullValue());
             System.out.println(sg);
         }
+    }
 
+    @Autowired
+    MetroPriceManagementController metroPriceManagementController;
+    @Test
+    void testPriceSuggestion() {
+        // metroPriceManagementController.suggestPriceToUpdate("AAA0000718012");
+        // metroPriceManagementController.suggestPriceToUpdate("AAA0000731095");
+        metroPriceManagementController.suggestPriceToUpdate("AAA0000857860");
     }
 
 }
