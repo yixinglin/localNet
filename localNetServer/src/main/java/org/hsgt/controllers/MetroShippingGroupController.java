@@ -1,22 +1,20 @@
 package org.hsgt.controllers;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.ibatis.annotations.Param;
-import org.hsgt.api.ApiKey;
 import org.hsgt.api.SellerApi;
-import org.hsgt.api.SellerApiFactory;
 import org.hsgt.builders.metro.MetroShippingGroupBuilder;
-import org.hsgt.config.AccountConfig;
+import org.hsgt.config.Global;
 import org.hsgt.entities.common.ShippingGroup;
 import org.hsgt.mappers.ShippingGroupMapper;
 import org.hsgt.mappers.SqlService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.websocket.server.PathParam;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +27,7 @@ public class MetroShippingGroupController {
     ShippingGroupMapper shippingGroupMapper;
     private final SellerApi api;
     public MetroShippingGroupController() {
-        ApiKey apiKey = AccountConfig.generateApiKey(AccountConfig.METRO_KEY);
-        api = SellerApiFactory.createSellerApi(SellerApi.METRO_MOCKED, apiKey, false);
+        this.api = Global.getMetroApiInstance();
     }
 
     @ApiOperation(value = "Get list of shipping groups", notes = "Get a list of shipping groups with group names and group IDs using Metro API.")
@@ -59,7 +56,7 @@ public class MetroShippingGroupController {
         MetroShippingGroupBuilder builder = new MetroShippingGroupBuilder();
         ShippingGroup shippingGroup = builder.web(new JSONObject(s)).build();
         shippingGroup.setOwner(api.accountName());
-        SqlService.sqlInsetOrUpdate(shippingGroup, shippingGroupMapper);
+        SqlService.sqlInsertOrUpdate(shippingGroup, shippingGroupMapper);
         return shippingGroup;
     }
 

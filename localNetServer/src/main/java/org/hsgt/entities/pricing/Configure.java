@@ -1,7 +1,6 @@
-package org.hsgt.entities;
+package org.hsgt.entities.pricing;
 
 import lombok.Data;
-import org.hsgt.entities.pricing.Offer;
 import org.hsgt.strategy.Strategy;
 
 import java.io.Serializable;

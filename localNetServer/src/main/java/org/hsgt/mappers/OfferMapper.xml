@@ -29,4 +29,7 @@
             productKey=#{productKey}, shippingGroupId=#{shippingGroup.id} where productId=#{id}
     </update>
 
+    <update id="updateLowestPriceAndNote">
+        update t_offer set lowestPrice=#{lowestPrice}, note=#{note} where productId=#{id}
+    </update>
 </mapper>

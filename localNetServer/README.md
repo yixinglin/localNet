@@ -2,9 +2,12 @@
 ## Summary
 Spring Boot, MySql, MyBatis
 
+## Swagger
+Link: http://localhost:8088/swagger-ui.html#/
+
 ## Procedures
 ### Query data
-1. Initialize Offer table. To show the product IDs and names. (No shipping cost)
+1. Initialize Offer table. To show the product IDs and names. (No shipping cost detail)
 1. Request for more details of the products in the table. Information from product pages 
 (including current shipping cost)
 

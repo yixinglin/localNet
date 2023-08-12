@@ -1,11 +1,12 @@
 package org.hsgt.strategy;
-
+import lombok.Data;
 import org.hsgt.entities.pricing.Competitor;
 import org.hsgt.entities.pricing.Offer;
 
 import java.util.List;
 
-public interface Strategy {
+@Data
+public abstract class Strategy {
 
     public static final float POSITIVE_INFINITY = 99999;
     public static final int APPROVED = 0;       // 接受
@@ -16,13 +17,44 @@ public interface Strategy {
     public static final int REJECTED_NO_COMPETITORS = 5; //  没有竞争者
     public static final int REJECTED_LARGE_ADJUST = 6;   // 调幅过大
 
-    /*
-     * @param null:
-      * @return null
-     * @author Lin
-     * @description TODO 进行价格比价，返回比价后能取得优势的结果
-     * @date 20.Dec.2022 020 02:09
-     */
-    public abstract Competitor execute(Competitor me, List<Competitor> competitorList, Offer offer) ;
-    public int getState();
+    protected int state;
+    protected float maxAdjust;
+    protected float reduce;
+
+    public Strategy() {
+
+    }
+
+    public Strategy(float reduce, float maxAdjust) {
+        this.maxAdjust = maxAdjust;
+        this.reduce = reduce;
+    }
+
+    public abstract Competitor execute(Competitor self, List<Competitor> competitorList, Offer offer);
+
+    protected boolean saftyValidation(Competitor newCompetitor, float lowestPrice) {
+        boolean safe = true;
+
+        // May lead to profit loss when customer buy a large number of products.
+        if (newCompetitor.getPrice2() + newCompetitor.getShippingGroup().getExtraUnitCost() < lowestPrice) {
+            this.setState(REJECTED_RISK_LOSS);
+            safe = false;
+        }
+
+        // Profit loss (when ShippingUnitCost >= ShippingExtraUnitCost)
+        if (newCompetitor.getPrice2() + newCompetitor.getShippingGroup().getUnitCost() < lowestPrice ) {
+            this.setState(REJECTED_LOSS);
+            safe = false;
+        }
+
+        // Price invalid
+        if (newCompetitor.getPrice2() <= 0 || newCompetitor.getPrice1() <= 0 ) {
+            this.setState(REJECTED_INVALID_PRICE);
+            safe = false;
+        }
+
+        return safe;
+    }
+
+    public abstract String getId();
 }
