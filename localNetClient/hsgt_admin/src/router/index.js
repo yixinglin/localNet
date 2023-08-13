@@ -11,6 +11,7 @@ import componentsRouter from './modules/components'
 import chartsRouter from './modules/charts'
 import tableRouter from './modules/table'
 import nestedRouter from './modules/nested'
+import autoPriceUpdateRouter from './modules/auto-price-update'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -129,6 +130,9 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
+
+  autoPriceUpdateRouter,
+
   {
     path: '/permission',
     component: Layout,
@@ -138,7 +142,7 @@ export const asyncRoutes = [
     meta: {
       title: 'Permission',
       icon: 'lock',
-      roles: ['admin', 'editor'] // you can set roles in root nav
+      roles: ['admin', 'admin1'] // you can set roles in root nav
     },
     children: [
       {
@@ -147,7 +151,7 @@ export const asyncRoutes = [
         name: 'PagePermission',
         meta: {
           title: 'Page Permission',
-          roles: ['admin'] // or you can only set roles in sub nav
+          roles: ['admin', 'admin1'] // or you can only set roles in sub nav
         }
       },
       {
@@ -165,7 +169,7 @@ export const asyncRoutes = [
         name: 'RolePermission',
         meta: {
           title: 'Role Permission',
-          roles: ['admin']
+          roles: ['admin', 'admin1']
         }
       }
     ]
@@ -179,7 +183,7 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/icons/index'),
         name: 'Icons',
-        meta: { title: 'Icons', icon: 'icon', noCache: true }
+        meta: { title: 'Icons', icon: 'icon', noCache: true, roles: ['admin'] }
       }
     ]
   },
@@ -197,7 +201,7 @@ export const asyncRoutes = [
     name: 'Example',
     meta: {
       title: 'Example',
-      icon: 'el-icon-s-help'
+      icon: 'el-icon-s-help', roles: ['admin']
     },
     children: [
       {
@@ -230,7 +234,7 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/tab/index'),
         name: 'Tab',
-        meta: { title: 'Tab', icon: 'tab' }
+        meta: { title: 'Tab', icon: 'tab', roles: ['admin'] }
       }
     ]
   },
@@ -242,7 +246,8 @@ export const asyncRoutes = [
     name: 'ErrorPages',
     meta: {
       title: 'Error Pages',
-      icon: '404'
+      icon: '404',
+      roles: ['admin']
     },
     children: [
       {
@@ -268,7 +273,7 @@ export const asyncRoutes = [
         path: 'log',
         component: () => import('@/views/error-log/index'),
         name: 'ErrorLog',
-        meta: { title: 'Error Log', icon: 'bug' }
+        meta: { title: 'Error Log', icon: 'bug', roles: ['admin'] }
       }
     ]
   },
@@ -280,7 +285,8 @@ export const asyncRoutes = [
     name: 'Excel',
     meta: {
       title: 'Excel',
-      icon: 'excel'
+      icon: 'excel',
+      roles: ['admin']
     },
     children: [
       {
@@ -316,7 +322,7 @@ export const asyncRoutes = [
     redirect: '/zip/download',
     alwaysShow: true,
     name: 'Zip',
-    meta: { title: 'Zip', icon: 'zip' },
+    meta: { title: 'Zip', icon: 'zip', roles: ['admin'] },
     children: [
       {
         path: 'download',
@@ -336,7 +342,7 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/pdf/index'),
         name: 'PDF',
-        meta: { title: 'PDF', icon: 'pdf' }
+        meta: { title: 'PDF', icon: 'pdf', roles: ['admin'] }
       }
     ]
   },
@@ -354,7 +360,7 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/theme/index'),
         name: 'Theme',
-        meta: { title: 'Theme', icon: 'theme' }
+        meta: { title: 'Theme', icon: 'theme', roles: ['admin'] }
       }
     ]
   },
@@ -367,7 +373,7 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/clipboard/index'),
         name: 'ClipboardDemo',
-        meta: { title: 'Clipboard', icon: 'clipboard' }
+        meta: { title: 'Clipboard', icon: 'clipboard', roles: ['admin'] }
       }
     ]
   },

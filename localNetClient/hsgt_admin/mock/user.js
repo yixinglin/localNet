@@ -5,6 +5,12 @@ const tokens = {
   },
   editor: {
     token: 'editor-token'
+  },
+  visitor: {
+    token: 'visitor-token'
+  },
+  admin1: {
+    token: 'admin1-token'
   }
 }
 
@@ -15,11 +21,23 @@ const users = {
     avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
     name: 'Super Admin'
   },
+  'admin1-token': {
+    roles: ['admin1'],
+    introduction: 'I am a administrator',
+    avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+    name: 'Admin'
+  },
   'editor-token': {
     roles: ['editor'],
     introduction: 'I am an editor',
     avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
     name: 'Normal Editor'
+  },
+  'visitor-token': {
+    roles: ['visitor'],
+    introduction: 'I am a visitor',
+    avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+    name: 'Normal Visitor'
   }
 }
 
@@ -29,6 +47,7 @@ module.exports = [
     url: '/vue-element-admin/user/login',
     type: 'post',
     response: config => {
+      debugger
       const { username } = config.body
       const token = tokens[username]
 
