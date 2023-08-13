@@ -2,9 +2,10 @@ package org.hsgt.controllers;
 
 import org.hsgt.controllers.response.VueElementAdminResponse;
 import org.hsgt.entities.common.User;
-import org.json.JSONObject;
+import org.hsgt.mappers.UserMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.utils.IoUtils;
+import org.utils.JwtsUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,17 +14,19 @@ import java.util.Map;
 @RequestMapping("/vue-element-admin/user")
 public class VueElementAdminLoginController {
 
-    String token;
-
+    @Autowired
+    UserMapper userMapper;
     @PostMapping("/login")
     public VueElementAdminResponse login(@RequestBody User user) {
         VueElementAdminResponse resp;
-        if (user.getUsername().equals("admin1")) {
+        User selectedUser = userMapper.selectByName(user.getUsername());
+        if (selectedUser != null && selectedUser.getPassword().equals(user.getPassword())) {
             resp = VueElementAdminResponse.ok();
-            token = user.getUsername() + "-token";
+            String token = JwtsUtils.token(selectedUser);
             Map<String, String> data = new HashMap<>();
             data.put("token", token);
             resp.setData(data);
+            userMapper.updateTokenById(selectedUser.getId(), token);
         } else {
             resp = new VueElementAdminResponse(VueElementAdminResponse.PW_INCORRECT,
                     "Account or password is incorrect.", null) ;
@@ -41,12 +44,12 @@ public class VueElementAdminLoginController {
     @GetMapping("/info")
     public VueElementAdminResponse userInfo(String token) {
         VueElementAdminResponse resp;
-        if (this.token.equals(token)) {
+        String username = JwtsUtils.verify(token).getSubject();
+        // User userinfo = userMapper.selectByToken(token);
+        User userinfo = userMapper.selectByName(username);
+        if (userinfo != null) {
             resp = VueElementAdminResponse.ok();
-            String s = IoUtils.readFile("src/main/resources/hsgt/login/user_mock.json");
-            JSONObject info = new JSONObject(s);
-            JSONObject user = info.getJSONObject("users").getJSONObject(this.token);
-            resp.setData(user.toMap());
+            resp.setData(userinfo);
         } else {
             resp = new VueElementAdminResponse(VueElementAdminResponse.PW_INCORRECT,
                     "Login failed, unable to get user details.", null) ;
