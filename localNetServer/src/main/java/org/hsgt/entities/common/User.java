@@ -8,9 +8,10 @@ import java.io.Serializable;
 public class User implements Serializable {
     private String username;
     private String password;
-    private String nickName;
+    private String name;
+    private String avatar;
+    private String introduction;
     private String email;
     private String phone;
-    private String signature;
-    private String profile;
+    private String[] roles;
 }
