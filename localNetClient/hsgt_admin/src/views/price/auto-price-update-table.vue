@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    <span> Auto Price Updates</span>
     <div class="filter-container">
       <el-input v-model="listQuery.title" placeholder="Title" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-select v-model="listQuery.importance" placeholder="Imp" clearable style="width: 90px" class="filter-item">
@@ -14,18 +15,19 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         Search
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+      <el-button class="filter-item" style="margin-left: 20px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         Add
       </el-button>
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
         Export
       </el-button>
-      <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
-        reviewer
+      <el-checkbox v-model="showProductName" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
+        Produktname
       </el-checkbox>
     </div>
 
     <el-table
+      v-if="list"
       :key="tableKey"
       v-loading="listLoading"
       :data="list"
@@ -35,48 +37,102 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
+      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="130px" :class-name="getSortClass('id')">
         <template slot-scope="{row}">
-          <span>{{ row.id }}</span>
+          <a :href="`https://www.metro.de/marktplatz/product/` + row.productKey" target="_blank">
+            {{ row.id }}
+          </a>
         </template>
       </el-table-column>
-      <el-table-column label="Date" width="150px" align="center">
+      <el-table-column label="No. 1" align="center" width="100px">
+        <template slot-scope="{row}">
+          <span v-if="row.sellers.length">{{ row.sellers[0].shopName }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Price" width="80px" align="center">
+        <template slot-scope="{row}">
+          <span style="color:rgb(55, 0, 255);">{{ row.price.toFixed(2) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="L.Price" align="center" width="80px">
+        <template slot-scope="{row}">
+          <span>{{ row.lowestPrice.toFixed(2) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Profit" align="center" width="80px">
+        <template slot-scope="{row}">
+          <span v-if="profit(row)>0" style="color:green;">{{ profit(row).toFixed(2) }}</span>
+          <span v-else style="color:red;">{{ profit(row).toFixed(2) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Amount" align="center" width="80px">
+        <template slot-scope="{row}">
+          <span>{{ row.amount }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Note" align="center" width="120px">
+        <template slot-scope="{row}">
+          <span>{{ row.note }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column v-if="showProductName" label="Title" min-width="100px" width="300px">
+        <template slot-scope="{row}">
+          <span class="link-type" @click="handleUpdate(row)">{{ row.productName }}</span>
+          <!-- <el-tag>{{ row.type | typeFilter }}</el-tag> -->
+        </template>
+      </el-table-column>
+      <el-table-column label="Strategy" align="center" width="80px">
+        <template slot-scope="{row}">
+          <span> 0 </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Status" align="center" width="80px">
+        <template slot-scope="{row}">
+          <span>Reject</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Comparable" align="center" width="80px">
+        <template slot-scope="{row}">
+          <span>Camparable</span>
+        </template>
+      </el-table-column>
+      <!--  <el-table-column label="Date" width="150px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
-      </el-table-column>
-      <el-table-column label="Title" min-width="150px">
-        <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
-          <el-tag>{{ row.type | typeFilter }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="Author" width="110px" align="center">
+      </el-table-column> -->
+      <!-- <el-table-column label="Author" width="110px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.author }}</span>
         </template>
-      </el-table-column>
-      <el-table-column v-if="showReviewer" label="Reviewer" width="110px" align="center">
+      </el-table-column> -->
+      <el-table-column label="Qty" width="80px" align="center">
         <template slot-scope="{row}">
-          <span style="color:red;">{{ row.reviewer }}</span>
+          <span v-if="row.quantity > 0">{{ row.quantity }}</span>
+          <span v-else style="color:red;">0</span>
         </template>
       </el-table-column>
-      <el-table-column label="Imp" width="80px">
+      <!-- <el-table-column label="Imp" width="80px">
         <template slot-scope="{row}">
           <svg-icon v-for="n in + row.importance" :key="n" icon-class="star" class="meta-item__icon" />
         </template>
-      </el-table-column>
-      <el-table-column label="Readings" align="center" width="95">
+      </el-table-column> -->
+      <!-- <el-table-column label="Readings" align="center" width="95">
         <template slot-scope="{row}">
           <span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>
           <span v-else>0</span>
         </template>
-      </el-table-column>
-      <el-table-column label="Status" class-name="status-col" width="100">
+      </el-table-column> -->
+      <!-- <el-table-column label="Status" class-name="status-col" width="100">
         <template slot-scope="{row}">
           <el-tag :type="row.status | statusFilter">
             {{ row.status }}
           </el-tag>
+        </template>
+      </el-table-column> -->
+      <el-table-column label="Enabled" align="center" width="80px">
+        <template slot-scope="{row}">
+          <span>True</span>
         </template>
       </el-table-column>
       <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
@@ -97,7 +153,7 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <!-- <pagination v-if="list" v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" /> -->
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
@@ -134,7 +190,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
+    <!-- <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
       <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
         <el-table-column prop="key" label="Channel" />
         <el-table-column prop="pv" label="Pv" />
@@ -142,7 +198,7 @@
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
       </span>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -151,6 +207,8 @@ import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import getters from '@/store/getters'
+import { mapState } from 'vuex'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -185,8 +243,8 @@ export default {
   data() {
     return {
       tableKey: 0,
-      list: null,
-      total: 0,
+      // list: null,
+      // total: 0,
       listLoading: true,
       listQuery: {
         page: 1,
@@ -200,7 +258,7 @@ export default {
       calendarTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
-      showReviewer: false,
+      showProductName: true,
       temp: {
         id: undefined,
         importance: 1,
@@ -226,10 +284,43 @@ export default {
       downloadLoading: false
     }
   },
+  computed: {
+    ...mapState({
+      list: state => state.autoPriceUpdate.list,
+      total: state => state.autoPriceUpdate.list.length
+    })
+  },
   created() {
-    this.getList()
+    this.listLoading = true
+    this.$store.dispatch('autoPriceUpdate/generateList').then(resp => {
+      this.listLoading = false
+    })
+    //                fetchOfferList().then((response) => {
+    //    // this.list = response.data
+    //   // this.total = this.list.length
+    //   // response.data.forEach(row => {
+    //   //   this.$store.dispatch('autoPriceUpdate/insertRowToList', row)
+    //   // })
+    //   console.log(this.total)
+    //   console.log(this.list)
+    //   return this.list
+    // })
+    // .then(resp => {
+    //   var productIds = resp.map(a => a.id)
+    //   fetchProductPageList(productIds).then(resp => {
+    //     this.listLoading = false
+    //     return resp
+    //   })
+    // })
+    // .then(resp => {
+    //   this.list.forEach(row => {
+    //     this.$store.dispatch('autoPriceUpdate/insertRowToList', row)
+    //   })
+    // })
+    // this.getList()
   },
   methods: {
+    profit(row) { return row.price - row.lowestPrice },
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
