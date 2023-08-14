@@ -95,5 +95,16 @@ public abstract class HttpRequest {
 
     }
 
+    public int delay(long min, long max) {
+        long random_int = (int)Math.floor(Math.random() * (max - min + 1) + min);
+        try {
+            Thread.sleep(random_int);
+            return 0;
+        } catch (InterruptedException e) {
+            System.err.println(e);
+            return 1;
+        }
+
+    }
 
 }

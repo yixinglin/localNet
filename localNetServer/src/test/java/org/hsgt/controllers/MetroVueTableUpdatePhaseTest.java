@@ -22,12 +22,12 @@ public class MetroVueTableUpdatePhaseTest {
     @Test
     void testTableInitialization() {
         // Get list of offers to update
-        List<Offer> offerList = metroOfferController.selectAll();
+        List<Offer> offerList = (List<Offer>) metroOfferController.selectAll().getData();
 
         // Get offers with more details.
         for (Offer o: offerList) {
             MatcherAssert.assertThat(o, Matchers.notNullValue());
-            ProductPage productPage = metroOfferController.productPage(o.getProductKey());
+            ProductPage productPage = (ProductPage) metroOfferController.productPage(o.getProductKey()).getData();
             MatcherAssert.assertThat(productPage, Matchers.notNullValue());
             System.out.println(productPage);
         }

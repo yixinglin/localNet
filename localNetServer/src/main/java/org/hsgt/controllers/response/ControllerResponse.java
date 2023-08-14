@@ -3,26 +3,26 @@ package org.hsgt.controllers.response;
 import lombok.Data;
 
 @Data
-public class VueElementAdminResponse {
+public class ControllerResponse<T> {
     public static int LOGIN_SUCCESS = 20000;
     public static int PW_INCORRECT = 60204;
     public static int LOGIN_FAIL = 50008;
 
     int code;
     String message;
-    Object data;
+    T data;
 
-    public VueElementAdminResponse() {
+    public ControllerResponse() {
     }
 
-    public VueElementAdminResponse(int code, String message, Object data) {
+    public ControllerResponse(int code, String message, T data) {
         this.code = code;
         this.message = message;
         this.data = data;
     }
 
-    public static VueElementAdminResponse ok() {
-        VueElementAdminResponse ans = new VueElementAdminResponse();
+    public static ControllerResponse ok() {
+        ControllerResponse ans = new ControllerResponse();
         ans.setCode(LOGIN_SUCCESS);
         ans.setMessage("success");
         return ans;

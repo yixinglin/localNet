@@ -6,6 +6,7 @@ import org.hsgt.api.SellerApi;
 import org.hsgt.builders.metro.MetroOfferBuilder;
 import org.hsgt.builders.metro.MetroProductPageBuilder;
 import org.hsgt.config.Global;
+import org.hsgt.controllers.response.ControllerResponse;
 import org.hsgt.entities.common.ProductPage;
 import org.hsgt.entities.common.ShippingGroup;
 import org.hsgt.entities.pricing.Competitor;
@@ -16,9 +17,8 @@ import org.hsgt.strategy.TotalPriceStrategy;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -45,7 +45,7 @@ public class MetroOfferController {
 
     @ApiOperation(value = "Get offer data.", notes = "")
     @GetMapping("/selectAll")
-    public List<Offer> selectAll() {
+    public ControllerResponse<List<Offer>> selectAll() {
         // Offer data from API
         String s = this.api.selectAllOffers().getContent();
         MetroOfferBuilder builder = new MetroOfferBuilder();
@@ -64,7 +64,10 @@ public class MetroOfferController {
         offers = offers.stream()
                 .sorted(Comparator.comparing(Offer::getNote).thenComparing(Offer::getPrice))
                 .collect(Collectors.toList());
-        return offers;
+
+        ControllerResponse<List<Offer>> resp = ControllerResponse.ok();
+        resp.setData(offers);
+        return resp;
     }
 
     // Insert offer to database, including Offer, Configuration, ShippingGroup ID,
@@ -86,7 +89,7 @@ public class MetroOfferController {
 
     // Insert or update Competitor and ShippingGroup to database
     @GetMapping("/productpage")
-    public ProductPage productPage(String productId) {
+    public ControllerResponse<ProductPage> productPage(String productId) {
         String s = this.api.selectProductPageById(productId).getContent();
         JSONObject jPage = new JSONObject(s);
         MetroProductPageBuilder builder = new MetroProductPageBuilder(this.api.accountName());
@@ -96,7 +99,27 @@ public class MetroOfferController {
             SqlService.sqlInsertOrUpdate(c, competitorMapper);
             SqlService.sqlInsertOrUpdate(c.getShippingGroup(), shippingGroupMapper);
         }
-        return productPage;
+        ControllerResponse resp = ControllerResponse.ok();
+        resp.setData(productPage);
+        return resp;
     }
 
+    // Get productPage list form database
+    @PostMapping("/productpageList")
+    public ControllerResponse<List<ProductPage>> productPageListFromDatabase(@RequestBody List<String> productIdList) {
+        List<ProductPage> pages = new ArrayList<>();
+        for (String productId: productIdList) {
+            ProductPage page = new ProductPage();
+            Offer offer  = this.offerMapper.selectById(productId);
+            List<Competitor> sellers = this.competitorMapper.findAllCompetitorByProductId(productId);
+            page.setCompetitors(sellers);
+            page.setId(offer.getProductKey());
+            page.setCode(offer.getId());
+            page.setProductName(offer.getProductName());
+            pages.add(page);
+        }
+        ControllerResponse response = ControllerResponse.ok();
+        response.setData(pages);
+        return response;
+    }
 }

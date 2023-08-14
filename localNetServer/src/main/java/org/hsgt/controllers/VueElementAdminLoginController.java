@@ -1,6 +1,5 @@
 package org.hsgt.controllers;
-
-import org.hsgt.controllers.response.VueElementAdminResponse;
+import org.hsgt.controllers.response.ControllerResponse;
 import org.hsgt.entities.common.User;
 import org.hsgt.mappers.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,18 +16,18 @@ public class VueElementAdminLoginController {
     @Autowired
     UserMapper userMapper;
     @PostMapping("/login")
-    public VueElementAdminResponse login(@RequestBody User user) {
-        VueElementAdminResponse resp;
+    public ControllerResponse login(@RequestBody User user) {
+        ControllerResponse resp;
         User selectedUser = userMapper.selectByName(user.getUsername());
         if (selectedUser != null && selectedUser.getPassword().equals(user.getPassword())) {
-            resp = VueElementAdminResponse.ok();
+            resp = ControllerResponse.ok();
             String token = JwtsUtils.token(selectedUser);
             Map<String, String> data = new HashMap<>();
             data.put("token", token);
             resp.setData(data);
             userMapper.updateTokenById(selectedUser.getId(), token);
         } else {
-            resp = new VueElementAdminResponse(VueElementAdminResponse.PW_INCORRECT,
+            resp = new ControllerResponse(ControllerResponse.PW_INCORRECT,
                     "Account or password is incorrect.", null) ;
         }
         return resp;
@@ -37,21 +36,21 @@ public class VueElementAdminLoginController {
 
 
     @PostMapping("logout")
-    public VueElementAdminResponse logout() {
-        return VueElementAdminResponse.ok();
+    public ControllerResponse logout() {
+        return ControllerResponse.ok();
     }
 
     @GetMapping("/info")
-    public VueElementAdminResponse userInfo(String token) {
-        VueElementAdminResponse resp;
+    public ControllerResponse userInfo(String token) {
+        ControllerResponse resp;
         String username = JwtsUtils.verify(token).getSubject();
         // User userinfo = userMapper.selectByToken(token);
         User userinfo = userMapper.selectByName(username);
         if (userinfo != null) {
-            resp = VueElementAdminResponse.ok();
+            resp = ControllerResponse.ok();
             resp.setData(userinfo);
         } else {
-            resp = new VueElementAdminResponse(VueElementAdminResponse.PW_INCORRECT,
+            resp = new ControllerResponse(ControllerResponse.PW_INCORRECT,
                     "Login failed, unable to get user details.", null) ;
         }
         return resp;

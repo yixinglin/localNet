@@ -1,5 +1,4 @@
 package org.hsgt.controllers;
-import static org.junit.Assert.*;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.hsgt.api.SellerApi;
@@ -20,6 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @SpringBootTest
 public class TestOfferController {
@@ -104,7 +106,7 @@ public class TestOfferController {
     MetroOfferController controller;
     @Test
     void testMetroOfferController3() {
-        List<Offer> s = controller.selectAll();
+        List<Offer> s = controller.selectAll().getData();
         System.out.println(s);
 
     }
