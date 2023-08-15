@@ -103,4 +103,19 @@ public class IoUtils {
         }
     }
 
+    public static int delay(long millis) {
+        try {
+            Thread.sleep(millis);
+            return 0;
+        } catch (InterruptedException e) {
+            System.err.println(e);
+            return 1;
+        }
+    }
+
+    public static int delay(long min, long max) {
+        long random_int = (int)Math.floor(Math.random() * (max - min + 1) + min);
+        return IoUtils.delay(random_int);
+    }
+
 }

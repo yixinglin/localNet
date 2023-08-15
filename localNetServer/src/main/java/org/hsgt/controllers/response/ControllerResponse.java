@@ -28,4 +28,8 @@ public class ControllerResponse<T> {
         return ans;
     }
 
+    public ControllerResponse setData(T data) {
+        this.data = data;
+        return this;
+    }
 }

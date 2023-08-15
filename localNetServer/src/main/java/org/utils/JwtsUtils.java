@@ -9,7 +9,7 @@ import java.util.Date;
 
 public class JwtsUtils {
 
-    private static final long expire = 300; // Seconds
+    private static final long expire = 3600; // Seconds
     private static String secret = "13f10949-4fea-45c2-96df-e377d9d5d674";
 
     public static String token(User user) {

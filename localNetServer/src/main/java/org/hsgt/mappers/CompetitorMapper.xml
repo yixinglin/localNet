@@ -4,12 +4,12 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.hsgt.mappers.CompetitorMapper">
-    <resultMap id="competitorMap" type="org.hsgt.entities.pricing.Competitor">
+    <resultMap id="competitorMap" type="org.hsgt.entities.pricing.Competitor" autoMapping="true">
         <id column="productId" property="productId"></id>
         <id column="shopName" property="shopName"></id>
         <result column="price" property="price1"></result>
         <result column="price" property="price2"></result>
-        <result column="shipment" property="shippingGroup.unitCost"></result>
+<!--        <result column="datetime" property="datetime"></result>-->
         <association property="shippingGroup" javaType="org.hsgt.entities.common.ShippingGroup"
                      column="shippingGroupId"
                      select="org.hsgt.mappers.ShippingGroupMapper.selectById">
@@ -24,21 +24,21 @@
         select * from t_competition where productId=#{productId} and shopName=#{shopName}
     </select>
 
-    <select id="findAllCompetitorByProductId" resultMap="competitorMap">
+    <select id="findAllCompetitorByProductId" resultMap="competitorMap" parameterType="string">
         select * from t_competition where productId=#{productId}
     </select>
 
     <insert id="insert">
         insert into t_competition
-        (productId, shopName, rank_, price, shipment, quantity, label, shippingGroupId) values
+        (productId, shopName, rank_, price, shipment, quantity, label, shippingGroupId, datetime) values
         (#{productId},#{shopName},#{rank},#{price2}, #{shippingGroup.unitCost},
-        #{quantity},#{label}, #{shippingGroup.id})
+        #{quantity},#{label}, #{shippingGroup.id}, #{datetime})
     </insert>
 
     <update id="updateById" parameterType="org.hsgt.entities.pricing.Competitor">
         update t_competition set
             productId=#{productId}, shopName=#{shopName}, rank_=#{rank}, price=#{price2}, shipment=#{shippingGroup.unitCost},
-            quantity=#{quantity}, label=#{label} where productId=#{productId} and shopName=#{shopName}
+            quantity=#{quantity}, label=#{label}, datetime=NOW() where productId=#{productId} and shopName=#{shopName}
     </update>
 
 </mapper>

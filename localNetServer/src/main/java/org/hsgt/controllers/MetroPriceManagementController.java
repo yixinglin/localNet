@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import org.hsgt.api.SellerApi;
 import org.hsgt.config.Global;
 import org.hsgt.controllers.response.ConfigureResponse;
+import org.hsgt.controllers.response.ControllerResponse;
 import org.hsgt.controllers.response.SuggestedPrice;
 import org.hsgt.entities.pricing.Competitor;
 import org.hsgt.entities.pricing.Configure;
@@ -40,7 +41,7 @@ public class MetroPriceManagementController {
 
     // Suggest price based on the data from database.
     @GetMapping("/suggest")
-    public SuggestedPrice suggestPriceToUpdate(String productId) {
+    public ControllerResponse<SuggestedPrice> suggestPriceToUpdate(String productId) {
 
         Offer offer = new Offer();
         offer.setId(productId);
@@ -63,6 +64,7 @@ public class MetroPriceManagementController {
         SuggestedPrice suggestedPrice = new SuggestedPrice();
         suggestedPrice.setStatus(strategy.getState());
         suggestedPrice.setProductId(offer.getId());
+        suggestedPrice.setStrategy(strategy.getId());
         if (expected != null) {
             suggestedPrice.setPrice(expected.getPrice2());
             suggestedPrice.setReduced(expected.getPrice2()-offer.getPrice());
@@ -70,11 +72,12 @@ public class MetroPriceManagementController {
             suggestedPrice.setPrice(self.getPrice2());
             suggestedPrice.setReduced(0);
         }
-        return suggestedPrice;
+        ControllerResponse<SuggestedPrice> resp = ControllerResponse.ok().setData(suggestedPrice);
+        return resp;
     }
 
     @GetMapping("/conf")
-    public List<ConfigureResponse> getConfiguration() {
+    public ControllerResponse<List<ConfigureResponse>> getConfiguration() {
         List<Configure> configureList = configureMapper.selectList(null);
         List<ConfigureResponse> configureResponses = new ArrayList<>();
         for (Configure c: configureList) {
@@ -90,11 +93,12 @@ public class MetroPriceManagementController {
             cr.setProductName(c.getOffer().getProductName());
             configureResponses.add(cr);
         }
-        return configureResponses;
+        ControllerResponse<List<ConfigureResponse>> resp = ControllerResponse.ok().setData(configureResponses);
+        return resp;
     }
 
     @PostMapping("/conf")
-    public ConfigureResponse updateConfiguration(@RequestBody ConfigureResponse payload) {
+    public ControllerResponse<ConfigureResponse> updateConfiguration(@RequestBody ConfigureResponse payload) {
         Configure conf = new Configure();
         Strategy strategy;
         switch (payload.getStrategyId()) {
@@ -122,6 +126,7 @@ public class MetroPriceManagementController {
         conf.setOffer(offer);
         SqlService.sqlInsertOrUpdate(conf, configureMapper);
         offerMapper.updateLowestPriceAndNote(offer);
-        return payload;
+        ControllerResponse<ConfigureResponse> resp = ControllerResponse.ok().setData(payload);
+        return resp;
     }
 }

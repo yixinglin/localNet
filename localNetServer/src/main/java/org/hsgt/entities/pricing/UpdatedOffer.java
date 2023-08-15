@@ -9,6 +9,6 @@ import java.io.Serializable;
 public class UpdatedOffer implements Serializable {
     private int id;
     private String ip;
-    private String dateTime;
+    private String datetime;
     private Offer offer;
 }

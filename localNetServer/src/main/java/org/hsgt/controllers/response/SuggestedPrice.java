@@ -8,4 +8,5 @@ public class SuggestedPrice {
     float price;    // Suggested price
     float reduced; // Magnitude that price reduced
     int status;    // Status after applying Price suggestion strategy
+    String strategy;
 }

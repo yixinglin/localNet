@@ -18,6 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.utils.IoUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -43,10 +44,10 @@ public class MetroOfferController {
         this.api = Global.getMetroApiInstance();
     }
 
-    @ApiOperation(value = "Get offer data.", notes = "")
+    @ApiOperation(value = "Get offer data.", notes = "Get offer data from api. Data is up-to-date")
     @GetMapping("/selectAll")
     public ControllerResponse<List<Offer>> selectAll() {
-        // Offer data from API
+        // Offer data from API to database
         String s = this.api.selectAllOffers().getContent();
         MetroOfferBuilder builder = new MetroOfferBuilder();
         JSONArray jOfferList = new JSONObject(s).getJSONArray("items");
@@ -60,17 +61,18 @@ public class MetroOfferController {
             offers.add(o);
         }
 
+        // Offer data from database
+        offers = this.offerMapper.selectList(null);
         // Sort
         offers = offers.stream()
                 .sorted(Comparator.comparing(Offer::getNote).thenComparing(Offer::getPrice))
                 .collect(Collectors.toList());
 
-        ControllerResponse<List<Offer>> resp = ControllerResponse.ok();
-        resp.setData(offers);
+        ControllerResponse<List<Offer>> resp = ControllerResponse.ok().setData(offers);
         return resp;
     }
 
-    // Insert offer to database, including Offer, Configuration, ShippingGroup ID,
+    // Insert offer to database, including Offer, Configuration, ShippingGroup ID
     private void offerToDataBase(Offer offer) {
         // Insert to t_shippinggroup
         ShippingGroup sg = offer.getShippingGroup();
@@ -87,24 +89,36 @@ public class MetroOfferController {
         SqlService.sqlInsertOrSkip(configure, configureMapper);
     }
 
-    // Insert or update Competitor and ShippingGroup to database
+    // Insert or update Competitor and ShippingGroup to database. Data is up-to-date.
+    @ApiOperation(value = "productPage", notes = "Get product page data from API. Data is up-to-date")
     @GetMapping("/productpage")
-    public ControllerResponse<ProductPage> productPage(String productId) {
-        String s = this.api.selectProductPageById(productId).getContent();
+    public ControllerResponse<ProductPage> productPage(String productKey) {
+        // Product page data from API to database
+        String s = this.api.selectProductPageById(productKey).getContent();
         JSONObject jPage = new JSONObject(s);
         MetroProductPageBuilder builder = new MetroProductPageBuilder(this.api.accountName());
         ProductPage productPage = builder.pageInfo(jPage).sellers(jPage).build();
-
         for (Competitor c: productPage.getCompetitors()) {
             SqlService.sqlInsertOrUpdate(c, competitorMapper);
             SqlService.sqlInsertOrUpdate(c.getShippingGroup(), shippingGroupMapper);
         }
-        ControllerResponse resp = ControllerResponse.ok();
-        resp.setData(productPage);
+
+        // Product data from database.
+        List<Competitor> competitors = competitorMapper.findAllCompetitorByProductId(productPage.getCode());
+        List<Competitor> self = competitors.stream().filter(c -> c.getShopName().equals(this.api.accountName())).collect(Collectors.toList());
+        productPage.setCompetitors(competitors);
+        productPage.setSelf(self.get(0));
+        ControllerResponse resp = ControllerResponse.ok().setData(productPage);
+
+        if(!Global.DEBUG) {
+            IoUtils.delay(1000, 6000);
+        }
         return resp;
     }
 
-    // Get productPage list form database
+    // Get productPage list form database. Data may not up-to-date
+    @ApiOperation(value = "productPageListFromDatabase",
+            notes = "Get product page data from Database. Data may not be up-to-date")
     @PostMapping("/productpageList")
     public ControllerResponse<List<ProductPage>> productPageListFromDatabase(@RequestBody List<String> productIdList) {
         List<ProductPage> pages = new ArrayList<>();
@@ -118,8 +132,7 @@ public class MetroOfferController {
             page.setProductName(offer.getProductName());
             pages.add(page);
         }
-        ControllerResponse response = ControllerResponse.ok();
-        response.setData(pages);
+        ControllerResponse response = ControllerResponse.ok().setData(pages);
         return response;
     }
 }

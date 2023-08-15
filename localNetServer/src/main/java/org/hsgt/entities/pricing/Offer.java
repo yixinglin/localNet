@@ -11,7 +11,7 @@ public class Offer implements Serializable {
     // @TableId("productId")
     private String id;      // primary key
     private float price;
-
+    private String datetime;
     private float lowestPrice;  // manually update
     private String productName;
     private String productKey;

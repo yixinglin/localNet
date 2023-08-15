@@ -19,14 +19,14 @@
     <insert id="insert">
         insert into t_offer
             (productId, price, lowestPrice, productName, note, quantity, manufacturer, platform,
-            amount, productKey, shippingGroupId) values
+            amount, productKey, shippingGroupId, datetime) values
             (#{id}, #{price}, #{lowestPrice}, #{productName}, #{note}, #{quantity}, #{manufacturer}, #{platform},
-            #{amount}, #{productKey}, #{shippingGroup.id})
+            #{amount}, #{productKey}, #{shippingGroup.id}, NOW())
     </insert>
 
     <update id="updateById" >
         update t_offer set productName=#{productName}, price=#{price}, quantity=#{quantity}, manufacturer=#{manufacturer},
-            productKey=#{productKey}, shippingGroupId=#{shippingGroup.id} where productId=#{id}
+            productKey=#{productKey}, shippingGroupId=#{shippingGroup.id}, datetime=NOW() where productId=#{id}
     </update>
 
     <update id="updateLowestPriceAndNote">
