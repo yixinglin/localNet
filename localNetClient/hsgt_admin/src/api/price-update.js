@@ -7,11 +7,18 @@ export function fetchOfferList() {
   })
 }
 
-export function fetchProductPage(id) {
+export function fetchAllConfiguration() {
+  return request({
+    url: '/pricing/metro/conf',
+    method: 'get'
+  })
+}
+
+export function fetchProductPage(productKey) {
   return request({
     url: '/offer/metro/productpage',
     method: 'get',
-    params: { productId: id }
+    params: { productKey: productKey }
   })
 }
 
@@ -22,3 +29,4 @@ export function fetchProductPageList(productIdList) {
     data: productIdList
   })
 }
+

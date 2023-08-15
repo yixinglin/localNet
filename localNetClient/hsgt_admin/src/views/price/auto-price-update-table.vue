@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <span> Auto Price Updates</span>
+    <div><SellerStats title="OOOASDASD" /></div>
     <div class="filter-container">
       <el-input v-model="listQuery.title" placeholder="Title" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-select v-model="listQuery.importance" placeholder="Imp" clearable style="width: 90px" class="filter-item">
@@ -49,9 +49,9 @@
           <span v-if="row.sellers.length">{{ row.sellers[0].shopName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Price" width="80px" align="center">
+      <el-table-column label="U.Price" width="80px" align="center">
         <template slot-scope="{row}">
-          <span style="color:rgb(55, 0, 255);">{{ row.price.toFixed(2) }}</span>
+          <span style="color:blue;">{{ row.price.toFixed(2) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="L.Price" align="center" width="80px">
@@ -61,7 +61,7 @@
       </el-table-column>
       <el-table-column label="Profit" align="center" width="80px">
         <template slot-scope="{row}">
-          <span v-if="profit(row)>0" style="color:green;">{{ profit(row).toFixed(2) }}</span>
+          <span v-if="profit(row)>0" style="color:green;">+{{ profit(row).toFixed(2) }}</span>
           <span v-else style="color:red;">{{ profit(row).toFixed(2) }}</span>
         </template>
       </el-table-column>
@@ -83,7 +83,7 @@
       </el-table-column>
       <el-table-column label="Strategy" align="center" width="80px">
         <template slot-scope="{row}">
-          <span> 0 </span>
+          <span> {{ row.conf.strategyId }} </span>
         </template>
       </el-table-column>
       <el-table-column label="Status" align="center" width="80px">
@@ -93,7 +93,8 @@
       </el-table-column>
       <el-table-column label="Comparable" align="center" width="80px">
         <template slot-scope="{row}">
-          <span>Camparable</span>
+          <!-- <span>{{ comparable(row) }}</span> -->
+          <el-tag v-if="!comparable(row)" type="warning"> NO </el-tag>
         </template>
       </el-table-column>
       <!--  <el-table-column label="Date" width="150px" align="center">
@@ -132,12 +133,13 @@
       </el-table-column> -->
       <el-table-column label="Enabled" align="center" width="80px">
         <template slot-scope="{row}">
-          <span>True</span>
+          <el-tag v-if="row.conf.enabled"> On </el-tag>
+          <el-tag v-else type="danger"> Off </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+          <!-- <el-button type="primary" size="mini" @click="handleUpdate(row)">
             Edit
           </el-button>
           <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
@@ -148,6 +150,12 @@
           </el-button>
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             Delete
+          </el-button> -->
+          <el-button type="primary" size="mini" @click="handleConfigData(row)">
+            Edit
+          </el-button>
+          <el-button @click="handleSellerData(row)">
+            Stats
           </el-button>
         </template>
       </el-table-column>
@@ -190,15 +198,17 @@
       </div>
     </el-dialog>
 
-    <!-- <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
-      </span>
-    </el-dialog> -->
+    <el-dialog :visible.sync="dialogStatsVisible" title="Seller Statistics">
+      <SellerStats title="" :selfName="selfName" :sellerData="tempSellers"/>
+    </el-dialog>
+
+    <el-dialog :visible.sync="dialogConfigFormVisible" title="Configuration">
+      <ConfigUpdateForm
+        title="Configuration"
+        :productId="tempConfig.productId"
+        @closeDialog="dialogConfigFormVisible = false"
+      />
+    </el-dialog>
   </div>
 </template>
 
@@ -207,8 +217,10 @@ import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import getters from '@/store/getters'
+// import getters from '@/store/getters'
 import { mapState } from 'vuex'
+import SellerStats from './components/SellerStats'
+import ConfigUpdateForm from './components/ConfigUpdateForm'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -225,7 +237,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination },
+  components: { Pagination, SellerStats, ConfigUpdateForm },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -268,6 +280,8 @@ export default {
         type: '',
         status: 'published'
       },
+      tempSellers: [],
+      tempConfig: [],
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
@@ -275,6 +289,8 @@ export default {
         create: 'Create'
       },
       dialogPvVisible: false,
+      dialogStatsVisible: false,
+      dialogConfigFormVisible: false,
       pvData: [],
       rules: {
         type: [{ required: true, message: 'type is required', trigger: 'change' }],
@@ -287,40 +303,41 @@ export default {
   computed: {
     ...mapState({
       list: state => state.autoPriceUpdate.list,
-      total: state => state.autoPriceUpdate.list.length
+      total: state => state.autoPriceUpdate.list.length,
+      selfName: state => state.autoPriceUpdate.selfName
     })
   },
   created() {
     this.listLoading = true
-    this.$store.dispatch('autoPriceUpdate/generateList').then(resp => {
-      this.listLoading = false
-    })
-    //                fetchOfferList().then((response) => {
-    //    // this.list = response.data
-    //   // this.total = this.list.length
-    //   // response.data.forEach(row => {
-    //   //   this.$store.dispatch('autoPriceUpdate/insertRowToList', row)
-    //   // })
-    //   console.log(this.total)
-    //   console.log(this.list)
-    //   return this.list
+    // this.$store.dispatch('autoPriceUpdate/generateList').then(resp => {
+    //   this.listLoading = false
     // })
-    // .then(resp => {
-    //   var productIds = resp.map(a => a.id)
-    //   fetchProductPageList(productIds).then(resp => {
-    //     this.listLoading = false
-    //     return resp
-    //   })
-    // })
-    // .then(resp => {
-    //   this.list.forEach(row => {
-    //     this.$store.dispatch('autoPriceUpdate/insertRowToList', row)
-    //   })
-    // })
-    // this.getList()
+    this.initList()
   },
   methods: {
     profit(row) { return row.price - row.lowestPrice },
+    comparable(row) {
+      if (row.sellers.length > 0) {
+        var seller = row.sellers[0]
+        var total = seller.price2 + seller.shippingGroup.unitCost
+        return total > row.lowestPrice
+      } else {
+        return false
+      }
+    },
+    async initList() {
+      var list_ = await this.$store.dispatch('autoPriceUpdate/generateList')
+      await this.$store.dispatch('autoPriceUpdate/generateConfigruations').then(resp => {
+        this.listLoading = false
+      })
+      for (let i = 0; i < list_.length; i++) {
+        await this.$store
+          .dispatch('autoPriceUpdate/updateSellersById', list_[i].productKey)
+          .catch(err => {
+            console.error(err)
+          })
+      }
+    },
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
@@ -451,6 +468,14 @@ export default {
         })
         this.downloadLoading = false
       })
+    },
+    handleSellerData(row) {
+      this.tempSellers = row.sellers
+      this.dialogStatsVisible = !this.dialogStatsVisible
+    },
+    handleConfigData(row) {
+      this.tempConfig = row.conf
+      this.dialogConfigFormVisible = !this.dialogConfigFormVisible
     },
     formatJson(filterVal) {
       return this.list.map(v => filterVal.map(j => {
