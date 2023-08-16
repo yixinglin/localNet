@@ -27,15 +27,15 @@ public class MetroVueTableUpdatePhaseTest {
         // Get offers with more details.
         for (Offer o: offerList) {
             MatcherAssert.assertThat(o, Matchers.notNullValue());
-            ProductPage productPage = (ProductPage) metroOfferController.productPage(o.getProductKey()).getData();
+            ProductPage productPage = metroOfferController.productPage(o.getProductKey()).getData();
             MatcherAssert.assertThat(productPage, Matchers.notNullValue());
             System.out.println(productPage);
         }
 
-        List<ShippingGroup> shippingGroups = metroShippingGroupController.getShippingGroupList();
+        List<ShippingGroup> shippingGroups = metroShippingGroupController.getShippingGroupList().getData();
         for (ShippingGroup e: shippingGroups) {
             MatcherAssert.assertThat(e, Matchers.notNullValue());
-            ShippingGroup sg = metroShippingGroupController.getShippingGroupById(e.getId());
+            ShippingGroup sg = metroShippingGroupController.getShippingGroupById(e.getId()).getData();
             MatcherAssert.assertThat(sg, Matchers.notNullValue());
             System.out.println(sg);
         }

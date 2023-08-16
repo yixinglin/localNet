@@ -8,6 +8,7 @@ import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.json.JSONObject;
+import org.utils.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,6 +16,8 @@ import java.io.InputStreamReader;
 import java.util.Map;
 
 public abstract class HttpRequest {
+
+    Logger logger = Logger.loggerBuilder(HttpRequest.class);
 
     public HttpResponse methodGetRequest(String url, Map<String, String> headers) throws IOException, InterruptedException {
         HttpResponse httpResponse;
@@ -43,7 +46,7 @@ public abstract class HttpRequest {
                 stringBuffer.append(line);
             }
             String resp = stringBuffer.toString();
-            System.out.println(String.format("GET [%d]: %s", stateCode, url));
+            logger.info(String.format("GET [%d]: %s", stateCode, url));
             httpResponse = new HttpResponse(stateCode, resp);
         }
         Thread.sleep(100);
@@ -76,7 +79,7 @@ public abstract class HttpRequest {
                 stringBuffer.append(line);
             }
             String resp = stringBuffer.toString();
-            System.out.println(String.format("POST [%d]: %s", stateCode, url));
+            logger.info(String.format("POST [%d]: %s", stateCode, url));
             httpResponse =  new HttpResponse(stateCode, resp);
         }
 

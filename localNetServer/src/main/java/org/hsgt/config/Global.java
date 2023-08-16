@@ -6,6 +6,7 @@ import org.hsgt.api.SellerApiFactory;
 
 public class Global {
     public static final boolean DEBUG = true;
+    public static final boolean ALLOW_API_UPDATE = true;
     private Global() {}
 
     public static SellerApi getMetroApiInstance() {

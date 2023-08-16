@@ -1,11 +1,13 @@
 package org.hsgt.api;
+
 import org.apache.commons.lang3.NotImplementedException;
 import org.net.HttpRequest;
 import org.net.HttpResponse;
 import org.utils.IoUtils;
+import org.utils.Logger;
 
 public class MetroMockSellerApi extends HttpRequest implements SellerApi {
-
+    Logger logger = Logger.loggerBuilder(MetroMockSellerApi.class);
     public static final String dataDir = "../data";
     private final ApiKey apiKey;
 
@@ -15,7 +17,7 @@ public class MetroMockSellerApi extends HttpRequest implements SellerApi {
     
     @Override
     public HttpResponse selectAllOrders() {
-        System.out.println("@@ MOCK: selectAllOrders");
+        logger.info("@@ MOCK: selectAllOrders");
         String content = IoUtils.readFile(this.dataDir + "/metro/orders.json");
         HttpResponse httpResponse = new HttpResponse(200, content);
         delay(200);
@@ -24,13 +26,13 @@ public class MetroMockSellerApi extends HttpRequest implements SellerApi {
 
     @Override
     public HttpResponse selectOrders(int limit, int offset) {
-        System.out.println("@@ MOCK: selectOrders");
+        logger.info("@@ MOCK: selectOrders");
         return this.selectAllOffers();
     }
 
     @Override
     public HttpResponse selectAllOffers() {
-        System.out.println("@@ MOCK: selectOffers");
+        logger.info("@@ MOCK: selectOffers");
         String content = IoUtils.readFile(this.dataDir + "/metro/offers.json");
         HttpResponse httpResponse = new HttpResponse(200, content);
         delay(200);
@@ -44,7 +46,7 @@ public class MetroMockSellerApi extends HttpRequest implements SellerApi {
 
     @Override
     public HttpResponse selectAllShippingGroups() {
-        System.out.println("@@ MOCK: selectShippingGroups");
+        logger.info("@@ MOCK: selectShippingGroups");
         String content = IoUtils.readFile(this.dataDir + "/metro/shippingGroups.json");
         HttpResponse httpResponse = new HttpResponse(200, content);
         delay(300);
@@ -63,7 +65,7 @@ public class MetroMockSellerApi extends HttpRequest implements SellerApi {
 
     @Override
     public HttpResponse selectOrderById(String id) {
-        System.out.println("@@ MOCK: selectOrderById");
+        logger.info("@@ MOCK: selectOrderById");
         String fname = String.format(this.dataDir + "/metro/orders/%s.json", id);
         String content = IoUtils.readFile(fname);
         HttpResponse httpResponse = new HttpResponse(200, content);
@@ -77,7 +79,7 @@ public class MetroMockSellerApi extends HttpRequest implements SellerApi {
 
     @Override
     public HttpResponse selectShippingGroupById(String id) {
-        System.out.println("@@ MOCK: selectShippingGroupById");
+        logger.info("@@ MOCK: selectShippingGroupById");
         String fname = String.format(this.dataDir + "/metro/shippingGroups/%s.json", id);
         String content = IoUtils.readFile(fname);
         HttpResponse httpResponse = new HttpResponse(200, content);
@@ -87,7 +89,7 @@ public class MetroMockSellerApi extends HttpRequest implements SellerApi {
 
     @Override
     public HttpResponse selectProductPageById(String id) {
-        System.out.printf("@@ MOCK: selectProductPageById %s\n", id);
+        logger.info( "@@ MOCK: selectProductPageById %s\n" +  id);
         String content = IoUtils.readFile(String.format(this.dataDir + "/metro/pages/%s.json", id));
         HttpResponse httpResponse = new HttpResponse(200, content);
         delay(300, 800);
