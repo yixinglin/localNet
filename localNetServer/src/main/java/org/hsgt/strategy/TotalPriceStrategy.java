@@ -39,7 +39,7 @@ public class TotalPriceStrategy extends Strategy {
             return newCompetitor;
         }
 
-        // Reduce price values that are lower than that of the No.1 seller.
+        // Reduce price values lower than that of the No.1 seller.
         float newUnitPrice = competitor.getPrice2() + competitor.getShippingGroup().getUnitCost()
                 - self.getShippingGroup().getUnitCost() - this.reduce;
         newCompetitor.setPrice1(newUnitPrice);
@@ -58,6 +58,12 @@ public class TotalPriceStrategy extends Strategy {
             return newCompetitor;
         }
         return newCompetitor;
+    }
+
+    @Override
+    public List<Competitor> sort(List<Competitor> sellers) {
+        sellers.sort(Comparator.comparing(o -> o.getPrice2() + o.getShippingGroup().getUnitCost()));
+        return sellers;
     }
 
     @Override

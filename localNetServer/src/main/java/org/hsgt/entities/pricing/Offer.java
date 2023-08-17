@@ -17,7 +17,7 @@ public class Offer implements Serializable {
     private String productKey;
     private int amount;
     private int quantity;    // to update
-
+    private String unit;
     private String note;    // manually update
     private String manufacturer;
     // @TableField(exist = false)

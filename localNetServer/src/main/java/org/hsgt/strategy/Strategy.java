@@ -32,6 +32,7 @@ public abstract class Strategy {
 
     public abstract Competitor execute(Competitor self, List<Competitor> competitorList, Offer offer);
 
+    public abstract List<Competitor> sort(List<Competitor> sellers);
     protected boolean saftyValidation(Competitor newCompetitor, float lowestPrice) {
         boolean safe = true;
 

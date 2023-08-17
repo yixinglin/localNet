@@ -44,4 +44,8 @@
             where productId=#{offer.id}
     </update>
 
+    <delete id="deleteById>">
+        delete from t_configure where productId=#{id}
+    </delete>
+
 </mapper>

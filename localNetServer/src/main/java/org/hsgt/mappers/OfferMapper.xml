@@ -30,6 +30,10 @@
     </update>
 
     <update id="updateLowestPriceAndNote">
-        update t_offer set lowestPrice=#{lowestPrice}, note=#{note} where productId=#{id}
+        update t_offer set lowestPrice=#{lowestPrice}, note=#{note}, amount=#{amount} where productId=#{id}
     </update>
+
+    <delete id="deleteById>">
+        delete from t_offer where productId=#{id}
+    </delete>
 </mapper>

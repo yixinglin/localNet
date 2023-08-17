@@ -41,4 +41,8 @@
             quantity=#{quantity}, label=#{label}, datetime=NOW() where productId=#{productId} and shopName=#{shopName}
     </update>
 
+    <delete id="deleteById" parameterType="string">
+        delete from t_competition where productId=#{productId}
+    </delete>
+
 </mapper>

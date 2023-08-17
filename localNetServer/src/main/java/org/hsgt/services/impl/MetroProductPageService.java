@@ -5,11 +5,9 @@ import org.hsgt.builders.metro.MetroProductPageBuilder;
 import org.hsgt.config.Global;
 import org.hsgt.entities.common.ProductPage;
 import org.hsgt.entities.pricing.Competitor;
+import org.hsgt.entities.pricing.Configure;
 import org.hsgt.entities.pricing.Offer;
-import org.hsgt.mappers.CompetitorMapper;
-import org.hsgt.mappers.OfferMapper;
-import org.hsgt.mappers.ShippingGroupMapper;
-import org.hsgt.mappers.SqlService;
+import org.hsgt.mappers.*;
 import org.hsgt.services.ProductPageService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +25,8 @@ public class MetroProductPageService implements ProductPageService {
     private ShippingGroupMapper shippingGroupMapper;
     @Autowired
     private CompetitorMapper competitorMapper;
+    @Autowired
+    private ConfigureMapper configureMapper;
 
     private SellerApi api;
 
@@ -45,16 +45,24 @@ public class MetroProductPageService implements ProductPageService {
     @Override
     public ProductPage queryById(String id) {
         // Product page data from API to database
-        String s = this.api.selectProductPageById(id).getContent();
+        Offer offer = this.offerMapper.selectById(id);
+        Configure configure = this.configureMapper.selectById(id);
+        String s = this.api.selectProductPageById(offer.getProductKey()).getContent();
         JSONObject jPage = new JSONObject(s);
         MetroProductPageBuilder builder = new MetroProductPageBuilder(this.api.accountName());
         ProductPage productPage = builder.pageInfo(jPage).sellers(jPage).build();
+        int numSeller0 = productPage.getCompetitors().size();   // Number of sellers acquired from API
+        int n = competitorMapper.deleteById(productPage.getCode());   // Delete sellers from database by product id.
         for (Competitor c: productPage.getCompetitors()) {
-            SqlService.sqlInsertOrUpdate(c, competitorMapper);
+            // SqlService.sqlInsertOrUpdate(c, competitorMapper);
+            competitorMapper.insert(c);
             SqlService.sqlInsertOrUpdate(c.getShippingGroup(), shippingGroupMapper);
         }
         // Product data from database.
         List<Competitor> competitors = competitorMapper.findAllCompetitorByProductId(productPage.getCode());
+        configure.getStrategy().sort(competitors);
+        int numSeller1 = competitors.size();
+        assert numSeller1 == numSeller0: "Number of sellers acquired from API should be the same as from database";
         List<Competitor> self = competitors.stream().filter(c -> c.getShopName().equals(this.api.accountName())).collect(Collectors.toList());
         productPage.setCompetitors(competitors);
         productPage.setSelf(self.get(0));
@@ -65,16 +73,25 @@ public class MetroProductPageService implements ProductPageService {
      * @param ids:
       * @return List<ProductPage>
      * @author Lin
-     * @description TODO [UTD] Query data of a product pages from API. The data is up-to-date.
-     *               After that the latest data will be store in the databse.
+     * @description TODO Query data of a product pages from database.
+     *               The result is not up-to-date
      * @date 16.Aug.2023 016 02:28
      */
     public List<ProductPage> queryById(List<String> ids) {
-        List<ProductPage> productPages = new ArrayList<>();
+        List<ProductPage> pages = new ArrayList<>();
         for (String id: ids) {
-            productPages.add(this.queryById(id));
+            ProductPage page = new ProductPage();
+            Configure configure = this.configureMapper.selectById(id);
+            Offer offer = this.offerMapper.selectById(id);
+            List<Competitor> sellers = this.competitorMapper.findAllCompetitorByProductId(id);
+            configure.getStrategy().sort(sellers);
+            page.setCompetitors(sellers);
+            page.setId(offer.getProductKey());
+            page.setCode(offer.getId());
+            page.setProductName(offer.getProductName());
+            pages.add(page);
         }
-        return productPages;
+        return pages;
     }
 
     /*
@@ -86,18 +103,7 @@ public class MetroProductPageService implements ProductPageService {
      */
     @Override
     public List<ProductPage> queryAll() {
-        List<ProductPage> pages = new ArrayList<>();
-        List<Offer> offers = this.offerMapper.selectList(null);
-        for (Offer offer: offers) {
-            ProductPage page = new ProductPage();
-            List<Competitor> sellers = this.competitorMapper.findAllCompetitorByProductId(page.getId());
-            page.setCompetitors(sellers);
-            page.setId(offer.getProductKey());
-            page.setCode(offer.getId());
-            page.setProductName(offer.getProductName());
-            pages.add(page);
-        }
-        return pages;
+        return null;
     }
 
 }

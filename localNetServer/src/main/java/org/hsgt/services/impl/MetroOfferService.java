@@ -16,10 +16,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.utils.Logger;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -59,13 +58,17 @@ public class MetroOfferService implements OfferService {
             o.setShippingGroup(null);
             offers.add(o);
         }
+        Set idSet = offers.stream().map(o -> o.getId()).collect(Collectors.toSet());
         // Offer data from database
-        offers = this.offerMapper.selectList(null);
+        List<Offer>  offersFromDB = this.offerMapper.selectList(null);
         // Sort
-        offers = offers.stream()
+        offersFromDB = offersFromDB.stream()
+                .filter(o -> idSet.contains(o.getId()))
                 .sorted(Comparator.comparing(Offer::getNote).thenComparing(Offer::getPrice))
                 .collect(Collectors.toList());
-        return offers;
+
+        assert offersFromDB.size() == offers.size(): "The size of acquired offers must be the same as acquired from API";
+        return offersFromDB;
     }
 
     /*
@@ -123,5 +126,20 @@ public class MetroOfferService implements OfferService {
     public List<Offer> queryAll() {
         List<Offer> offers = offerMapper.selectList(null);
         return offers;
+    }
+
+    @Override
+    public void updateLowestPriceAndNote(Offer offer) {
+        assert offer != null;
+        assert offer.getLowestPrice() >= 0;
+        assert offer.getNote() != null;
+        assert offer.getAmount() >= 0;
+        Offer o = offerMapper.selectById(offer);
+        if (o == null) {
+            Logger.loggerBuilder(getClass()).error("Offer dose not exist!");
+            throw new RuntimeException("Offer dose not exist!" + offer.getId());
+        } else {
+            offerMapper.updateLowestPriceAndNote(offer);
+        }
     }
 }

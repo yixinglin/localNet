@@ -89,7 +89,7 @@ public class MetroMockSellerApi extends HttpRequest implements SellerApi {
 
     @Override
     public HttpResponse selectProductPageById(String id) {
-        logger.info( "@@ MOCK: selectProductPageById %s\n" +  id);
+        logger.info( String.format("@@ MOCK: selectProductPageById [%s]\n", id));
         String content = IoUtils.readFile(String.format(this.dataDir + "/metro/pages/%s.json", id));
         HttpResponse httpResponse = new HttpResponse(200, content);
         delay(300, 800);

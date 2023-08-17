@@ -62,6 +62,12 @@ public class UnitPriceStrategy extends Strategy {
     }
 
     @Override
+    public List<Competitor> sort(List<Competitor> sellers) {
+        sellers.sort(Comparator.comparing(o -> o.getPrice2()));
+        return sellers;
+    }
+
+    @Override
     public String getId() {
         return UnitPriceStrategy.id;
     }
