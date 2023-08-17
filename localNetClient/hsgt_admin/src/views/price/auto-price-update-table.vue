@@ -1,6 +1,5 @@
 <template>
   <div class="app-container">
-    <div><SellerStats title="OOOASDASD" /></div>
     <div class="filter-container">
       <el-input v-model="listQuery.title" placeholder="Title" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-select v-model="listQuery.importance" placeholder="Imp" clearable style="width: 90px" class="filter-item">
@@ -37,6 +36,7 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
+      <el-table-column type="index" label="#" align="center" width="50px"/>
       <el-table-column label="ID" prop="id" sortable="custom" align="center" width="130px" :class-name="getSortClass('id')">
         <template slot-scope="{row}">
           <a :href="`https://www.metro.de/marktplatz/product/` + row.productKey" target="_blank">
@@ -49,14 +49,29 @@
           <span v-if="row.sellers.length">{{ row.sellers[0].shopName }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="Rank" align="center" width="60px">
+        <template slot-scope="{row}">
+          <el-tag v-if="row.conf.strategyId==='UnitPriceStrategy'" type="info">单</el-tag>
+          <el-tag v-else-if="row.conf.strategyId==='TotalPriceStrategy'" type="info">总</el-tag>
+          <span class="link-type" @click="handleSellerData(row)"> {{ rank_(row) }} </span>
+        </template>
+      </el-table-column>
       <el-table-column label="U.Price" width="80px" align="center">
         <template slot-scope="{row}">
           <span style="color:blue;">{{ row.price.toFixed(2) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="L.Price" align="center" width="80px">
+      <el-table-column label="L.Price" align="center" width="110px">
         <template slot-scope="{row}">
-          <span>{{ row.lowestPrice.toFixed(2) }}</span>
+          <span v-if="row.conf.lowestPrice != null">
+            <span v-if="row.sellers.length && !comparable(row)"> &#128543;</span>
+            {{ row.conf.lowestPrice }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Reduce" align="center" width="80px">
+        <template slot-scope="{row}">
+          <span>{{ reduced_(row).toFixed(2) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="Profit" align="center" width="80px">
@@ -67,12 +82,12 @@
       </el-table-column>
       <el-table-column label="Amount" align="center" width="80px">
         <template slot-scope="{row}">
-          <span>{{ row.amount }}</span>
+          <span>{{ row.conf.offerAmount }}</span>
         </template>
       </el-table-column>
       <el-table-column label="Note" align="center" width="120px">
         <template slot-scope="{row}">
-          <span>{{ row.note }}</span>
+          <span>{{ row.conf.offerNote }}</span>
         </template>
       </el-table-column>
       <el-table-column v-if="showProductName" label="Title" min-width="100px" width="300px">
@@ -81,22 +96,28 @@
           <!-- <el-tag>{{ row.type | typeFilter }}</el-tag> -->
         </template>
       </el-table-column>
-      <el-table-column label="Strategy" align="center" width="80px">
+      <!-- <el-table-column label="Strategy" align="center" width="80px">
         <template slot-scope="{row}">
           <span> {{ row.conf.strategyId }} </span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="Status" align="center" width="80px">
         <template slot-scope="{row}">
-          <span>Reject</span>
+          <div v-if="row.conf.enabled">
+            <span v-if="row.suggest.status===0" style="color:green;">可比价</span>
+            <span v-else-if="row.suggest.status===1 || row.suggest.status===5" style="color:blue;">已满足</span>
+            <span v-else-if="row.suggest.status===2" style="color:red;">亏损</span>
+            <span v-else-if="row.suggest.status===3" style="color:orange;">风险</span>
+            <span v-else-if="row.suggest.status===4" style="color:gray;">无效</span>
+            <span v-else-if="row.suggest.status===6" style="color:purple;">调幅过大</span>
+          </div>
         </template>
       </el-table-column>
-      <el-table-column label="Comparable" align="center" width="80px">
+      <!-- <el-table-column label="Comparable" align="center" width="80px">
         <template slot-scope="{row}">
-          <!-- <span>{{ comparable(row) }}</span> -->
           <el-tag v-if="!comparable(row)" type="warning"> NO </el-tag>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <!--  <el-table-column label="Date" width="150px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
@@ -151,7 +172,10 @@
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             Delete
           </el-button> -->
-          <el-button type="primary" size="mini" @click="handleConfigData(row)">
+          <el-button type="primary" size="mini">
+            OK
+          </el-button>
+          <el-button size="mini" @click="handleConfigData(row)">
             Edit
           </el-button>
           <el-button @click="handleSellerData(row)">
@@ -199,7 +223,13 @@
     </el-dialog>
 
     <el-dialog :visible.sync="dialogStatsVisible" title="Seller Statistics">
-      <SellerStats title="" :selfName="selfName" :sellerData="tempSellers"/>
+      <SellerStats
+        title=""
+        :lowestPrice="tempConfig.lowestPrice"
+        :strategyId="tempConfig.strategyId"
+        :selfName="selfName"
+        :sellerData="tempSellers"
+      />
     </el-dialog>
 
     <el-dialog :visible.sync="dialogConfigFormVisible" title="Configuration">
@@ -255,8 +285,6 @@ export default {
   data() {
     return {
       tableKey: 0,
-      // list: null,
-      // total: 0,
       listLoading: true,
       listQuery: {
         page: 1,
@@ -316,8 +344,32 @@ export default {
   },
   methods: {
     profit(row) { return row.price - row.lowestPrice },
+    rank_(row) {
+      var nSellers = row.sellers.length
+      var i = row.sellers.findIndex(s => this.selfName === s.shopName) + 1
+      return `${i}/${nSellers}`
+    },
+    reduced_(row) {
+      if (row.sellers.length === 0) {
+        return 0
+      }
+      var seller = row.sellers[0]
+      if (seller.shopName === this.selfName) {
+        return 0
+      } else {
+        var self = row.sellers.filter(s => s.shopName === this.selfName)[0]
+        var total = seller.price2 + seller.shippingGroup.unitCost
+        return row.conf.strategyId === 'TotalPriceStrategy'
+          ? total - self.shippingGroup.unitCost - self.price2 - 0.01
+          : seller.price2 - self.price2
+      }
+    },
     comparable(row) {
-      if (row.sellers.length > 0) {
+      if (row.sellers.length === 1) {
+        return true
+      }
+      var otherSellers = row.sellers.filter(s => s.shopName !== this.selfName)
+      if (otherSellers.length > 0) {
         var seller = row.sellers[0]
         var total = seller.price2 + seller.shippingGroup.unitCost
         return total > row.lowestPrice
@@ -327,12 +379,15 @@ export default {
     },
     async initList() {
       var list_ = await this.$store.dispatch('autoPriceUpdate/generateList')
-      await this.$store.dispatch('autoPriceUpdate/generateConfigruations').then(resp => {
+      await this.$store.dispatch('autoPriceUpdate/generateConfigurations').then(resp => {
         this.listLoading = false
       })
       for (let i = 0; i < list_.length; i++) {
-        await this.$store
-          .dispatch('autoPriceUpdate/updateSellersById', list_[i].productKey)
+        await this.$store.dispatch('autoPriceUpdate/updateSuggestById', list_[i].id)
+          .catch(err => {
+            console.error(err)
+          })
+        await this.$store.dispatch('autoPriceUpdate/updateSellersById', list_[i].id)
           .catch(err => {
             console.error(err)
           })
@@ -471,9 +526,11 @@ export default {
     },
     handleSellerData(row) {
       this.tempSellers = row.sellers
+      this.tempConfig = row.conf
       this.dialogStatsVisible = !this.dialogStatsVisible
     },
     handleConfigData(row) {
+      this.tempSellers = row.sellers
       this.tempConfig = row.conf
       this.dialogConfigFormVisible = !this.dialogConfigFormVisible
     },

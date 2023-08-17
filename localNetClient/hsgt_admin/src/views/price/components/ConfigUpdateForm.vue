@@ -15,22 +15,19 @@
         <span> {{ formData.productName }}</span>
       </el-form-item>
       <el-form-item label="Amount" prop="amount">
-        <el-input v-model="formData.offerAmount" />
+        <el-input-number v-model="formData.offerAmount" :min="0"/>
       </el-form-item>
       <el-form-item label="Note" prop="note">
         <el-input v-model="formData.offerNote" />
       </el-form-item>
       <el-form-item label="Max Adjust" prop="maxAdjust">
-        <el-input v-model="formData.maxAdjust" />
+        <el-input-number v-model="formData.maxAdjust" :precision="2" :step="1" :min="0" />
       </el-form-item>
       <el-form-item label="Reduce" prop="reduce">
-        <el-input v-model="formData.reduce" />
-      </el-form-item>
-      <el-form-item label="Strategy" prop="strategyId">
-        <el-input v-model="formData.strategyId" />
+        <el-input-number v-model="formData.reduce" :precision="2" :step="0.01" :min="0" />
       </el-form-item>
       <el-form-item label="Lowest Price" prop="lowestPrice">
-        <el-input v-model="formData.lowestPrice" />
+        <el-input-number v-model="formData.lowestPrice" :precision="2" :step="1" :min="0" />
       </el-form-item>
       <el-form-item label="Enabled" prop="enabled">
         <el-switch v-model="formData.enabled" size="large" />
@@ -57,7 +54,7 @@
       <el-button @click="closeDialog()">
         Cancel
       </el-button>
-      <el-button type="primary" @click="updateData()">
+      <el-button :loading="loading" type="primary" @click="updateData()">
         Confirm
       </el-button>
     </div>
@@ -82,11 +79,15 @@ export default {
   },
   computed: {
     ...mapState({
-      list: state => state.autoPriceUpdate.list
+      // list: state => Object.assign({}, state.autoPriceUpdate.list)
+      list(state) {
+        return state.autoPriceUpdate.list
+      }
     })
   },
   data() {
     return {
+      loading: false,
       strategyOptions: ['UnitPriceStrategy', 'TotalPriceStrategy'],
       formData: {
         type: Object,
@@ -97,20 +98,34 @@ export default {
     }
   },
   watch: {
-    productId(newId, oldId) {
-      var conf = this.list.filter(a => a.id === newId)[0].conf
-      this.formData = Object.assign({}, conf)
+    'productId': {
+      immediate: true,
+      handler(newId, oldId) {
+        var conf = this.list.filter(a => a.id === newId)[0].conf
+        this.formData = Object.assign({}, conf)
+      }
     }
   },
   methods: {
-    updateData() {
+    async updateData() {
       console.log('update data')
+      // Update to backend
+      this.loading = true
+      var copyFom = Object.assign({}, this.formData)
+      try {
+        await this.$store.dispatch('autoPriceUpdate/uploadConfiguration', copyFom)
+        await this.$store.dispatch('autoPriceUpdate/updateSellersById', copyFom.productId)
+        await this.$store.dispatch('autoPriceUpdate/updateSuggestById', copyFom.productId)
+      } catch (err) {
+        console.error(err)
+      }
+      this.loading = false
       this.closeDialog()
     },
     closeDialog() {
       console.log('close')
       this.$emit('closeDialog')
-      this.formData = this.resetForm()
+      // this.formData = this.resetForm()
     },
     resetForm() {
       return {

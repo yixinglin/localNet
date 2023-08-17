@@ -2,6 +2,7 @@
   <div>
     <div>
       <span>{{ title }}</span>
+      <span>Lowest price: {{ lowestPrice.toFixed(2) }}</span>
     </div>
     <el-table
       v-if="sellerData.length>0"
@@ -10,8 +11,8 @@
       fit
       highlight-current-row
       style="width: 100%"
+      :cell-style="columnStyle"
       show-overflow-tooltip
-      :default-sort="{prop: 'unitPrice', order: 'ascending'}"
     >
       <el-table-column label="Seller" align="center" width="200px">
         <template slot-scope="{row}">
@@ -85,6 +86,14 @@ export default {
     selfName: {
       type: String,
       default: ''
+    },
+    lowestPrice: {
+      type: Number,
+      default: -2
+    },
+    strategyId: {
+      type: String,
+      default: ''
     }
   },
   methods: {
@@ -96,6 +105,13 @@ export default {
     },
     sortByTotalPrice(n1, n2) {
       return n1.price2 - n2.price2 + n1.shippingGroup.unitCost - n2.shippingGroup.unitCost
+    },
+    columnStyle({ row, column, rowIndex, columnIndex }) {
+      if (this.strategyId === 'TotalPriceStrategy' && columnIndex === 3) {
+        return 'background:	#FFF8DC;'
+      } else if (this.strategyId === 'UnitPriceStrategy' && columnIndex === 2) {
+        return 'background:	#FFF8DC;'
+      }
     }
   }
 }

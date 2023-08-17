@@ -1,10 +1,11 @@
 import { getToken } from '@/utils/auth'
-import { fetchOfferList, fetchProductPage, fetchAllConfiguration } from '@/api/price-update'
+import { fetchOfferList, fetchProductPage, fetchAllConfiguration, fetchSuggestion, updateConfiguration } from '@/api/price-update'
 
 const state = {
   token: getToken(),
   list: null,
   conf: null,
+  suggest: null,
   selfName: ''
 }
 
@@ -22,11 +23,21 @@ const mutations = {
       el.conf = res[0]
     })
   },
+  'UPDATE_SUGGEST_OF_ROW': (state, data) => {
+    var { productId } = data
+    var row = state.list.filter(a => a.id === productId)[0]
+    row.suggest = data
+  },
   'UPDATE_SELLERS_OF_ROW': (state, data) => {
     var { code, competitors, self } = data
     var row = state.list.filter(a => a.id === code)[0]
     row.sellers = competitors
     state.selfName = self.shopName
+  },
+  'UPDATE_CONF_OF_ROW': (state, data) => {
+    var { productId } = data
+    var row = state.list.filter(a => a.id === productId)[0]
+    row.conf = data
   }
 }
 
@@ -37,15 +48,15 @@ const actions = {
       list_.forEach(a => {
         a.sellers = []
         a.conf = []
+        a.suggest = {}
       })
-      console.log('aa', list_)
-      commit('SET_TABLE', list_)
       return list_
     }).then(resp => {
+      commit('SET_TABLE', resp)
       return resp
     })
   },
-  generateConfigruations({ commit }) {
+  generateConfigurations({ commit }) {
     return fetchAllConfiguration().then(resp => {
       var conf = resp.data
       console.log('bb', conf)
@@ -53,15 +64,29 @@ const actions = {
       return conf
     })
   },
-  updateSellersById({ commit, state }, id) {
+  uploadConfiguration({ commit }, conf) {
+    return updateConfiguration(conf).then(resp => {
+      commit('UPDATE_CONF_OF_ROW', conf)
+      return resp.data
+    })
+  },
+  updateSellersById({ commit }, id) {
     var p = null
-    // var conf = state.list.filter(a => a.productKey === id)[0].conf
-    // if (conf.enabled) {
     p = fetchProductPage(id).then(resp => {
       var page = resp.data
       console.log('cc', page)
       commit('UPDATE_SELLERS_OF_ROW', page)
       return page
+    })
+    return p
+  },
+  updateSuggestById({ commit }, id) {
+    var p = null
+    p = fetchSuggestion(id).then(resp => {
+      var suggest = resp.data
+      console.log('dd', suggest)
+      commit('UPDATE_SUGGEST_OF_ROW', suggest)
+      return suggest
     })
     return p
   }

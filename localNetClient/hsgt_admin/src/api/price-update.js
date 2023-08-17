@@ -1,5 +1,6 @@
 import request from '@/utils/request'
 
+// Fetch offers from API and store it to database
 export function fetchOfferList() {
   return request({
     url: '/offer/metro/selectAll',
@@ -7,6 +8,7 @@ export function fetchOfferList() {
   })
 }
 
+// Fetch configurations from databse
 export function fetchAllConfiguration() {
   return request({
     url: '/pricing/metro/conf',
@@ -14,14 +16,16 @@ export function fetchAllConfiguration() {
   })
 }
 
-export function fetchProductPage(productKey) {
+// Fetch a product page from API and store it to database
+export function fetchProductPage(productId) {
   return request({
     url: '/offer/metro/productpage',
     method: 'get',
-    params: { productKey: productKey }
+    params: { productId: productId }
   })
 }
 
+// Fetch product page from database quickly.
 export function fetchProductPageList(productIdList) {
   return request({
     url: '/offer/metro/productpageList',
@@ -30,3 +34,20 @@ export function fetchProductPageList(productIdList) {
   })
 }
 
+// Fetch product page from database quickly.
+export function fetchSuggestion(productId) {
+  return request({
+    url: '/pricing/metro/suggest',
+    method: 'get',
+    params: { productId: productId }
+  })
+}
+
+// Fetch product page from database quickly.
+export function updateConfiguration(conf) {
+  return request({
+    url: '/pricing/metro/conf',
+    method: 'post',
+    data: conf
+  })
+}
