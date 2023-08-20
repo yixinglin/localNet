@@ -1,25 +1,23 @@
 # Local Server Backend
 ## Summary
-Spring Boot, MySql, MyBatis
+Java8, Spring Boot, MySQL, MyBatis.
 
 ## Swagger
 Link: http://localhost:8088/swagger-ui.html#/
 
 ## Procedures
 ### Query data
-1. Initialize Offer table. To show the product IDs and names. (No shipping cost detail)
-1. Request for more details of the products in the table. Information from product pages 
-(including current shipping cost)
+1. Initialize `Offer` table. To show the product IDs and names without NO shipping cost details.
+1. Request for more details of the products in the table. All information was fetched from product pages including current shipping cost.
 
 ### Update prices
-1. Select a product. Request server for a price with a selected strategy and info of other sellers. 
-The server should return an expected price that user may want to update.
-2. User should confirm the product price and press OK to update the price.
+1. Select a product, then request the server for a price with a selected strategy and information of other sellers.
+2. The user should confirm the product price and press OK to update the price.
 
 ### Setting
 1. Max reduction
 2. Reduction
 2. Reserve price
 3. Note
-4. amount
-5. Enable or Desable
+4. Amount
+5. Enable or Disable
