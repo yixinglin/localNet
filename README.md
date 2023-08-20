@@ -6,5 +6,10 @@ The Dynamic Pricing System consists of a [backend](localNetServer) and a [fronte
 
 The [backend](localNetServer) was developed based on Spring Boot, a Spring-based application of Web service. For database, MySQL was chosen. In order to maintain data persistence, MyBatis, which automates the mapping between SQL databases and objects in Java, was used. 
 
+
 The [frontend](localNetClient/hsgt_admin) template I used was fetched by the [vue-element-admin](https://github.com/PanJiaChen/vue-element-admin) project, a production-ready front-end solution for admin interfaces. This project provides various helpful templates of webpages, which allows quick frontend development.
 
+![alt img](pic\dynamics_pricing.png "Dynamics pricing")
+
+<img decoding="async" src="pic\dynamics_pricing-1.png" width="70%">
+<img decoding="async" src="pic\dynamics_pricing-2.png" width="70%">
