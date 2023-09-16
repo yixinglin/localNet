@@ -1,5 +1,5 @@
 import { getToken } from '@/utils/auth'
-import { fetchOfferList, fetchProductPage, fetchAllConfiguration, fetchSuggestion, updateConfiguration } from '@/api/price-update'
+import { pricing, fetchOfferList, fetchShippingGroups, fetchProductPage, fetchAllConfiguration, fetchSuggestion, updateConfiguration } from '@/api/price-update'
 
 const state = {
   token: getToken(),
@@ -42,6 +42,7 @@ const mutations = {
 }
 
 const actions = {
+  // Fetch offer data
   generateList({ commit }) {
     return fetchOfferList().then((response) => {
       var list_ = response.data
@@ -56,39 +57,54 @@ const actions = {
       return resp
     })
   },
+  // Fetch configuration for dynamic pricing
   generateConfigurations({ commit }) {
     return fetchAllConfiguration().then(resp => {
       var conf = resp.data
-      console.log('bb', conf)
       commit('SET_CONFIGURE', conf)
       return conf
     })
   },
+  // Fetch list of shipping groups
+  generateShipmentList({ commit }) {
+    return fetchShippingGroups().then(resp => {
+      var ship = resp.data
+      return ship
+    })
+  },
+  // Update configuration for dynamic pricing
   uploadConfiguration({ commit }, conf) {
     return updateConfiguration(conf).then(resp => {
       commit('UPDATE_CONF_OF_ROW', conf)
       return resp.data
     })
   },
+  // Update information of other sellers
   updateSellersById({ commit }, id) {
     var p = null
     p = fetchProductPage(id).then(resp => {
       var page = resp.data
-      console.log('cc', page)
       commit('UPDATE_SELLERS_OF_ROW', page)
       return page
     })
     return p
   },
+  // Update suggested price for competition.
   updateSuggestById({ commit }, id) {
     var p = null
     p = fetchSuggestion(id).then(resp => {
       var suggest = resp.data
-      console.log('dd', suggest)
       commit('UPDATE_SUGGEST_OF_ROW', suggest)
       return suggest
     })
     return p
+  },
+  // Request for Pricing
+  requestPricing({ commit }, offer) {
+    return pricing(offer).then(resp => {
+      var newOffer = resp.data
+      return newOffer
+    })
   }
 }
 

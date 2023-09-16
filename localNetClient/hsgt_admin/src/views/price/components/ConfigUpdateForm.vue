@@ -1,17 +1,10 @@
 <template>
   <div>
     <el-form ref="dataForm" :model="formData" label-position="left" label-width="120px" style="width: 700px; margin-left:50px;">
-      <!-- <el-form-item label="Type" prop="type">
-        <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-          <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-        </el-select>
-      </el-form-item> -->
       <el-form-item label="Product ID" prop="productId">
-        <!-- <el-input v-model="formData.productId" readonly /> -->
         <span> {{ formData.productId }}</span>
       </el-form-item>
       <el-form-item label="Product" prop="product">
-        <!-- <el-input v-model="formData.productName" readonly /> -->
         <span> {{ formData.productName }}</span>
       </el-form-item>
       <el-form-item label="Amount" prop="amount">
@@ -37,17 +30,6 @@
           <el-option v-for="item in strategyOptions" :key="item" :label="item" :value="item" />
         </el-select>
       </el-form-item>
-      <!-- <el-form-item label="Status">
-        <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-          <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="Imp">
-        <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />
-      </el-form-item>
-      <el-form-item label="Remark">
-        <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
-      </el-form-item> -->
     </el-form>
 
     <div slot="footer" class="dialog-footer">

@@ -51,3 +51,32 @@ export function updateConfiguration(conf) {
     data: conf
   })
 }
+
+// Offer
+export function makeOfferObject() {
+  return {
+    id: '',
+    price: 0.0,
+    quantity: 0,
+    shippingGroup: {
+      id: null
+    }
+  }
+}
+
+// Request for pricing
+export function pricing(offer) {
+  return request({
+    url: '/pricing/metro/edit',
+    method: 'post',
+    data: offer
+  })
+}
+
+// Fetch shipping groups
+export function fetchShippingGroups() {
+  return request({
+    url: '/shipment/metro/groups',
+    method: 'get'
+  })
+}

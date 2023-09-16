@@ -6,9 +6,9 @@ const autoPriceUpdateRouter = {
   path: '/auto-price-update',
   component: Layout,
   redirect: 'noRedirect',
-  name: '自动比价',
+  name: 'Dynamics Pricing',
   meta: {
-    title: '自动比价',
+    title: 'Dynamics Pricing',
     icon: 'chart', roles: ['admin', 'admin1']
   },
   children: [

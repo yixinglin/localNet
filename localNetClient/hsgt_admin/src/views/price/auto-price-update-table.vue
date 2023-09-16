@@ -160,67 +160,18 @@
       </el-table-column>
       <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <!-- <el-button type="primary" size="mini" @click="handleUpdate(row)">
+          <el-button type="primary" size="mini" @click="handleEditPriceData(row)">
             Edit
-          </el-button>
-          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
-            Publish
-          </el-button>
-          <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
-            Draft
-          </el-button>
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            Delete
-          </el-button> -->
-          <el-button type="primary" size="mini">
-            OK
           </el-button>
           <el-button size="mini" @click="handleConfigData(row)">
-            Edit
+            Setting
           </el-button>
-          <el-button @click="handleSellerData(row)">
+          <el-button size="mini" @click="handleSellerData(row)">
             Stats
           </el-button>
         </template>
       </el-table-column>
     </el-table>
-
-    <!-- <pagination v-if="list" v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" /> -->
-
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="Type" prop="type">
-          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Date" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
-        </el-form-item>
-        <el-form-item label="Title" prop="title">
-          <el-input v-model="temp.title" />
-        </el-form-item>
-        <el-form-item label="Status">
-          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Imp">
-          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />
-        </el-form-item>
-        <el-form-item label="Remark">
-          <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          Cancel
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          Confirm
-        </el-button>
-      </div>
-    </el-dialog>
 
     <el-dialog :visible.sync="dialogStatsVisible" title="Seller Statistics">
       <SellerStats
@@ -239,6 +190,15 @@
         @closeDialog="dialogConfigFormVisible = false"
       />
     </el-dialog>
+
+    <el-dialog :visible.sync="dialogEditPriceFormVisible" title="Edit Price">
+      <EditPriceForm
+        title="Edit Price"
+        :productId="tempConfig.productId"
+        @closeDialog="dialogEditPriceFormVisible = false"
+      />
+    </el-dialog>
+
   </div>
 </template>
 
@@ -251,6 +211,7 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 import { mapState } from 'vuex'
 import SellerStats from './components/SellerStats'
 import ConfigUpdateForm from './components/ConfigUpdateForm'
+import EditPriceForm from './components/EditPriceForm.vue'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -267,7 +228,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination, SellerStats, ConfigUpdateForm },
+  components: { Pagination, SellerStats, ConfigUpdateForm, EditPriceForm },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -319,6 +280,7 @@ export default {
       dialogPvVisible: false,
       dialogStatsVisible: false,
       dialogConfigFormVisible: false,
+      dialogEditPriceFormVisible: false,
       pvData: [],
       rules: {
         type: [{ required: true, message: 'type is required', trigger: 'change' }],
@@ -361,7 +323,7 @@ export default {
         var total = seller.price2 + seller.shippingGroup.unitCost
         return row.conf.strategyId === 'TotalPriceStrategy'
           ? total - self.shippingGroup.unitCost - self.price2 - 0.01
-          : seller.price2 - self.price2
+          : seller.price2 - self.price2 - 0.01
       }
     },
     comparable(row) {
@@ -533,6 +495,11 @@ export default {
       this.tempSellers = row.sellers
       this.tempConfig = row.conf
       this.dialogConfigFormVisible = !this.dialogConfigFormVisible
+    },
+    handleEditPriceData(row) {
+      this.tempSellers = row.sellers
+      this.tempConfig = row.conf
+      this.dialogEditPriceFormVisible = !this.dialogEditPriceFormVisible
     },
     formatJson(filterVal) {
       return this.list.map(v => filterVal.map(j => {
