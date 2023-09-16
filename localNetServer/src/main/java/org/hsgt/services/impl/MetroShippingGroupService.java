@@ -39,6 +39,8 @@ public class MetroShippingGroupService implements ShippingGroupService {
         String s = this.api.selectAllShippingGroups().getContent();
         JSONArray jGroups = new JSONObject(s).getJSONArray("shippingGroups");
         List<ShippingGroup> shippingGroups = new ArrayList<>();
+        ShippingGroup free = new ShippingGroup();
+        shippingGroups.add(free);
         for (int i = 0; i < jGroups.length(); i++) {
             ShippingGroup sg = new ShippingGroup();
             JSONObject jg = jGroups.getJSONObject(i);

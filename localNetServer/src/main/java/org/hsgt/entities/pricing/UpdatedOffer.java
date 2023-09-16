@@ -11,4 +11,5 @@ public class UpdatedOffer implements Serializable {
     private String ip;
     private String datetime;
     private Offer offer;
+    private String note;
 }

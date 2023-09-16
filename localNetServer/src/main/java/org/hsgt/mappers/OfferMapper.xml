@@ -36,4 +36,11 @@
     <delete id="deleteById>">
         delete from t_offer where productId=#{id}
     </delete>
+
+
+    <insert id="insertUpdatedPricingLog" parameterType="org.hsgt.entities.pricing.UpdatedOffer">
+        insert into t_updated_offer
+        (datetime, ip, productId, price, quantity, shippingGroupId, note) values
+        (NOW(), #{ip}, #{offer.id}, #{offer.price}, #{offer.quantity}, #{offer.shippingGroup.id}, #{note})
+    </insert>
 </mapper>

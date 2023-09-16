@@ -7,6 +7,7 @@ import org.hsgt.controllers.response.ConfigureResponse;
 import org.hsgt.controllers.response.ControllerResponse;
 import org.hsgt.controllers.response.SuggestedPrice;
 import org.hsgt.entities.pricing.Configure;
+import org.hsgt.entities.pricing.Offer;
 import org.hsgt.mappers.CompetitorMapper;
 import org.hsgt.mappers.ConfigureMapper;
 import org.hsgt.services.OfferService;
@@ -68,5 +69,12 @@ public class MetroPriceManagementController {
         offerService.updateLowestPriceAndNote(conf.getOffer());
         ControllerResponse resp = ControllerResponse.ok();
         return resp;
+    }
+
+    @PostMapping("/edit")
+    public ControllerResponse pricing(@RequestBody Offer offer) {
+        Offer resp = priceManagementService.pricing(offer);
+        ControllerResponse<Offer> cr = ControllerResponse.ok().setData(resp);
+        return cr;
     }
 }

@@ -6,6 +6,7 @@ import org.hsgt.controllers.response.SuggestedPrice;
 import org.hsgt.entities.pricing.Competitor;
 import org.hsgt.entities.pricing.Configure;
 import org.hsgt.entities.pricing.Offer;
+import org.hsgt.entities.pricing.UpdatedOffer;
 import org.hsgt.mappers.CompetitorMapper;
 import org.hsgt.mappers.ConfigureMapper;
 import org.hsgt.mappers.OfferMapper;
@@ -71,6 +72,29 @@ public class MetroPriceManagementService implements PriceManagementService {
         Competitor expected = strategy.execute(self, others, offer);
         SuggestedPrice suggestedPrice = SuggestedPrice.build(strategy, offer, self, expected);
         return suggestedPrice;
+    }
+
+    @Override
+    public Offer pricing(Offer latestOffer) {
+        float price = latestOffer.getPrice();
+        int quantity = latestOffer.getQuantity();
+        String shippingGroupId = latestOffer.getShippingGroup().getId();
+        shippingGroupId = shippingGroupId.equals("0") ? null: shippingGroupId;
+        // Update price via API
+        Offer resp = latestOffer;
+
+
+        // Add pricing log to database
+        UpdatedOffer updatedOffer = new UpdatedOffer();
+        updatedOffer.setIp("1.2.3.4");
+        updatedOffer.setOffer(latestOffer);
+        if (Global.DEBUG)
+            updatedOffer.setNote("Staging");
+        else
+            updatedOffer.setNote("Production");
+        offerMapper.insertUpdatedPricingLog(updatedOffer);
+
+        return resp;
     }
 
 }
