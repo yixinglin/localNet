@@ -21,6 +21,7 @@ class ConfigurePricing(QDialog, Ui_Dialog):
     def __init__(self, parent=None):
         super(ConfigurePricing, self).__init__(parent)
         self.setupUi(self)
+        self.setFixedSize(self.size())
         self.setWindowTitle("Pricing Configuration")
         self.configureTable.setColumnWidth(0, 90)
         self.configureTable.setColumnWidth(1, 200)
@@ -36,6 +37,7 @@ class ConfigurePricing(QDialog, Ui_Dialog):
         cell = self.createCell(iRow, 0, row[0])  # Gtin
         cell.setTextAlignment(Qt.AlignLeft)
         cellName = self.createCell(iRow, 1, row[1])  # Name
+        cellName.setTextAlignment(Qt.AlignLeft)
         cell = self.createCell(iRow, 2, row[2], readOnly=False)  # Note
         cell.setTextAlignment(Qt.AlignLeft)
         cell = self.createCell(iRow, 3, f"{row[3]: .2f}", readOnly=False)  # LowestPrice
@@ -43,7 +45,7 @@ class ConfigurePricing(QDialog, Ui_Dialog):
 
         cellName.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
         cellName.setCheckState(Qt.Checked if row[4] else Qt.Unchecked)
-        cellName.setTextAlignment(Qt.AlignLeft)
+
 
     def removeRow(self):
         pass
@@ -85,6 +87,7 @@ class Communication(QObject):
     sg_conf = pyqtSignal(dict, name="getConfiguration")
     sg_upload_conf = pyqtSignal(dict, name="uploadConfiguration")
 
+# ----------- THREADS -------------------
 class ConfigureThread(QThread):
 
     def __init__(self, parent=None, api=None):
@@ -96,8 +99,6 @@ class ConfigureThread(QThread):
         conf = self.api.fetchListConfiguration()
         self.parent.communication.sg_conf.emit(conf)
 
-
-
 class ConfigurePricingLogic(ConfigurePricing):
 
     def __init__(self, parent=None):
@@ -107,6 +108,7 @@ class ConfigurePricingLogic(ConfigurePricing):
         self.serverBaseURL = self.getServerURL()
         self.communication = Communication()
         self.communication.sg_conf.connect(self.fillTable)
+        self.confData = {}
 
     def fetchConfiguration(self):
         self.serverBaseURL = self.getServerURL()
@@ -116,16 +118,17 @@ class ConfigurePricingLogic(ConfigurePricing):
 
     def fillTable(self, conf: dict):
         table = []
+        self.confData = conf
         for item in conf["data"]:
             row = (item["productId"], item["productName"], item["offerNote"], item["lowestPrice"], item["enabled"])
             table.append(row)
         table = sorted(table, key=lambda o: (o[2], float(o[3])))
-
         for item in table:
             self.appendRow(item)
 
+    def uploadListConfiguration(self):
+        pass
+
     def onClickedConfirmButton(self):
         self.disabledInputWidgets(True)
-
-
         self.disabledInputWidgets(False)
