@@ -1,12 +1,14 @@
 from views.pricing.components.ui_pricingboard import Ui_Form
 from datetime import datetime
-from PyQt5.QtWidgets import QDialog, QTableWidgetItem, QFrame
+from PyQt5.QtWidgets import QFrame
 from PyQt5.QtCore import Qt, pyqtSignal, QObject, QThread
-from PyQt5.QtGui import QColor
+from views.pricing.components.baseui import BaseUi
+from views.pricing.components.competitorstat import CompetitorStatDialog
+from utils.general import *
 
 # pyuic5 pricingboard.ui -o ui_pricingboard.py
 
-class PricingBoard(QFrame, Ui_Form):
+class PricingBoard(QFrame, Ui_Form, BaseUi):
 
     def __init__(self, parent=None):
         super(PricingBoard, self).__init__(parent)
@@ -21,41 +23,31 @@ class PricingBoard(QFrame, Ui_Form):
         self.pricingBoard.setColumnWidth(6, 70)
         self.pricingBoard.setColumnWidth(7, 180)
 
-    def appendRow(self, row: tuple, bgcolor:QColor = None):
+    def appendRow(self, row: tuple, **kwargs):
         iRow = self.pricingBoard.rowCount()
         self.pricingBoard.setRowCount(iRow + 1)
-        self.updateRow(iRow, row, bgcolor)
+        self.updateRow(iRow, row, **kwargs)
 
-    def updateRow(self, iRow, row, bgcolor:QColor = None):
-        cellNo1 = self.createCell(iRow, 0, row[0], bgcolor=bgcolor)  # No. 1
+    def updateRow(self, iRow, row:tuple, **kwargs):
+        cellNo1 = self.createCell(self.pricingBoard, iRow, 0, row[0], **kwargs)  # No. 1
         cellNo1.setTextAlignment(Qt.AlignLeft)
-        cell = self.createCell(iRow, 1, row[1], bgcolor=bgcolor)  # Rank
+        cell = self.createCell(self.pricingBoard, iRow, 1, row[1], **kwargs)  # Rank
         cell.setTextAlignment(Qt.AlignCenter)
-        cell = self.createCell(iRow, 2, f"{row[2]: .2f}", readOnly=True, bgcolor=bgcolor)  # Unit Price
+        cell = self.createCell(self.pricingBoard, iRow, 2, f"{row[2]: .2f}", readOnly=True, **kwargs)  # Unit Price
         cell.setTextAlignment(Qt.AlignRight)
-        cell = self.createCell(iRow, 3, f"{row[3]: .2f}", readOnly=False, bgcolor=bgcolor)  # LowestPrice
+        cell = self.createCell(self.pricingBoard, iRow, 3, f"{row[3]: .2f}", readOnly=False, **kwargs)  # LowestPrice
         cell.setTextAlignment(Qt.AlignRight)
-        cell = self.createCell(iRow, 4, f"{row[4]: .2f}", readOnly=True, bgcolor=bgcolor)  # Reduce
+        cell = self.createCell(self.pricingBoard, iRow, 4, f"{row[4]: .2f}", readOnly=True, **kwargs)  # Reduce
         cell.setTextAlignment(Qt.AlignRight)
-        cell = self.createCell(iRow, 5, f"{row[5]: .2f}", readOnly=True, bgcolor=bgcolor)  # Profit
+        cell = self.createCell(self.pricingBoard, iRow, 5, f"{row[5]: .2f}", readOnly=True, **kwargs)  # Profit
         cell.setTextAlignment(Qt.AlignRight)
-        cell = self.createCell(iRow, 6, row[6], readOnly=True, bgcolor=bgcolor)  # Status
+        cell = self.createCell(self.pricingBoard, iRow, 6, row[6], readOnly=True, **kwargs)  # Status
         cell.setTextAlignment(Qt.AlignLeft)
-        cellName = self.createCell(iRow, 7, row[7], readOnly=True, bgcolor=bgcolor)  # Name
+        cellName = self.createCell(self.pricingBoard, iRow, 7, row[7], readOnly=True, **kwargs)  # Name
         cellName.setTextAlignment(Qt.AlignLeft)
 
         cellName.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
         cellName.setCheckState(Qt.Checked if row[8] else Qt.Unchecked)
-
-
-    def createCell(self, r: int, c: int, val: str, readOnly=True, bgcolor:QColor = None) -> QTableWidgetItem:
-        cell = QTableWidgetItem(val) if isinstance(val, str) else QTableWidgetItem(str(val))
-        self.pricingBoard.setItem(r, c, cell)
-        if readOnly:
-            cell.setFlags(Qt.ItemIsEnabled)
-        if bgcolor is not None:
-            cell.setBackground(bgcolor)
-        return cell
 
     def setCurrentTime(self):
         now = datetime.now()
@@ -98,7 +90,7 @@ class FetchPricingDataThread(BasePricingThread):
         listConf = self.api.fetchListConfiguration()['data']
         for o in offer['data']:
             pid = o['id']
-            ic = self.searchConfigureById(listConf, pid)
+            ic = findi(listConf, lambda o: pid == o['productId'])
             if not listConf[ic]['enabled']:
                 continue
             sig = dict(offer=o, productPage=self.api.fetchProductPage(pid)['data'],
@@ -107,17 +99,7 @@ class FetchPricingDataThread(BasePricingThread):
         self.parent.communication.sg_finished.emit(1)
 
 
-    def searchConfigureById(self, listConf: list, id):
-        for i, item in enumerate(listConf):
-            if item['productId'] == id:
-                return i
-        return None
-
 class PricingBoardLogic(PricingBoard):
-
-    Q_GREED = QColor("#66FF66")
-    Q_RED = QColor("#FFCCCC")
-    Q_YELLOW = QColor("#FFFF99")
     StatusDict = {0: "通过", 1: "满足", 2: "亏损", 3: "风险", 4: "无效", 5: "无竞争", 6: "调幅过大",}
 
     def __init__(self, parent=None, api=None):
@@ -125,6 +107,7 @@ class PricingBoardLogic(PricingBoard):
         self.api = api
         self.pricingData = None
         self.pricingBoardData = []
+        self.pricingBoardMoreData = []
         self.pricingBoard.clicked.connect(self.onClickPricingBoard)
         self.pricingBoard.doubleClicked.connect(self.onDoubleClickPricingBoard)
         self.refreshButton.clicked.connect(self.onClickRefreshButton)
@@ -135,14 +118,12 @@ class PricingBoardLogic(PricingBoard):
         self.communication.sg_offer.connect(self.initPricingBoardPhase1)
         self.communication.sg_productPage.connect(self.initPricingBoardPhase2)
         self.communication.sg_finished.connect(self.eventFetchDataFinished)
-
         self.selectedRowIndex = 0
-        # self.pricingBoard.selectionModel().selectedRows()
-        # self.pricingBoard.selectedIndexes()[0]
 
     def reset(self):
         self.clearAllItems()
         self.pricingBoardData = []
+        self.pricingBoardMoreData = []
         self.setCurrentTime()
 
     def initPricingBoardPhase1(self, offers):
@@ -178,29 +159,17 @@ class PricingBoardLogic(PricingBoard):
         elif conf['strategyId'] == "TotalPriceStrategy":
             no1 = "总: " + no1
 
-        rank = self.getRankByName(productPage['competitors'], shopName)
+        rank = 1 + findi(productPage['competitors'], lambda o: o['shopName'] == shopName)
         suggestPrice = suggest['price']
         reduce = suggestPrice - offer['price']
         item = (no1, f"{rank}/{len(productPage['competitors'])}", offer['price'], offer['lowestPrice'],
                 reduce, profit, self.StatusDict[suggest["status"]],
                 offer['productName'], conf['enabled'],
                 data)
-        iRow = self.searchRowById(offer['id'])
+        iRow = findi(self.pricingBoardData, lambda o: o[-1]['id'] == offer['id'])
         self.updateRow(iRow, item, bgcolor=bgcolor)
+        self.pricingBoardMoreData.append(data)
         pass
-
-    def searchRowById(self, pid) -> int:
-        for i, item in enumerate(self.pricingBoardData):
-            offer = item[-1]
-            if pid == offer['id']:
-                return i
-        return None
-
-    def getRankByName(self, competitors, shopName):
-        for i, c in enumerate(competitors):
-            if c['shopName'] == shopName:
-                return i+1
-        return None
 
     def fetchPricingData(self):
         thread = FetchPricingDataThread(self, self.api)
@@ -209,13 +178,30 @@ class PricingBoardLogic(PricingBoard):
     def onDoubleClickPricingBoard(self):
         index = self.pricingBoard.selectionModel().currentIndex()
         self.selectedRowIndex = index.row()
-        data = self.pricingBoardData[index.row()]
+        try:
+            data = self.pricingBoardMoreData[index.row()]
+            productPage = data['productPage']
+            dialog = CompetitorStatDialog()
+            dialog.setProductName(productPage['productName'])
+            for i, c in enumerate(productPage["competitors"]):
+                total = c['price2'] + c['shippingGroup']['unitCost']
+                dialog.appendRow((c['shopName'], c['label'], c['price2'],
+                                total, c['shippingGroup']['unitCost'],
+                                c['shippingGroup']['extraUnitCost'], c['quantity']))
+            if dialog.exec_():
+                pass
+            dialog.destroy()
+        except IndexError as e:
+            print("line ", lineno(), e)
 
     def onClickPricingBoard(self):
         index = self.pricingBoard.selectionModel().currentIndex()
         self.selectedRowIndex = index.row()
-        data = self.pricingBoardData[index.row()]
-        print(data)
+        try:
+            data = self.pricingBoardMoreData[index.row()]
+            print(data)
+        except IndexError as e:
+            print("line ", lineno(), e)
 
     def onClickRefreshButton(self):
         self.reset()

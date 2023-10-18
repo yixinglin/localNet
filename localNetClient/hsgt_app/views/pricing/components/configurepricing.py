@@ -10,13 +10,13 @@
 
 # pyuic5 -o ui_configurepricing.py configurepricing.ui
 
-from PyQt5.QtWidgets import QDialog, QTableWidgetItem
+from PyQt5.QtWidgets import QDialog
 from views.pricing.components.ui_configurepricing import Ui_Dialog
 from PyQt5.QtCore import Qt, pyqtSignal, QObject, QThread
 from api.pricing import MetroPricing
+from views.pricing.components.baseui import BaseUi
 
-
-class ConfigurePricing(QDialog, Ui_Dialog):
+class ConfigurePricing(QDialog, Ui_Dialog, BaseUi):
 
     def __init__(self, parent=None):
         super(ConfigurePricing, self).__init__(parent)
@@ -34,13 +34,13 @@ class ConfigurePricing(QDialog, Ui_Dialog):
         iRow = self.configureTable.rowCount()
         self.configureTable.setRowCount(iRow + 1)
 
-        cell = self.createCell(iRow, 0, row[0])  # Gtin
+        cell = self.createCell(self.configureTable, iRow, 0, row[0])  # Gtin
         cell.setTextAlignment(Qt.AlignLeft)
-        cellName = self.createCell(iRow, 1, row[1])  # Name
+        cellName = self.createCell(self.configureTable, iRow, 1, row[1])  # Name
         cellName.setTextAlignment(Qt.AlignLeft)
-        cell = self.createCell(iRow, 2, row[2], readOnly=False)  # Note
+        cell = self.createCell(self.configureTable, iRow, 2, row[2], readOnly=False)  # Note
         cell.setTextAlignment(Qt.AlignLeft)
-        cell = self.createCell(iRow, 3, f"{row[3]: .2f}", readOnly=False)  # LowestPrice
+        cell = self.createCell(self.configureTable, iRow, 3, f"{row[3]: .2f}", readOnly=False)  # LowestPrice
         cell.setTextAlignment(Qt.AlignRight)
 
         cellName.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
@@ -49,13 +49,6 @@ class ConfigurePricing(QDialog, Ui_Dialog):
 
     def removeRow(self):
         pass
-
-    def createCell(self, r: int, c: int, val: str, readOnly=True) -> QTableWidgetItem:
-        cell = QTableWidgetItem(val) if isinstance(val, str) else QTableWidgetItem(str(val))
-        self.configureTable.setItem(r, c, cell)
-        if readOnly:
-            cell.setFlags(Qt.ItemIsEnabled)
-        return cell
 
     def getShopName(self) -> str:
         return self.shopName.text()
