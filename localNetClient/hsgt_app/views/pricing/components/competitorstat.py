@@ -21,9 +21,12 @@ class CompetitorStat(QWidget, Ui_Widget, BaseUi):
         self.sellerBoard.setColumnWidth(4, 80)
         self.sellerBoard.setColumnWidth(5, 80)
         self.sellerBoard.setColumnWidth(6, 60)
+        self.shopName = ""
 
     def appendRow(self, row:tuple, **kwargs):
         iRow = self.sellerBoard.rowCount()
+        if self.shopName ==  row[0]:
+            kwargs['bgcolor'] = self.Q_YELLOW
         self.sellerBoard.setRowCount(iRow+1)
         cell = self.createCell(self.sellerBoard, iRow, 0, row[0], **kwargs)  # Seller
         cell.setTextAlignment(Qt.AlignLeft)
@@ -43,11 +46,14 @@ class CompetitorStat(QWidget, Ui_Widget, BaseUi):
     def setProductName(self, name):
         self.productLabel.setText(name)
 
+    def setShopName(self, shopName):
+        self.shopName = shopName
+
+
 class CompetitorStatLogic(CompetitorStat):
 
     def __init__(self, parent=None):
         super(CompetitorStatLogic, self).__init__(parent)
-
 
 class CompetitorStatDialog(QDialog, CompetitorStat):
     

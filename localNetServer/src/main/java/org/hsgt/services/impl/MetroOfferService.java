@@ -50,6 +50,7 @@ public class MetroOfferService implements OfferService {
         MetroOfferBuilder builder = new MetroOfferBuilder();
         JSONArray jOfferList = new JSONObject(s).getJSONArray("items");
         List<Offer> offers =  new ArrayList<>();
+        // Offers without concrete shipping group details
         for (int i = 0; i < jOfferList.length(); i++) {
             // Convert JSON to Offer object
             Offer o = builder.offer(jOfferList.getJSONObject(i)).build();

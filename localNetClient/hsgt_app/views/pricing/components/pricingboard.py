@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QFrame
 from PyQt5.QtCore import Qt, pyqtSignal, QObject, QThread
 from views.pricing.components.baseui import BaseUi
 from views.pricing.components.competitorstat import CompetitorStatDialog
+from views.pricing.components.newofferdialog import NewOfferDialogLogic
 from utils.general import *
 
 # pyuic5 pricingboard.ui -o ui_pricingboard.py
@@ -14,6 +15,7 @@ class PricingBoard(QFrame, Ui_Form, BaseUi):
         super(PricingBoard, self).__init__(parent)
         self.setupUi(self)
         self.setFixedSize(self.size())
+        self.setWindowTitle("Pricing Board")
         self.pricingBoard.setColumnWidth(0, 120)
         self.pricingBoard.setColumnWidth(1, 70)
         self.pricingBoard.setColumnWidth(2, 70)
@@ -88,14 +90,16 @@ class FetchPricingDataThread(BasePricingThread):
         offer['data'] = sorted(offer['data'], key=lambda o: (o["note"], o["lowestPrice"]))
         self.parent.communication.sg_offer.emit(offer)
         listConf = self.api.fetchListConfiguration()['data']
-        for o in offer['data']:
+        for i, o in enumerate(offer['data']):
             pid = o['id']
             ic = findi(listConf, lambda o: pid == o['productId'])
             if not listConf[ic]['enabled']:
                 continue
             sig = dict(offer=o, productPage=self.api.fetchProductPage(pid)['data'],
-                       conf=listConf[ic], suggest = self.api.fetchSuggest(pid)['data'])
+                       conf=listConf[ic], suggest=self.api.fetchSuggest(pid)['data'])
             self.parent.communication.sg_productPage.emit(sig)
+            if i == 3:
+                break
         self.parent.communication.sg_finished.emit(1)
 
 
@@ -176,27 +180,15 @@ class PricingBoardLogic(PricingBoard):
         thread.start()
 
     def onDoubleClickPricingBoard(self):
-        index = self.pricingBoard.selectionModel().currentIndex()
-        self.selectedRowIndex = index.row()
-        try:
-            data = self.pricingBoardMoreData[index.row()]
-            productPage = data['productPage']
-            dialog = CompetitorStatDialog()
-            dialog.setProductName(productPage['productName'])
-            for i, c in enumerate(productPage["competitors"]):
-                total = c['price2'] + c['shippingGroup']['unitCost']
-                dialog.appendRow((c['shopName'], c['label'], c['price2'],
-                                total, c['shippingGroup']['unitCost'],
-                                c['shippingGroup']['extraUnitCost'], c['quantity']))
-            if dialog.exec_():
-                pass
-            dialog.destroy()
-        except IndexError as e:
-            print("line ", lineno(), e)
+        index = self.__getCurrentIndex()
+        c = index.column()
+        if c == 1 or c == 0:
+            self.__showCompetitorStatistics(index)
+        elif c == 2:
+            self.__showNewOfferDialog(index)
 
     def onClickPricingBoard(self):
-        index = self.pricingBoard.selectionModel().currentIndex()
-        self.selectedRowIndex = index.row()
+        index = self.__getCurrentIndex()
         try:
             data = self.pricingBoardMoreData[index.row()]
             print(data)
@@ -220,3 +212,38 @@ class PricingBoardLogic(PricingBoard):
 
     def onClickOfferButton(self):
         pass
+
+    def __showNewOfferDialog(self, index):
+        try:
+            dialog = NewOfferDialogLogic(parent=self, api=self.api)
+            data = self.pricingBoardMoreData[index.row()]
+            offer = data['offer']
+            dialog.setProductName(offer["productName"])
+            dialog.setNewOffer(offer['price'], offer['quantity'], offer['shippingGroup']['id'])
+            dialog.setLowestPrice(offer['lowestPrice'])
+            dialog.exec_()
+        except IndexError as e:
+            print("line ", lineno(), e)
+
+    def __showCompetitorStatistics(self, index):
+        try:
+            data = self.pricingBoardMoreData[index.row()]
+            productPage = data['productPage']
+            dialog = CompetitorStatDialog()
+            dialog.setShopName(productPage['self']['shopName'])
+            dialog.setProductName(productPage['productName'])
+            for i, c in enumerate(productPage["competitors"]):
+                total = c['price2'] + c['shippingGroup']['unitCost']
+                dialog.appendRow((c['shopName'], c['label'], c['price2'],
+                                total, c['shippingGroup']['unitCost'],
+                                c['shippingGroup']['extraUnitCost'], c['quantity']))
+            if dialog.exec_():
+                pass
+            dialog.destroy()
+        except IndexError as e:
+            print("line ", lineno(), e)
+
+    def __getCurrentIndex(self):
+        index = self.pricingBoard.selectionModel().currentIndex()
+        self.selectedRowIndex = index.row()
+        return index

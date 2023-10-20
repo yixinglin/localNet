@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Api(tags = "Shipment Management")
@@ -37,6 +38,16 @@ public class MetroShippingGroupController {
     @GetMapping("/groups/{id}")
     public ControllerResponse<ShippingGroup> getShippingGroupById(@PathVariable String id) {
         ShippingGroup shippingGroup = shippingGroupService.queryById(id);
+        ControllerResponse<ShippingGroup> resp = ControllerResponse.ok().setData(shippingGroup);
+        return resp;
+    }
+
+    @ApiOperation(value = "", notes = "Get shipping group from database by id.")
+    @GetMapping("/groups/db-{id}")
+    public ControllerResponse<ShippingGroup> getShippingGroupById_DB(@PathVariable String id) {
+        List<String> sgs = new ArrayList<>();
+        sgs.add(id);
+        ShippingGroup shippingGroup = shippingGroupService.queryById(sgs).get(0);
         ControllerResponse<ShippingGroup> resp = ControllerResponse.ok().setData(shippingGroup);
         return resp;
     }
