@@ -49,6 +49,9 @@ class CompetitorStat(QWidget, Ui_Widget, BaseUi):
     def setShopName(self, shopName):
         self.shopName = shopName
 
+    def reset(self):
+        self.sellerBoard.setRowCount(0)
+        self.sellerBoard.clearContents()
 
 class CompetitorStatLogic(CompetitorStat):
 

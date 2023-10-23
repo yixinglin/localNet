@@ -18,10 +18,12 @@ public class AccountConfig {
                 apiKey.setClientKey(conf.getJSONObject("metro").getString("client"));
                 apiKey.setSecretKey(conf.getJSONObject("metro").getString("secret"));
                 apiKey.setAccountName(conf.getJSONObject("metro").getString("account"));
+                break;
             case KAUFLAND_KEY:
                 apiKey.setClientKey(conf.getJSONObject("kaufland").getString("client"));
                 apiKey.setSecretKey(conf.getJSONObject("kaufland").getString("secret"));
                 apiKey.setAccountName(conf.getJSONObject("kaufland").getString("account"));
+                break;
         }
         return apiKey;
     }

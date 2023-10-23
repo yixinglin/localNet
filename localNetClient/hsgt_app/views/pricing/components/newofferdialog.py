@@ -1,8 +1,10 @@
+import time
+
 from views.pricing.components.ui_newofferdialog import Ui_Dialog
 from PyQt5.QtCore import Qt, QThread, QObject, pyqtSignal
 from PyQt5.QtWidgets import QDialog
 from jinja2 import Environment, FileSystemLoader
-
+from utils.general import findi, find
 class NewOfferDialog(QDialog, Ui_Dialog):
 
     def __init__(self, parent=None):
@@ -19,6 +21,11 @@ class NewOfferDialog(QDialog, Ui_Dialog):
     def setNewOffer(self, price, quantity, shippingGroupId):
         self.unitPrice.setValue(price)
         self.quantity.setValue(quantity)
+        groupName = find(self.groupNameMap.keys(), key=lambda k: self.groupNameMap[k][0] == shippingGroupId)
+        i = self.shippingGroup.findText(groupName)
+        if i != -1:
+            self.shippingGroup.setCurrentIndex(i)
+
 
     def getOfferFromUserInput(self):
         unitPrice = self.unitPrice.text()
@@ -70,10 +77,12 @@ class ShippingGroupThread(QThread):
         self.api = api
         self.parent = parent
         self.task = task
+        self.data = []
 
     def run(self) -> None:
         if self.task == self.GET_LIST:
             data = self.api.fetchListShippingGroup()
+            self.data = data
             self.parent.communication.sg_shippinggroups.emit(data)
 
 class NewOfferDialogLogic(NewOfferDialog):
@@ -88,6 +97,9 @@ class NewOfferDialogLogic(NewOfferDialog):
         self.unitPrice.textChanged.connect(self.onChangedUnitPrice)
         thread = ShippingGroupThread(self, api, task=ShippingGroupThread.GET_LIST)
         thread.start()
+        thread.wait()
+        self.addShippingGroupItemsToComboBox(thread.data)
+        pass
 
     def addShippingGroupItemsToComboBox(self, data):
         for sg in data['data']:

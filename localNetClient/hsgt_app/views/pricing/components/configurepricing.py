@@ -9,11 +9,15 @@
 
 
 # pyuic5 -o ui_configurepricing.py configurepricing.ui
+import time
+import traceback
 
-from PyQt5.QtWidgets import QDialog
+import requests.exceptions
+from PyQt5.QtWidgets import QDialog, QMessageBox, QComboBox
 from views.pricing.components.ui_configurepricing import Ui_Dialog
-from PyQt5.QtCore import Qt, pyqtSignal, QObject, QThread
+from PyQt5.QtCore import Qt, pyqtSignal, QObject, QThread, QModelIndex
 from api.pricing import MetroPricing
+from utils.general import *
 from views.pricing.components.baseui import BaseUi
 
 class ConfigurePricing(QDialog, Ui_Dialog, BaseUi):
@@ -23,29 +27,40 @@ class ConfigurePricing(QDialog, Ui_Dialog, BaseUi):
         self.setupUi(self)
         self.setFixedSize(self.size())
         self.setWindowTitle("Pricing Configuration")
-        self.configureTable.setColumnWidth(0, 90)
-        self.configureTable.setColumnWidth(1, 200)
-        self.configureTable.setColumnWidth(2, 90)
-        self.configureTable.setColumnWidth(3, 70)
+        self.configureTable.setColumnWidth(0, 110)
+        self.configureTable.setColumnWidth(1, 180)
+        self.configureTable.setColumnWidth(2, 60)
+        self.configureTable.setColumnWidth(3, 90)
         self.configureTable.setColumnWidth(4, 70)
-        # self.confirmBox.clicked.connect(self.onConfirmButtonClicked)
+        self.configureTable.setColumnWidth(5, 100)
 
     def appendRow(self, row: tuple):
         iRow = self.configureTable.rowCount()
         self.configureTable.setRowCount(iRow + 1)
 
+        combobox = QComboBox()
+        combobox.setProperty("row", iRow)
+        combobox.addItem("UnitPriceStrategy")
+        combobox.addItem("TotalPriceStrategy")
         cell = self.createCell(self.configureTable, iRow, 0, row[0])  # Gtin
         cell.setTextAlignment(Qt.AlignLeft)
         cellName = self.createCell(self.configureTable, iRow, 1, row[1])  # Name
         cellName.setTextAlignment(Qt.AlignLeft)
-        cell = self.createCell(self.configureTable, iRow, 2, row[2], readOnly=False)  # Note
+        cell = self.createCell(self.configureTable, iRow, 2, row[2], readOnly=False)  # Amount
+        cell.setTextAlignment(Qt.AlignHCenter)
+        cell = self.createCell(self.configureTable, iRow, 3, row[3], readOnly=False)  # Note
         cell.setTextAlignment(Qt.AlignLeft)
-        cell = self.createCell(self.configureTable, iRow, 3, f"{row[3]: .2f}", readOnly=False)  # LowestPrice
+        cell = self.createCell(self.configureTable, iRow, 4, f"{row[4]: .2f}", readOnly=False)  # LowestPrice
         cell.setTextAlignment(Qt.AlignRight)
-
+        self.configureTable.setCellWidget(iRow, 5, combobox) # Strategy
+        combobox.setCurrentText(row[5])
+        combobox.currentIndexChanged.connect(self.eventBoardComboboxCellChanged)
+        cell.setTextAlignment(Qt.AlignLeft)
         cellName.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
-        cellName.setCheckState(Qt.Checked if row[4] else Qt.Unchecked)
+        cellName.setCheckState(Qt.Checked if row[6] else Qt.Unchecked)
 
+    def eventBoardComboboxCellChanged(self, combobox):
+        raise NotImplementedError
 
     def removeRow(self):
         pass
@@ -79,6 +94,8 @@ class ConfigurePricing(QDialog, Ui_Dialog, BaseUi):
 class Communication(QObject):
     sg_conf = pyqtSignal(dict, name="getConfiguration")
     sg_upload_conf = pyqtSignal(dict, name="uploadConfiguration")
+    sg_finished = pyqtSignal(bool, name="finished")
+    sg_errormessage = pyqtSignal(str, Exception, name="finished")
 
 # ----------- THREADS -------------------
 class ConfigureThread(QThread):
@@ -89,33 +106,94 @@ class ConfigureThread(QThread):
         self.parent = parent
 
     def run(self) -> None:
-        conf = self.api.fetchListConfiguration()
-        self.parent.communication.sg_conf.emit(conf)
+        self.parent.communication.sg_finished.emit(False)
+        try:
+            conf = self.api.fetchListConfiguration()
+            self.parent.communication.sg_conf.emit(conf)
+        except Exception as e :
+            self.parent.communication.sg_errormessage.emit(
+                traceback.format_exc(),
+                e
+            )
+        finally:
+            self.parent.communication.sg_finished.emit(True)
+
 
 class ConfigurePricingLogic(ConfigurePricing):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, api=None,
+                 server="", pricingFreq=999999, shopName=""):
         super(ConfigurePricingLogic, self).__init__(parent)
-        self.APINAME = MetroPricing
+        self.api = api
         self.confirmBox.clicked.connect(self.onClickedConfirmButton)
         self.serverBaseURL = self.getServerURL()
         self.communication = Communication()
         self.communication.sg_conf.connect(self.fillTable)
-        self.confData = {}
+        self.communication.sg_finished.connect(self.eventFinish)
+        self.communication.sg_errormessage.connect(self.eventErrorMessage)
+        self.configureTable.itemChanged.connect(self.eventBoardCellChanged)
+        # self.configureTable.cellChanged.connect(self.eventBoardCellChanged)
+        self.confList = []
+        self.server.setText(server)
+        self.pricingFreq.setValue(pricingFreq)
+        self.shopName.setText(shopName)
+        self.isLoading = False
+        self.pricingFreq.setReadOnly(True)
+        self.server.setReadOnly(True)
+        self.shopName.setReadOnly(True)
 
     def fetchConfiguration(self):
         self.serverBaseURL = self.getServerURL()
-        api = self.APINAME(self.serverBaseURL)
-        thread = ConfigureThread(self, api)
+        thread = ConfigureThread(self, self.api)
         thread.start()
+
+    def eventErrorMessage(self, message:str, exception):
+        print(message)
+        if isinstance(exception, (requests.exceptions.ConnectionError, requests.exceptions.Timeout)):
+            d = QMessageBox.critical(self, "Error", "Network Error")
+
+    def eventBoardCellChanged(self, index):
+        if not self.isLoading:
+            conf = self.__get_data(index)
+            amount = self.configureTable.item(index.row(), 2).text()
+            note = self.configureTable.item(index.row(), 3).text()
+            lprice = self.configureTable.item(index.row(), 4).text()
+            enabled = self.configureTable.item(index.row(), 1).checkState()
+            strategy = self.configureTable.cellWidget(index.row(), 5).currentText()
+
+            try:
+                conf['offerAmount'] = int(amount)
+                conf['lowestPrice'] = float(lprice)
+                conf['offerNote'] = note
+                conf['enabled'] = True if enabled else False
+                conf['strategyId'] = strategy
+                print(conf)
+                self.api.updateConfiguration([conf])
+            except TypeError:
+                QMessageBox.critical(self, "Error", "Input Error!")
+
+    def eventBoardComboboxCellChanged(self):
+        combo = self.sender()
+        row = combo.property("row")
+        class Index:
+            def row(self):
+                return row
+        self.eventBoardCellChanged(Index())
+
+    def eventFinish(self, finished):
+        self.isLoading = not finished
+        self.disabledInputWidgets(not finished)
 
     def fillTable(self, conf: dict):
         table = []
-        self.confData = conf
         for item in conf["data"]:
-            row = (item["productId"], item["productName"], item["offerNote"], item["lowestPrice"], item["enabled"])
+            row = (item["productId"], item["productName"],
+                   item["offerAmount"], item["offerNote"],
+                   item["lowestPrice"], item['strategyId'],
+                   item["enabled"])
             table.append(row)
-        table = sorted(table, key=lambda o: (o[2], float(o[3])))
+            self.confList.append(item)
+        table = sorted(table, key=lambda o: (o[3], float(o[4])))
         for item in table:
             self.appendRow(item)
 
@@ -123,5 +201,13 @@ class ConfigurePricingLogic(ConfigurePricing):
         pass
 
     def onClickedConfirmButton(self):
-        self.disabledInputWidgets(True)
-        self.disabledInputWidgets(False)
+        self.api.baseURL = self.getServerURL()
+
+    def __getCurrentIndex(self):
+        index = self.configureTable.selectionModel().currentIndex()
+        return index
+
+    def __get_data(self, index):
+        productId = self.configureTable.item(index.row(), 0).text()
+        conf = find(self.confList, key=lambda o: o['productId'] == productId)
+        return conf

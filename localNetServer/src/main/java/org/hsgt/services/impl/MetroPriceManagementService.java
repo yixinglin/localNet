@@ -40,15 +40,18 @@ public class MetroPriceManagementService implements PriceManagementService {
         return configureList;
     }
 
-    public void updateConfiguration(Configure conf) {
-        Offer offer = offerMapper.selectById(conf.getOffer());   // Offer from database
-        if (offer == null) {
-            Logger.loggerBuilder(getClass()).error("Offer is null! [updateConfiguratinon]");
-            throw new RuntimeException("Offer is null! [updateConfiguratinon]");
+    public void updateConfiguration(List<Configure> conf) {
+        for (Configure c: conf) {
+            Offer offer = offerMapper.selectById(c.getOffer());   // Offer from database
+            if (offer == null) {
+                Logger.loggerBuilder(getClass()).error("Offer is null! [updateConfiguratinon]");
+                // throw new RuntimeException("Offer is null! [updateConfiguratinon]");
+                continue;
+            }
+            // Update t_configure
+            configureMapper.updateById(c);
         }
 
-        // Update t_configure
-        configureMapper.updateById(conf);
     }
 
     public SuggestedPrice suggestPriceUpdate(String productId) {
@@ -57,13 +60,23 @@ public class MetroPriceManagementService implements PriceManagementService {
         Configure configure = new Configure();
         configure.setOffer(offer);
         configure = configureMapper.selectById(productId);
-        offer = configure.getOffer();
+        try {
+            offer = configure.getOffer();
+        } catch (NullPointerException e) {
+            throw new NullPointerException("No offer was found. " + productId);
+        }
 
         Strategy strategy = configure.getStrategy();
         List<Competitor> competitors = competitorMapper.findAllCompetitorByProductId(productId);
-        Competitor self = competitors.stream()
-                .filter(c -> c.getShopName().equals(this.api.accountName()))
-                .collect(Collectors.toList()).get(0);
+        Competitor self;
+        try {
+            self = competitors.stream()
+                    .filter(c -> c.getShopName().equals(this.api.accountName()))
+                    .collect(Collectors.toList()).get(0);
+        } catch (IndexOutOfBoundsException e) {
+            throw new IndexOutOfBoundsException("Your are not in the competitor list! " + offer.getId());
+        }
+
         List<Competitor> others = competitors.stream()
                 .filter(c -> !c.getShopName().equals(this.api.accountName()))
                 .collect(Collectors.toList());
@@ -71,6 +84,24 @@ public class MetroPriceManagementService implements PriceManagementService {
         // Compute the expected price to update by comparing my price with other sellers' prices.
         Competitor expected = strategy.execute(self, others, offer);
         SuggestedPrice suggestedPrice = SuggestedPrice.build(strategy, offer, self, expected);
+        float diff = 0;
+        if(others.size() > 0) {
+            Competitor top = others.get(0);
+            switch (strategy.getId()) {
+                case "UnitPriceStrategy":
+                    diff = top.getPrice2() - offer.getPrice();
+                    break;
+                case "TotalPriceStrategy":
+                    diff = (top.getPrice2() + top.getShippingGroup().getUnitCost()) - (offer.getPrice() + offer.getShippingGroup().getUnitCost());
+                    break;
+                default:
+                    diff = 0.01f;
+            }
+            if (!top.getShopName().equals(self.getShopName())) {
+                diff -= 0.01;
+            }
+        }
+        suggestedPrice.setDiff(diff);
         return suggestedPrice;
     }
 

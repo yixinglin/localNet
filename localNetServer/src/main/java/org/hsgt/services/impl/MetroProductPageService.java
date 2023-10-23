@@ -64,6 +64,8 @@ public class MetroProductPageService implements ProductPageService {
         int numSeller1 = competitors.size();
         assert numSeller1 == numSeller0: "Number of sellers acquired from API should be the same as from database";
         List<Competitor> self = competitors.stream().filter(c -> c.getShopName().equals(this.api.accountName())).collect(Collectors.toList());
+        if (self.size() == 0)
+            throw new RuntimeException("Your product is NOT in a competition!");
         productPage.setCompetitors(competitors);
         productPage.setSelf(self.get(0));
         return productPage;

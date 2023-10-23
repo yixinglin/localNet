@@ -1,9 +1,10 @@
 from utils import httprequests
 import json
+from PyQt5.QtCore import QObject
+class MetroPricing(QObject):
 
-class MetroPricing:
-
-    def __init__(self, baseURL):
+    def __init__(self, parent=None, baseURL=""):
+        super(MetroPricing, self).__init__(parent)
         self.baseURL = baseURL
 
     def fetchListConfiguration(self) -> dict:
@@ -29,4 +30,8 @@ class MetroPricing:
 
     def fetchShippingGroupById(self, id):
         resp = httprequests.get(f"{self.baseURL}/shipment/metro/groups/db-{id}")
+        return json.loads(resp.content)
+
+    def updateConfiguration(self, conf:list):
+        resp = httprequests.post(f"{self.baseURL}/pricing/metro/conf", json=conf)
         return json.loads(resp.content)

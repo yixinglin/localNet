@@ -58,7 +58,7 @@ public class MetroOfferController {
         ProductPage productPage = productPageService.queryById(productId);
         ControllerResponse resp = ControllerResponse.ok().setData(productPage);
         if(!Global.DEBUG) {
-            IoUtils.delay(1000, 6000);
+            IoUtils.delay(200, 1500);
         }
         return resp;
     }

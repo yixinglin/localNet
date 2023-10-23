@@ -16,8 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Api(tags = "Price Management" )
 @RestController
@@ -52,21 +52,20 @@ public class MetroPriceManagementController {
     @GetMapping("/conf")
     public ControllerResponse<List<ConfigureResponse>> getConfiguration() {
         List<Configure> configureList = priceManagementService.queryAllConfigurations();
-        List<ConfigureResponse> configureResponses = new ArrayList<>();
-        for (int i = 0; i < configureList.size(); i++) {
-            configureResponses.add(ConfigureResponse.build(configureList.get(i)));
-        }
+        List<ConfigureResponse> configureResponses = configureList.stream().map(o -> ConfigureResponse.build(o)).collect(Collectors.toList());
         ControllerResponse<List<ConfigureResponse>> resp = ControllerResponse.ok().setData(configureResponses);
         return resp;
     }
 
     @PostMapping("/conf")
-    public ControllerResponse updateConfiguration(@RequestBody ConfigureResponse payload) {
-        Configure conf = ConfigureResponse.build(payload);
+    public ControllerResponse updateConfiguration(@RequestBody List<ConfigureResponse> payload) {
+        List<Configure> conf = payload.stream().map(o -> ConfigureResponse.build(o)).collect(Collectors.toList());
         // Update t_configure
         priceManagementService.updateConfiguration(conf);
         // Update t_offer
-        offerService.updateLowestPriceAndNote(conf.getOffer());
+        for (Configure c: conf) {
+            offerService.updateLowestPriceAndNote(c.getOffer());
+        }
         ControllerResponse resp = ControllerResponse.ok();
         return resp;
     }

@@ -57,7 +57,8 @@ public class MetroOfferService implements OfferService {
             // Update offer to database
             this.offerToDataBase(o);
             o.setShippingGroup(null);
-            offers.add(o);
+            if (o.getQuantity() > 0)
+                offers.add(o);
         }
         Set idSet = offers.stream().map(o -> o.getId()).collect(Collectors.toSet());
         // Offer data from database

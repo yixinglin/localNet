@@ -43,6 +43,7 @@ class Ui_Dialog(object):
         self.unitPrice = QtWidgets.QDoubleSpinBox(Dialog)
         self.unitPrice.setGeometry(QtCore.QRect(150, 80, 111, 22))
         self.unitPrice.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.unitPrice.setMaximum(9999999.0)
         self.unitPrice.setSingleStep(0.02)
         self.unitPrice.setObjectName("unitPrice")
         self.shippingGroup = QtWidgets.QComboBox(Dialog)
