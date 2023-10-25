@@ -23,5 +23,6 @@ public class Offer implements Serializable {
     // @TableField(exist = false)
     private ShippingGroup shippingGroup;
     private String platform;
+    private Boolean active;
 
 }

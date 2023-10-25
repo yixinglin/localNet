@@ -5,6 +5,7 @@ import org.hsgt.api.SellerApi;
 import org.hsgt.config.Global;
 import org.hsgt.controllers.response.ConfigureResponse;
 import org.hsgt.controllers.response.ControllerResponse;
+import org.hsgt.controllers.response.NewOffer;
 import org.hsgt.controllers.response.SuggestedPrice;
 import org.hsgt.entities.pricing.Configure;
 import org.hsgt.entities.pricing.Offer;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +38,7 @@ public class MetroPriceManagementController {
     @Autowired
     CompetitorMapper competitorMapper;
 
+    private List<String> filterKeywords = Global.pricing_filterKeywords;
     private final SellerApi api;
     public MetroPriceManagementController() {
         api = Global.getMetroApiInstance();
@@ -52,8 +55,9 @@ public class MetroPriceManagementController {
     @GetMapping("/conf")
     public ControllerResponse<List<ConfigureResponse>> getConfiguration() {
         List<Configure> configureList = priceManagementService.queryAllConfigurations();
+        configureList = configureList.stream().filter(c -> !excluded(c)).collect(Collectors.toList());
         List<ConfigureResponse> configureResponses = configureList.stream().map(o -> ConfigureResponse.build(o)).collect(Collectors.toList());
-        ControllerResponse<List<ConfigureResponse>> resp = ControllerResponse.ok().setData(configureResponses);
+        ControllerResponse<List<ConfigureResponse>> resp = ControllerResponse.ok().setData(configureResponses).setLength(configureResponses.size());
         return resp;
     }
 
@@ -66,14 +70,19 @@ public class MetroPriceManagementController {
         for (Configure c: conf) {
             offerService.updateLowestPriceAndNote(c.getOffer());
         }
-        ControllerResponse resp = ControllerResponse.ok();
+        ControllerResponse resp = ControllerResponse.ok().setLength(conf.size());
         return resp;
     }
 
     @PostMapping("/edit")
-    public ControllerResponse pricing(@RequestBody Offer offer) {
-        Offer resp = priceManagementService.pricing(offer);
+    public ControllerResponse pricing(@RequestBody NewOffer newOffer, HttpServletRequest httpRequest) {
+        String ip = httpRequest != null? httpRequest.getRemoteAddr(): "127.0.0.1";
+        NewOffer resp = priceManagementService.pricing(newOffer, ip);
         ControllerResponse<Offer> cr = ControllerResponse.ok().setData(resp);
         return cr;
+    }
+
+    public boolean excluded(Configure configure) {
+        return filterKeywords.stream().filter(s -> configure.getOffer().getProductName().toLowerCase().contains(s)).findFirst().isPresent();
     }
 }

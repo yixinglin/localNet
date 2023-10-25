@@ -31,6 +31,4 @@ public class SuggestedPrice {
         return suggestedPrice;
     }
 
-//    public static SuggestedPrice fromStrategy(Strategy strategy) {
-//    }
 }

@@ -32,7 +32,7 @@ class ConfigurePricing(QDialog, Ui_Dialog, BaseUi):
         self.configureTable.setColumnWidth(2, 60)
         self.configureTable.setColumnWidth(3, 90)
         self.configureTable.setColumnWidth(4, 70)
-        self.configureTable.setColumnWidth(5, 100)
+        self.configureTable.setColumnWidth(5, 120)
 
     def appendRow(self, row: tuple):
         iRow = self.configureTable.rowCount()

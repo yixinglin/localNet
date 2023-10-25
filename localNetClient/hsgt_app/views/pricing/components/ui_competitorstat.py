@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'competitorstat.ui'
+# Form implementation generated from reading ui file '.\views\pricing\components\competitorstat.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.7
 #

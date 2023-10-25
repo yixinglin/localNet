@@ -19,14 +19,14 @@
     <insert id="insert">
         insert into t_offer
             (productId, price, lowestPrice, productName, note, quantity, manufacturer, platform,
-            amount, productKey, shippingGroupId, datetime) values
+            amount, productKey, shippingGroupId, datetime, active) values
             (#{id}, #{price}, #{lowestPrice}, #{productName}, #{note}, #{quantity}, #{manufacturer}, #{platform},
-            #{amount}, #{productKey}, #{shippingGroup.id}, NOW())
+            #{amount}, #{productKey}, #{shippingGroup.id}, NOW(), active)
     </insert>
 
     <update id="updateById" >
         update t_offer set productName=#{productName}, price=#{price}, quantity=#{quantity}, manufacturer=#{manufacturer},
-            productKey=#{productKey}, shippingGroupId=#{shippingGroup.id}, datetime=NOW() where productId=#{id}
+            productKey=#{productKey}, shippingGroupId=#{shippingGroup.id}, datetime=NOW(), active=#{active} where productId=#{id}
     </update>
 
     <update id="updateLowestPriceAndNote">
@@ -37,10 +37,9 @@
         delete from t_offer where productId=#{id}
     </delete>
 
-
     <insert id="insertUpdatedPricingLog" parameterType="org.hsgt.entities.pricing.UpdatedOffer">
         insert into t_updated_offer
         (datetime, ip, productId, price, quantity, shippingGroupId, note) values
-        (NOW(), #{ip}, #{offer.id}, #{offer.price}, #{offer.quantity}, #{offer.shippingGroup.id}, #{note})
+        (NOW(), #{ip}, #{offer.productId}, #{offer.price}, #{offer.quantity}, #{offer.shippingGroupId}, #{note})
     </insert>
 </mapper>

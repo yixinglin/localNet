@@ -3,7 +3,7 @@ package org.hsgt.strategy;
 import lombok.Data;
 import org.apache.commons.lang3.SerializationUtils;
 import org.hsgt.entities.pricing.Competitor;
-import org.hsgt.entities.pricing.Offer;
+import org.hsgt.entities.pricing.Configure;
 
 import java.util.Comparator;
 import java.util.List;
@@ -22,7 +22,8 @@ public class UnitPriceStrategy extends Strategy {
     }
 
     @Override
-    public Competitor execute(Competitor self, List<Competitor> others, Offer offer) {
+    public Competitor execute(Competitor self, List<Competitor> others, Configure configure) {
+        float lowestPrice = configure.getOffer().getLowestPrice();
         Competitor newCompetitor = SerializationUtils.clone(self);
         // You have no competitors.
         if (others.isEmpty()) {
@@ -46,7 +47,7 @@ public class UnitPriceStrategy extends Strategy {
         newCompetitor.setPrice1(competitor.getPrice1() - this.reduce);
         newCompetitor.setPrice2(competitor.getPrice2() - this.reduce);
 
-        if (!this.saftyValidation(newCompetitor, offer.getLowestPrice())) {
+        if (!this.saftyValidation(newCompetitor, lowestPrice)) {
             newCompetitor = null;
             return newCompetitor;
         }

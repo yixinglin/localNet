@@ -12,6 +12,7 @@ public class ControllerResponse<T> {
     int code;
     String message;
     T data;
+    int length;
 
     public ControllerResponse() {
     }
@@ -41,6 +42,11 @@ public class ControllerResponse<T> {
 
     public ControllerResponse setData(T data) {
         this.data = data;
+        return this;
+    }
+
+    public ControllerResponse setLength(int length) {
+        this.length = length;
         return this;
     }
 }

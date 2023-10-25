@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'configurepricing.ui'
+# Form implementation generated from reading ui file '.\views\pricing\components\configurepricing.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.7
 #
@@ -14,14 +14,14 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(850, 640)
+        Dialog.resize(912, 640)
         self.confirmBox = QtWidgets.QDialogButtonBox(Dialog)
-        self.confirmBox.setGeometry(QtCore.QRect(740, 20, 81, 91))
+        self.confirmBox.setGeometry(QtCore.QRect(800, 20, 81, 91))
         self.confirmBox.setOrientation(QtCore.Qt.Vertical)
         self.confirmBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.confirmBox.setObjectName("confirmBox")
         self.configureTable = QtWidgets.QTableWidget(Dialog)
-        self.configureTable.setGeometry(QtCore.QRect(15, 20, 641, 591))
+        self.configureTable.setGeometry(QtCore.QRect(15, 20, 701, 591))
         self.configureTable.setObjectName("configureTable")
         self.configureTable.setColumnCount(6)
         self.configureTable.setRowCount(0)
@@ -44,7 +44,7 @@ class Ui_Dialog(object):
         item.setTextAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignVCenter)
         self.configureTable.setHorizontalHeaderItem(5, item)
         self.layoutWidget = QtWidgets.QWidget(Dialog)
-        self.layoutWidget.setGeometry(QtCore.QRect(670, 110, 151, 175))
+        self.layoutWidget.setGeometry(QtCore.QRect(730, 110, 151, 175))
         self.layoutWidget.setObjectName("layoutWidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.layoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)

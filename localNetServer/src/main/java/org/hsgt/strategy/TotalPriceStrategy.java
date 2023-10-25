@@ -1,7 +1,8 @@
 package org.hsgt.strategy;
+
 import org.apache.commons.lang3.SerializationUtils;
 import org.hsgt.entities.pricing.Competitor;
-import org.hsgt.entities.pricing.Offer;
+import org.hsgt.entities.pricing.Configure;
 
 import java.util.Comparator;
 import java.util.List;
@@ -18,7 +19,8 @@ public class TotalPriceStrategy extends Strategy {
     }
 
     @Override
-    public Competitor execute(Competitor self, List<Competitor> others, Offer offer) {
+    public Competitor execute(Competitor self, List<Competitor> others, Configure configure) {
+        float lowestPrice = configure.getOffer().getLowestPrice();
         Competitor newCompetitor = SerializationUtils.clone(self);
         // You have no competitors.
         if (others.isEmpty()) {
@@ -46,12 +48,12 @@ public class TotalPriceStrategy extends Strategy {
         newCompetitor.setPrice2(newUnitPrice);
 
         // Validate the new price.
-        if (!this.saftyValidation(newCompetitor, offer.getLowestPrice())) {
+        if (!this.saftyValidation(newCompetitor, lowestPrice)) {
             newCompetitor = null;
             return newCompetitor;
         }
 
-        // Price reduction is too large, which are not safe.
+        // Large price reduction is seemed as an unsafe operation.
         if (self.getPrice2() - newCompetitor.getPrice2() > this.maxAdjust) {
             newCompetitor = null;
             this.setState(REJECTED_LARGE_ADJUST);

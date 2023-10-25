@@ -54,22 +54,33 @@ public class MetroOfferService implements OfferService {
         for (int i = 0; i < jOfferList.length(); i++) {
             // Convert JSON to Offer object
             Offer o = builder.offer(jOfferList.getJSONObject(i)).build();
+            o.setActive(true);
             // Update offer to database
             this.offerToDataBase(o);
             o.setShippingGroup(null);
             if (o.getQuantity() > 0)
                 offers.add(o);
         }
-        Set idSet = offers.stream().map(o -> o.getId()).collect(Collectors.toSet());
+        Set idSet = offers.stream().map(o -> o.getId()).collect(Collectors.toSet());  // A set of activated product ID
         // Offer data from database
-        List<Offer>  offersFromDB = this.offerMapper.selectList(null);
+        List<Offer>  offersFromDB0 = this.offerMapper.selectList(null);
         // Sort
-        offersFromDB = offersFromDB.stream()
-                .filter(o -> idSet.contains(o.getId()))
+        List<Offer> offersFromDB = offersFromDB0.stream()
+                .filter(o -> idSet.contains(o.getId())) // A set of product ID
                 .sorted(Comparator.comparing(Offer::getNote).thenComparing(Offer::getPrice))
                 .collect(Collectors.toList());
 
         assert offersFromDB.size() == offers.size(): "The size of acquired offers must be the same as acquired from API";
+
+        // Set deactivated offer
+        List<Offer> deactivatedOffer = offersFromDB0.stream().filter(o -> !idSet.contains(o.getId())).collect(Collectors.toList());
+        if (deactivatedOffer.size() > 0) {
+            for (Offer o: deactivatedOffer) {
+                o.setActive(false);
+                this.offerToDataBase(o);
+            }
+        }
+
         return offersFromDB;
     }
 

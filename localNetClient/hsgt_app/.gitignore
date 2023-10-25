@@ -11,6 +11,7 @@
 *.yaml
 
 views/pricing/components/example/*
+*.log
 
 
 

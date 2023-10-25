@@ -1,7 +1,8 @@
 package org.hsgt.strategy;
+
 import lombok.Data;
 import org.hsgt.entities.pricing.Competitor;
-import org.hsgt.entities.pricing.Offer;
+import org.hsgt.entities.pricing.Configure;
 
 import java.util.List;
 
@@ -30,7 +31,16 @@ public abstract class Strategy {
         this.reduce = reduce;
     }
 
-    public abstract Competitor execute(Competitor self, List<Competitor> competitorList, Offer offer);
+    /**
+     * @param self:
+     * @param competitorList:
+     * @param configure:
+     * @return Competitor
+     * @author Lin
+     * @description TODO Please fetching data from the target product page via API before performing this function!
+     * @date 25.Oct.2023 025 16:59
+     */
+    public abstract Competitor execute(Competitor self, List<Competitor> competitorList, Configure configure);
 
     public abstract List<Competitor> sort(List<Competitor> sellers);
     protected boolean saftyValidation(Competitor newCompetitor, float lowestPrice) {

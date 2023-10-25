@@ -5,6 +5,7 @@ from PyQt5.QtCore import Qt, QThread, QObject, pyqtSignal
 from PyQt5.QtWidgets import QDialog
 from jinja2 import Environment, FileSystemLoader
 from utils.general import findi, find
+from utils.log import *
 class NewOfferDialog(QDialog, Ui_Dialog):
 
     def __init__(self, parent=None):
@@ -24,7 +25,7 @@ class NewOfferDialog(QDialog, Ui_Dialog):
         groupName = find(self.groupNameMap.keys(), key=lambda k: self.groupNameMap[k][0] == shippingGroupId)
         i = self.shippingGroup.findText(groupName)
         if i != -1:
-            self.shippingGroup.setCurrentIndex(i)
+            self.shippingGroup.setCurrentText(groupName)
 
 
     def getOfferFromUserInput(self):
@@ -32,7 +33,7 @@ class NewOfferDialog(QDialog, Ui_Dialog):
         quantity = self.quantity.value()
         groupName = self.getShippingGroupName()
         groupId = self.groupNameMap[groupName][0]
-        return unitPrice, quantity, groupId
+        return (unitPrice, quantity, groupId)
 
     def setTextBrowser(self, html):
         self.textBrowser.setText(html)
@@ -60,7 +61,7 @@ class NewOfferDialog(QDialog, Ui_Dialog):
 
     @property
     def totalPrice(self):
-        unitPrice, _, _ = self.getOfferFromUserInput()
+        unitPrice = self.getUnitPrice()
         groupName = self.getShippingGroupName()
         return float(unitPrice) + self.groupNameMap[groupName][1]
 # ============= Logic =====================
@@ -104,8 +105,7 @@ class NewOfferDialogLogic(NewOfferDialog):
     def addShippingGroupItemsToComboBox(self, data):
         for sg in data['data']:
             self.addShippingGroupItem(sg['groupName'], sg['id'], sg['unitCost'])
-        self.renderTextBrowser()
-
+        # self.renderTextBrowser()
 
     def onClickButtonConfirm(self):
         unitPrice, quantity, groupId = self.getOfferFromUserInput()
@@ -115,11 +115,18 @@ class NewOfferDialogLogic(NewOfferDialog):
         if self.getShippingGroupName() != "":
             self.renderTextBrowser()
 
-    def onComboboxChanged(self):
+    def __getShippingGroupDetail(self):
         data = self.api.fetchShippingGroupById(self.getShippingGroupId())
         if data is not None:
             sg = data['data']
             self.groupNameMap[self.getShippingGroupName()] = (sg['id'], sg['unitCost'])
+        else:
+            log_stdout("Network error")
+        return self.groupNameMap[self.getShippingGroupName()]
+
+    def onComboboxChanged(self):
+        data = self.__getShippingGroupDetail()
+        print(self.getShippingGroupName(), self.getShippingGroupId(), self.totalPrice)
         self.renderTextBrowser()
 
     def renderTextBrowser(self):
@@ -129,3 +136,13 @@ class NewOfferDialogLogic(NewOfferDialog):
                                   profit=f"{self.profit: .2f}",
                                   total=f"{self.totalPrice: .2f}")
         self.setTextBrowser(content)
+
+    def exec_(self) -> tuple:
+        reply = super(NewOfferDialogLogic, self).exec_()
+        if reply == 1:
+            unitPrice, quantity, groupId = self.getOfferFromUserInput()
+            log_stdout(unitPrice, quantity, groupId)
+            log_info(f"New offer: {unitPrice} {quantity} {groupId}")
+            return (unitPrice, quantity, self.getShippingGroupName())
+        return None
+

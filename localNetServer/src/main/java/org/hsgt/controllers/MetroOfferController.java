@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import org.utils.IoUtils;
-
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +27,7 @@ public class MetroOfferController {
     @Autowired()
     private ProductPageService productPageService;
 
-    private List<String> filterKeywords = Arrays.asList("hansagt");
+    private List<String> filterKeywords = Global.pricing_filterKeywords;
 
     @ApiOperation(value = "Get offer data.", notes = "Get offer data from api. Data is up-to-date. " +
             "Note that the concrete shipping groups are just acquired from database. So they are not up-to-date.")
@@ -37,17 +35,12 @@ public class MetroOfferController {
     public ControllerResponse<List<Offer>> selectAll() {
         List<Offer> offers = offerService.queryById((List<String>) null);
         offers = offers.stream().filter(o -> !excluded(o)).collect(Collectors.toList());
-        ControllerResponse<List<Offer>> resp = ControllerResponse.ok().setData(offers);
+        ControllerResponse<List<Offer>> resp = ControllerResponse.ok().setData(offers).setLength(offers.size());
         return resp;
     }
 
-    public boolean excluded(Offer offer) {
-        for (String s: filterKeywords) {
-            if (offer.getProductName().toLowerCase().contains(s)) {
-                return true;
-            }
-        }
-        return false;
+    private boolean excluded(Offer offer) {
+        return filterKeywords.stream().filter(s -> offer.getProductName().toLowerCase().contains(s)).findFirst().isPresent();
     }
 
     // Insert or update Competitor and ShippingGroup to database. Data is up-to-date.
@@ -69,7 +62,7 @@ public class MetroOfferController {
     @PostMapping("/productpageList")
     public ControllerResponse<List<ProductPage>> productPageListFromDatabase(@RequestBody List<String> productIdList) {
         List<ProductPage> pages = productPageService.queryById(productIdList);
-        ControllerResponse response = ControllerResponse.ok().setData(pages);
+        ControllerResponse response = ControllerResponse.ok().setData(pages).setLength(pages.size());
         return response;
     }
 }
