@@ -1,4 +1,6 @@
 package org.hsgt.controllers;
+
+import io.jsonwebtoken.MalformedJwtException;
 import org.hsgt.controllers.response.ControllerResponse;
 import org.hsgt.entities.common.User;
 import org.hsgt.mappers.UserMapper;
@@ -42,17 +44,23 @@ public class VueElementAdminLoginController {
 
     @GetMapping("/info")
     public ControllerResponse userInfo(String token) {
-        ControllerResponse resp;
-        String username = JwtsUtils.verify(token).getSubject();
-        // User userinfo = userMapper.selectByToken(token);
-        User userinfo = userMapper.selectByName(username);
-        if (userinfo != null) {
-            resp = ControllerResponse.ok();
-            resp.setData(userinfo);
-        } else {
-            resp = new ControllerResponse(ControllerResponse.PW_INCORRECT,
-                    "Login failed, unable to get user details.", null) ;
+        ControllerResponse resp = new ControllerResponse(ControllerResponse.PW_INCORRECT,
+                "Login failed, unable to get user details.", token);
+        try {
+            if (token != null) {
+                User userinfo = null;
+                String username = JwtsUtils.verify(token).getSubject();
+                // User userinfo = userMapper.selectByToken(token);
+                userinfo = userMapper.selectByName(username);
+                if (userinfo != null) {
+                    resp = ControllerResponse.ok();
+                    resp.setData(userinfo);
+                }
+            }
+        } catch (MalformedJwtException e) {
+            e.printStackTrace();
         }
         return resp;
     }
+
 }

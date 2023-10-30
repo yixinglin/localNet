@@ -97,8 +97,10 @@ public class MetroMockSellerApi extends HttpRequest implements SellerApi {
     }
 
     @Override
-    public HttpResponse updateOfferById(Object payload, String id) {
-        return null;
+    public HttpResponse updateOfferById(Object payload, Object default_, boolean actualUpdate) {
+        logger.info(String.format("@@ MOCK: updateOfferById [%s]\n", payload.toString()));
+        HttpResponse httpResponse = new HttpResponse(200,  "Mock");
+        return httpResponse;
     }
 
     @Override

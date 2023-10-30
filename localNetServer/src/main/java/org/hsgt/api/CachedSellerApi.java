@@ -94,8 +94,8 @@ public class CachedSellerApi implements SellerApi {
     }
 
     @Override
-    public HttpResponse updateOfferById(Object payload, String id) {
-        return this.api.updateOfferById(payload, id);
+    public HttpResponse updateOfferById(Object payload, Object default_, boolean actualUpdate) {
+        return this.api.updateOfferById(payload, default_, actualUpdate);
     }
 
     @Override

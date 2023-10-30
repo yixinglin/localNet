@@ -2,7 +2,7 @@ package org.hsgt.services.impl;
 
 import org.hsgt.api.SellerApi;
 import org.hsgt.builders.metro.MetroProductPageBuilder;
-import org.hsgt.config.Global;
+import org.hsgt.config.MetroPricingConfig;
 import org.hsgt.entities.common.ProductPage;
 import org.hsgt.entities.pricing.Competitor;
 import org.hsgt.entities.pricing.Configure;
@@ -28,10 +28,10 @@ public class MetroProductPageService implements ProductPageService {
     @Autowired
     private ConfigureMapper configureMapper;
 
-    private SellerApi api;
+    @Autowired
+    private MetroPricingConfig pricingConfig;
 
     public MetroProductPageService() {
-        this.api = Global.getMetroApiInstance();
     }
 
     /*
@@ -44,12 +44,13 @@ public class MetroProductPageService implements ProductPageService {
      */
     @Override
     public ProductPage queryById(String id) {
+        SellerApi api = pricingConfig.getApiInstance();
         // Product page data from API to database
         Offer offer = this.offerMapper.selectById(id);
         Configure configure = this.configureMapper.selectById(id);
-        String s = this.api.selectProductPageById(offer.getProductKey()).getContent();
+        String s = api.selectProductPageById(offer.getProductKey()).getContent();
         JSONObject jPage = new JSONObject(s);
-        MetroProductPageBuilder builder = new MetroProductPageBuilder(this.api.accountName());
+        MetroProductPageBuilder builder = new MetroProductPageBuilder(api.accountName());
         ProductPage productPage = builder.pageInfo(jPage).sellers(jPage).build();
         int numSeller0 = productPage.getCompetitors().size();   // Number of sellers acquired from API
         int n = competitorMapper.deleteById(productPage.getCode());   // Delete sellers from database by product id.
@@ -63,7 +64,7 @@ public class MetroProductPageService implements ProductPageService {
         configure.getStrategy().sort(competitors);
         int numSeller1 = competitors.size();
         assert numSeller1 == numSeller0: "Number of sellers acquired from API should be the same as from database";
-        List<Competitor> self = competitors.stream().filter(c -> c.getShopName().equals(this.api.accountName())).collect(Collectors.toList());
+        List<Competitor> self = competitors.stream().filter(c -> c.getShopName().equals(api.accountName())).collect(Collectors.toList());
         if (self.size() == 0)
             throw new RuntimeException("Your product is NOT in a competition!");
         productPage.setCompetitors(competitors);

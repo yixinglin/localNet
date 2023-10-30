@@ -80,6 +80,8 @@ public abstract class HttpRequest {
             }
             String resp = stringBuffer.toString();
             logger.info(String.format("POST [%d]: %s", stateCode, url));
+            logger.info(String.format("Payload: [%s]", body));
+            logger.info(String.format("Response: [%s]", resp));
             httpResponse =  new HttpResponse(stateCode, resp);
         }
 

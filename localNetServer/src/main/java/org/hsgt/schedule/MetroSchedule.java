@@ -1,6 +1,6 @@
 package org.hsgt.schedule;
 
-import org.hsgt.config.Global;
+import org.hsgt.config.MetroPricingConfig;
 import org.hsgt.controllers.MetroOfferController;
 import org.hsgt.controllers.MetroPriceManagementController;
 import org.hsgt.controllers.response.NewOffer;
@@ -9,6 +9,8 @@ import org.hsgt.entities.common.ProductPage;
 import org.hsgt.entities.pricing.Competitor;
 import org.hsgt.entities.pricing.Offer;
 import org.hsgt.strategy.Strategy;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,27 +29,33 @@ public class MetroSchedule {
     MetroOfferController metroOfferController;
     @Autowired
     MetroPriceManagementController metroPriceManagementController;
+    @Autowired
+    MetroPricingConfig metroPricingConfig;
 
-    public boolean enable_metro_dynamic_pricing = Global.enable_metro_dynamic_pricing;
-    public final long dynamic_time_delay_sec = 60; // Global.dynamic_time_delay_sec;
+    // public boolean enable_metro_dynamic_pricing = Global.enable_metro_dynamic_pricing;
+    // public final long dynamic_time_delay_sec = metroPricingConfig.getDynamicTimeDelaySec(); // Global.dynamic_time_delay_sec;
     public int rounds = 1;
 
     public List<String> skipProductIds = new ArrayList<>();
 
-    @Scheduled(fixedDelay = dynamic_time_delay_sec *1000)  // Time delay in milliseconds
+    @Scheduled(fixedDelayString = "${pricing.metro.dynamic-task-delay-ms}")  // Time delay in milliseconds
     public void metroDynamicPricingTask() {
-        if (!this.enable_metro_dynamic_pricing )
+        boolean enableMetroDynamicPricing = metroPricingConfig.isEnableDynamicPricing();
+        boolean isMocked = metroPricingConfig.isMocked();
+        long httpDelay = metroPricingConfig.getDynamicHttpDelayMs();
+        if (!enableMetroDynamicPricing )
             return;
         System.out.printf("[%s][#%d] %s\n", IoUtils.currentDateTime(), rounds, "Metro Dynamic Pricing Task Started. ");
         try {
             // Obtain up-to-date offer
             List<Offer> activeListOffer = metroOfferController.selectAll().getData();
+            JSONArray currentOfferList = (new JSONObject(Cache.currentMetroOfferList)).getJSONArray("items");
             // Obtain up-to-date data from product page, and shipping groups will be updated.
             // The latest data will be stored in the local database.
             List<ProductPage> productListPage = new ArrayList<>();
             for (Offer o: activeListOffer) {
                 try {
-                    ProductPage p = null;
+                    ProductPage p;
                     if (this.skipProductIds.contains(o.getId())) {
                         System.out.println("Skip " + o.getId());
                         continue;
@@ -64,13 +72,14 @@ public class MetroSchedule {
                             p.getProductName());
                     productListPage.add(p);
                     System.out.println(pr);
-                    if(!Global.DEBUG) IoUtils.delay(1000, 9000);
+                    if(!isMocked) IoUtils.delay(httpDelay, httpDelay+8000);
                 } catch (Exception e) {
                     // Send  notification to email
                     e.printStackTrace();
                 }
             }
 
+            System.out.println("Pricing Preprocessing...");
             List<SuggestedPrice> sp0 = productListPage.stream()
                     .map(p -> metroPriceManagementController.suggestPriceToUpdate(p.getCode()).getData())
                     .collect(Collectors.toList());
@@ -90,7 +99,7 @@ public class MetroSchedule {
                         .filter(o -> o.getId().equals(suggested.getProductId())).findFirst().get();
                 offer.setPrice(suggested.getPrice());
                 NewOffer newOffer = NewOffer.from(offer);
-                metroPriceManagementController.pricing(newOffer, null);
+                metroPriceManagementController.pricing(newOffer, currentOfferList, null);
                 IoUtils.delay(200);
             }
 

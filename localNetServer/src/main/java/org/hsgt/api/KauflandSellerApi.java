@@ -60,7 +60,7 @@ public class KauflandSellerApi extends HttpRequest implements SellerApi {
     }
 
     @Override
-    public HttpResponse updateOfferById(Object payload, String id) {
+    public HttpResponse updateOfferById(Object payload, Object default_, boolean actualUpdate) {
         return null;
     }
 

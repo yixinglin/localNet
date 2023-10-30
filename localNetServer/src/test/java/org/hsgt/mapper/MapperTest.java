@@ -2,6 +2,7 @@ package org.hsgt.mapper;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.hsgt.controllers.response.NewOffer;
 import org.hsgt.entities.common.SystemConfigure;
 import org.hsgt.entities.pricing.Configure;
 import org.hsgt.entities.pricing.Offer;
@@ -58,7 +59,7 @@ public class MapperTest {
     public void testUpdatedOffer() {
         UpdatedOffer updatedOffer = new UpdatedOffer();
         Offer offer = offerMapper.selectById("AAA0000718012");
-        updatedOffer.setOffer(offer);
+        updatedOffer.setOffer(NewOffer.from(offer));
         updatedOffer.setIp("1.2.3.4");
         updatedOffer.setNote("Testing");
         offerMapper.insertUpdatedPricingLog(updatedOffer);

@@ -22,7 +22,12 @@ public interface SellerApi {
     public HttpResponse selectShippingGroupById(String id);
     public HttpResponse selectProductPageById(String id);
 
-    public HttpResponse updateOfferById(Object payload, String id);
+    /**
+     * @param payload: Payload of new offer in JSON
+     * @param default_: Default offer object in JSON.
+     * @param actualUpdate: Perform actual offer update.
+     */
+    public HttpResponse updateOfferById(Object payload, Object default_, boolean actualUpdate);
 
 
 

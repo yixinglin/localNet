@@ -2,7 +2,7 @@ package org.hsgt.services.impl;
 
 import org.hsgt.api.SellerApi;
 import org.hsgt.builders.metro.MetroOfferBuilder;
-import org.hsgt.config.Global;
+import org.hsgt.config.MetroPricingConfig;
 import org.hsgt.entities.common.ShippingGroup;
 import org.hsgt.entities.pricing.Configure;
 import org.hsgt.entities.pricing.Offer;
@@ -10,6 +10,7 @@ import org.hsgt.mappers.ConfigureMapper;
 import org.hsgt.mappers.OfferMapper;
 import org.hsgt.mappers.ShippingGroupMapper;
 import org.hsgt.mappers.SqlService;
+import org.hsgt.schedule.Cache;
 import org.hsgt.services.OfferService;
 import org.hsgt.strategy.TotalPriceStrategy;
 import org.json.JSONArray;
@@ -18,7 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.utils.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -31,10 +35,12 @@ public class MetroOfferService implements OfferService {
     private ShippingGroupMapper shippingGroupMapper;
     @Autowired
     private ConfigureMapper configureMapper;
-    private SellerApi api;
 
+    @Autowired
+    private MetroPricingConfig pricingConfig;
+
+    Logger logger = Logger.loggerBuilder(MetroOfferService.class);
     public MetroOfferService() {
-        this.api = Global.getMetroApiInstance();
     }
 
     /*
@@ -46,7 +52,10 @@ public class MetroOfferService implements OfferService {
      * @date 16.Aug.2023 016 01:58
      */
     public List<Offer> queryById(List<String> ids) {
-        String s = this.api.selectAllOffers().getContent();
+        SellerApi api = pricingConfig.getApiInstance();
+        String s = api.selectAllOffers().getContent();
+        Cache.currentMetroOfferList = s;
+        this.logger.info("@@ Saved [currentMetroOfferList] to Cache");
         MetroOfferBuilder builder = new MetroOfferBuilder();
         JSONArray jOfferList = new JSONObject(s).getJSONArray("items");
         List<Offer> offers =  new ArrayList<>();
@@ -114,9 +123,10 @@ public class MetroOfferService implements OfferService {
      * @date 16.Aug.2023 016 02:01
      */
     private void offerToDataBase(Offer offer) {
+        SellerApi api = pricingConfig.getApiInstance();
         // Insert to t_shippinggroup
         ShippingGroup sg = offer.getShippingGroup();
-        sg.setOwner(this.api.accountName());
+        sg.setOwner(api.accountName());
         SqlService.sqlInsertOrSkip(sg, shippingGroupMapper);
         // Update or insert to t_offer
         offer.setLowestPrice(offer.getPrice() * 0.8f);

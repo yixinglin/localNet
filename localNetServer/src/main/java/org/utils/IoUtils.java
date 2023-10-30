@@ -3,6 +3,7 @@ package org.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
 import java.io.*;
 import java.nio.file.Files;
@@ -37,12 +38,15 @@ public class IoUtils {
         return content;
     }
 
-    public static String readFile(InputStream in) throws IOException {
-        // return CharStreams.toString(new InputStreamReader(in, StandardCharsets.UTF_8));
-        byte[] bytes = new byte[in.available()];
-        in.read(bytes);
-        return new String(bytes);
+    public static String  readFile(File file) {
+        return readFile(file.toString());
     }
+//    public static String readFile(InputStream in) throws IOException {
+//        // return CharStreams.toString(new InputStreamReader(in, StandardCharsets.UTF_8));
+//        byte[] bytes = new byte[in.available()];
+//        in.read(bytes);
+//        return new String(bytes);
+//    }
 
     /**
      * @param fname: File name
@@ -58,6 +62,10 @@ public class IoUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void writeFile(File file, String text) {
+         writeFile(file.toString(), text);
     }
 
     public static void serialization(File file, Object object) throws IOException {
@@ -118,4 +126,7 @@ public class IoUtils {
         return IoUtils.delay(random_int);
     }
 
+    public static String getStackTrace(Exception e) {
+        return ExceptionUtils.getStackTrace(e);
+    }
 }

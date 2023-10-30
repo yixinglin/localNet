@@ -2,7 +2,7 @@ package org.hsgt.services.impl;
 
 import org.hsgt.api.SellerApi;
 import org.hsgt.builders.metro.MetroShippingGroupBuilder;
-import org.hsgt.config.Global;
+import org.hsgt.config.MetroPricingConfig;
 import org.hsgt.entities.common.ShippingGroup;
 import org.hsgt.mappers.ShippingGroupMapper;
 import org.hsgt.mappers.SqlService;
@@ -20,10 +20,11 @@ public class MetroShippingGroupService implements ShippingGroupService {
 
     @Autowired
     ShippingGroupMapper shippingGroupMapper;
-    private final SellerApi api;
+
+    @Autowired
+    private MetroPricingConfig pricingConfig;
 
     public MetroShippingGroupService()  {
-        this.api = Global.getMetroApiInstance();
     }
 
     /*
@@ -36,7 +37,8 @@ public class MetroShippingGroupService implements ShippingGroupService {
      */
     @Override
     public List<ShippingGroup> queryAll() {
-        String s = this.api.selectAllShippingGroups().getContent();
+        SellerApi api = pricingConfig.getApiInstance();
+        String s = api.selectAllShippingGroups().getContent();
         JSONArray jGroups = new JSONObject(s).getJSONArray("shippingGroups");
         List<ShippingGroup> shippingGroups = new ArrayList<>();
         ShippingGroup free = new ShippingGroup();
@@ -78,7 +80,8 @@ public class MetroShippingGroupService implements ShippingGroupService {
      */
     @Override
     public ShippingGroup queryById(String id) {
-        String s = this.api.selectShippingGroupById(id).getContent();
+        SellerApi api = pricingConfig.getApiInstance();
+        String s = api.selectShippingGroupById(id).getContent();
         MetroShippingGroupBuilder builder = new MetroShippingGroupBuilder();
         ShippingGroup shippingGroup = builder.web(new JSONObject(s)).build();
         shippingGroup.setOwner(api.accountName());

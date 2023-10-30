@@ -2,7 +2,7 @@ package org.hsgt.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.hsgt.config.Global;
+import org.hsgt.config.MetroPricingConfig;
 import org.hsgt.controllers.response.ControllerResponse;
 import org.hsgt.entities.common.ProductPage;
 import org.hsgt.entities.pricing.Offer;
@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import org.utils.IoUtils;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,8 +27,9 @@ public class MetroOfferController {
     @Qualifier("metroProductPageService")
     @Autowired()
     private ProductPageService productPageService;
-
-    private List<String> filterKeywords = Global.pricing_filterKeywords;
+    @Autowired
+    private MetroPricingConfig metroPricingConfig;
+    // private List<String> filterKeywords = Global.pricing_filterKeywords;
 
     @ApiOperation(value = "Get offer data.", notes = "Get offer data from api. Data is up-to-date. " +
             "Note that the concrete shipping groups are just acquired from database. So they are not up-to-date.")
@@ -40,6 +42,7 @@ public class MetroOfferController {
     }
 
     private boolean excluded(Offer offer) {
+        List<String> filterKeywords = metroPricingConfig.getFilterKeywords();
         return filterKeywords.stream().filter(s -> offer.getProductName().toLowerCase().contains(s)).findFirst().isPresent();
     }
 
@@ -48,9 +51,10 @@ public class MetroOfferController {
             "the latest shipping group details are updated to the database.")
     @GetMapping("/productpage")
     public ControllerResponse<ProductPage> productPage(String productId) {
+        boolean isMocked = metroPricingConfig.isMocked();
         ProductPage productPage = productPageService.queryById(productId);
         ControllerResponse resp = ControllerResponse.ok().setData(productPage);
-        if(!Global.DEBUG) {
+        if(!isMocked) {
             IoUtils.delay(200, 1500);
         }
         return resp;

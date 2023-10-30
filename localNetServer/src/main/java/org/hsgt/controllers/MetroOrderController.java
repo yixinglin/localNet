@@ -1,18 +1,21 @@
 package org.hsgt.controllers;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import org.hsgt.api.SellerApi;
 import org.hsgt.builders.metro.MetroInvoiceBuilder;
-import org.hsgt.config.Global;
+import org.hsgt.config.MetroPricingConfig;
 import org.hsgt.controllers.response.InvoiceResponse;
 import org.hsgt.entities.orders.Invoice;
 import org.hsgt.utils.InvoiceMaker;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.utils.DocUtils;
 import org.utils.IoUtils;
+
 import java.io.IOException;
 import java.nio.file.Paths;
 
@@ -23,8 +26,11 @@ public class MetroOrderController {
 
     private SellerApi api;
 
+    @Autowired
+    private MetroPricingConfig pricingConfig;
+
     public MetroOrderController() {
-        this.api = Global.getMetroApiInstance();
+        // this.api = pricingConfig.getApi();
     }
 
     @GetMapping("/invoice")

@@ -1,25 +1,24 @@
 package org.hsgt.api;
 
 import org.hsgt.config.AccountConfig;
+import org.hsgt.controllers.response.NewOffer;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.net.HttpResponse;
 import org.utils.IoUtils;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-class MetroSellerApiTest  {
+class MetroSellerApiTest {
 
     SellerApi api;
+    SellerApi mockedApi;
     public MetroSellerApiTest() {
         String s = IoUtils.readFile("../data/config.json");
         JSONObject conf = new JSONObject(s);
         ApiKey apiKey = AccountConfig.generateApiKey(AccountConfig.METRO_KEY);
-        api = SellerApiFactory.createSellerApi(SellerApi.METRO, apiKey, true);
+        api = SellerApiFactory.createSellerApi(SellerApi.METRO, apiKey, false);
+        mockedApi = SellerApiFactory.createSellerApi(SellerApi.METRO_MOCKED, apiKey, false);
     }
-//    @Test
-//    void testSelectAllOrders() {
-//    }
 
     @Test
     void testSelectOrders() {
@@ -67,5 +66,15 @@ class MetroSellerApiTest  {
 
     @Test
     void testUpdateOfferById() {
+        String s = this.mockedApi.selectAllOffers().getContent();
+        JSONArray offerList = new JSONObject(s).getJSONArray("items");
+        NewOffer newOffer = new NewOffer();
+        newOffer.setProductId("AAA0001037072");
+        newOffer.setPrice(4.97f);
+        newOffer.setQuantity(44);
+        newOffer.setShippingGroupId("0");
+
+        this.api.updateOfferById(newOffer, offerList, false);
     }
+
 }
