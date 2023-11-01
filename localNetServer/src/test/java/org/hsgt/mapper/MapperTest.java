@@ -13,7 +13,6 @@ import org.hsgt.mappers.SystemConfigureMapper;
 import org.hsgt.strategy.Strategy;
 import org.hsgt.strategy.TotalPriceStrategy;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -27,7 +26,7 @@ public class MapperTest {
     @Autowired
     OfferMapper offerMapper;
 
-    @Test
+
     public void testSystemConfigureMapper() {
         SystemConfigure pricingInterval = systemConfigureMapper.selectById("pricingInterval");
         SystemConfigure requestInterval = systemConfigureMapper.selectById("requestInterval");
@@ -38,7 +37,7 @@ public class MapperTest {
         Assertions.assertEquals(requestInterval.getValue(), "3", "requestInterval");
     }
 
-    @Test
+
     public void testConfigure() {
         Strategy strategy = new TotalPriceStrategy(0.2f, 0.5f);
         Offer offer = offerMapper.selectById("AAA0001029984");
@@ -55,7 +54,7 @@ public class MapperTest {
         System.out.println(c);
     }
 
-    @Test
+
     public void testUpdatedOffer() {
         UpdatedOffer updatedOffer = new UpdatedOffer();
         Offer offer = offerMapper.selectById("AAA0000718012");

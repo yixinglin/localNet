@@ -1,4 +1,5 @@
 package org.hsgt.utils;
+
 import com.deepoove.poi.XWPFTemplate;
 import com.deepoove.poi.config.Configure;
 import com.deepoove.poi.plugin.table.LoopRowTableRenderPolicy;
@@ -10,7 +11,6 @@ import org.utils.IoUtils;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -31,7 +31,7 @@ public class InvoiceMaker {
     // private final Invoice invoice;
     private Map invoiceReplaceMap;
     private String tempDirectory = "src/main/resources/hsgt/.cache";  // Directory for temporal files.
-    private String templateDocFile = "src/main/resources/hsgt/template_b2c_de.docx";  // 模板文件
+    private String templateDocFile = "../data/template_b2c_de.docx";  // 模板文件
     private String targetPdfDirectory = "src/main/resources/hsgt/.cache";  // Directory for PDF output;
     private Path outputPdfPath;
     private Path outputDocxPath;

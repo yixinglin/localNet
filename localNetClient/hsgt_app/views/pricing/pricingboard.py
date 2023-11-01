@@ -13,7 +13,10 @@ from utils.exceptions import *
 from utils.general import *
 import traceback
 from views.pricing.components.edititemdialog import EditItemDialogLogic
+
 # pyuic5 pricingboard.ui -o ui_pricingboard.py
+
+DEBUG = True
 
 class PricingBoard(QFrame, Ui_Form, BaseUi):
 
@@ -36,7 +39,7 @@ class PricingBoard(QFrame, Ui_Form, BaseUi):
         self.pricingBoard.setRowCount(iRow + 1)
         self.updateRow(iRow, row, **kwargs)
 
-    def updateRow(self, iRow, row:tuple, **kwargs):
+    def updateRow(self, iRow, row: tuple, **kwargs):
         cellNo1 = self.createCell(self.pricingBoard, iRow, 0, row[0], **kwargs)  # No. 1
         cellNo1.setTextAlignment(Qt.AlignLeft)
         cell = self.createCell(self.pricingBoard, iRow, 1, row[1], **kwargs)  # Rank
@@ -45,9 +48,11 @@ class PricingBoard(QFrame, Ui_Form, BaseUi):
         cell.setTextAlignment(Qt.AlignRight)
         cell = self.createCell(self.pricingBoard, iRow, 3, f"{row[3]: .2f}", readOnly=False, **kwargs)  # LowestPrice
         cell.setTextAlignment(Qt.AlignRight)
-        cell = self.createCell(self.pricingBoard, iRow, 4, float2str2(row[4], flag=True), readOnly=True, **kwargs)  # Reduce
+        cell = self.createCell(self.pricingBoard, iRow, 4, float2str2(row[4], flag=True), readOnly=True,
+                               **kwargs)  # Reduce
         cell.setTextAlignment(Qt.AlignRight)
-        cell = self.createCell(self.pricingBoard, iRow, 5, float2str2(row[5], flag=True), readOnly=True, **kwargs)  # Profit
+        cell = self.createCell(self.pricingBoard, iRow, 5, float2str2(row[5], flag=True), readOnly=True,
+                               **kwargs)  # Profit
         cell.setTextAlignment(Qt.AlignRight)
         cell = self.createCell(self.pricingBoard, iRow, 6, row[6], readOnly=True, **kwargs)  # Status
         cell.setTextAlignment(Qt.AlignLeft)
@@ -84,12 +89,12 @@ class PricingBoard(QFrame, Ui_Form, BaseUi):
         self.detailBrowser.setPlainText(s)
         self.detailBrowser.verticalScrollBar().setValue(mx)
 
-
     def disabledInputWidgets(self, disabled=True):
         self.startButton.setDisabled(disabled)
         self.pricingBoard.setDisabled(disabled)
         # self.refreshButton.setDisabled(disabled)
         # self.editButton.setDisabled(disabled)
+
 
 # ================ Logic ====================
 
@@ -98,6 +103,7 @@ class Communication(QObject):
     sg_productPage = pyqtSignal(dict, str, name="productPage")
     sg_finished = pyqtSignal(bool, name="finished")
     sg_errormessage = pyqtSignal(str, Exception, name="errormessage")
+
 
 class BasePricingThread(QThread):
 
@@ -123,23 +129,23 @@ class FetchPricingDataThread(BasePricingThread):
                     pid = o['id']
                     ic = findi(listConf, lambda o: pid == o['productId'])
                     if self.target_index is None and listConf[ic]['enabled']:
-                        self.__fetchItem(o, listConf[ic], f"{i+1}/{len(offer['data'])}")
+                        self.__fetchItem(o, listConf[ic], f"{i + 1}/{len(offer['data'])}")
                         cnt += 1
                     elif self.target_index == i:
-                        self.__fetchItem(o, listConf[ic], f"{i+1}/{len(offer['data'])}")
+                        self.__fetchItem(o, listConf[ic], f"{i + 1}/{len(offer['data'])}")
                     else:
                         pass
                 except Exception:
                     log_stdout(traceback.format_exc())
                     log_error(traceback.format_exc())
-                # if cnt >= 10:
-                #     break
+                if DEBUG and cnt >= 10:
+                    break
         except Exception as e:
             self.parent.communication.sg_errormessage.emit(traceback.format_exc(), e)
         finally:
             self.parent.communication.sg_finished.emit(True)
 
-    def __fetchItem(self, offer, conf, progress:str):
+    def __fetchItem(self, offer, conf, progress: str):
         pid = offer['id']
         product = offer['productName']
         log_stdout(f"Fetch {pid}: {product}")
@@ -149,7 +155,7 @@ class FetchPricingDataThread(BasePricingThread):
 
 
 class PricingBoardLogic(PricingBoard):
-    StatusDict = {0: "通过", 1: "满足", 2: "亏损", 3: "风险", 4: "无效", 5: "无竞争", 6: "调幅过大",}
+    StatusDict = {0: "通过", 1: "满足", 2: "亏损", 3: "风险", 4: "无效", 5: "无竞争", 6: "调幅过大", }
 
     def __init__(self, parent=None, api=None, **kwargs):
         super(PricingBoardLogic, self).__init__(parent)
@@ -191,7 +197,7 @@ class PricingBoardLogic(PricingBoard):
         self.isLoading = False
         self.selectedRowIndex = 0
 
-    def initPricingBoardPhase1(self, offers:dict, listConf:list):
+    def initPricingBoardPhase1(self, offers: dict, listConf: list):
         table = []
         for offer in offers['data']:
             profit = offer['price'] - offer['lowestPrice']
@@ -237,7 +243,7 @@ class PricingBoardLogic(PricingBoard):
         iRow = findi(self.pricingBoardData, lambda o: o[-1]['id'] == offer['id'])
         self.updateRow(iRow, item, bgcolor=bgcolor)
         i = findi(self.pricingBoardData, key=lambda o: o[-1]['id'] == offer['id'])
-        self.pricingBoardMoreData[i] = data # .append(data)
+        self.pricingBoardMoreData[i] = data  # .append(data)
         # self.pricingBoard.verticalScrollBar().setSliderPosition(i-10)
         pass
 
@@ -303,7 +309,7 @@ class PricingBoardLogic(PricingBoard):
             try:
                 row = self.__get_data(index)
                 if row:
-                    offer, productPage, conf, suggest  = row
+                    offer, productPage, conf, suggest = row
                     conf['lowestPrice'] = float(self.pricingBoard.item(index.row(), 3).text())
                     # conf['enabled'] = True if self.pricingBoard.item(index.row(), 7).checkState() else False
                     log_stdout(conf)
@@ -329,7 +335,6 @@ class PricingBoardLogic(PricingBoard):
             offer, productPage, conf, suggest = row
             webbrowser.open(suggest['url'], new=0, autoraise=True)
 
-
     def onClickStartButton(self):
         reply = QMessageBox.question(self, "Tips", "Start fetching data?")
         if reply == QMessageBox.Yes:
@@ -348,9 +353,9 @@ class PricingBoardLogic(PricingBoard):
             offer, productPage, conf, suggest = self.__get_data(index)
             self.pricingDialog.setProductName(offer["productName"])
             self.pricingDialog.setLowestPrice(offer['lowestPrice'])
-
+            self.pricingDialog.setProductId(offer['id'])
             if index.column() == 4:
-                self.pricingDialog.setNewOffer(offer['price']+suggest['diff'],
+                self.pricingDialog.setNewOffer(offer['price'] + suggest['diff'],
                                                offer['quantity'], offer['shippingGroup']['id'])
             else:
                 self.pricingDialog.setNewOffer(offer['price'], offer['quantity'], offer['shippingGroup']['id'])
@@ -378,12 +383,11 @@ class PricingBoardLogic(PricingBoard):
             for i, c in enumerate(productPage["competitors"]):
                 total = c['price2'] + c['shippingGroup']['unitCost']
                 self.statDialog.appendRow((c['shopName'], c['label'], c['price2'],
-                                total, c['shippingGroup']['unitCost'],
-                                c['shippingGroup']['extraUnitCost'], c['quantity']))
+                                           total, c['shippingGroup']['unitCost'],
+                                           c['shippingGroup']['extraUnitCost'], c['quantity']))
         except (IndexError, TypeError) as e:
             log_stdout(traceback.format_exc())
             log_error(traceback.format_exc())
-
 
     def __getCurrentIndex(self):
         index = self.pricingBoard.selectionModel().currentIndex()
@@ -400,6 +404,7 @@ class PricingBoardLogic(PricingBoard):
         except NoRowSelectedError:
             QMessageBox.critical(self, "Error", "Please select a row.")
         except TypeError:
-            reply = QMessageBox.question(self, "Error", "Fail: Please refresh the selected product.")
+            reply = QMessageBox.question(self, "Error",
+                                         "Fail: Please refresh the selected product.")
             if reply == QMessageBox.Yes:
                 self.onClickRefreshButton()

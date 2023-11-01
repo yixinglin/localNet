@@ -21,3 +21,10 @@ Link: http://localhost:8088/swagger-ui.html#/
 3. Note
 4. Amount
 5. Enable or Disable
+
+### Run
+```shell
+java -jar springboot.jar --spring.profiles.active=dev 
+java -jar springboot.jar --spring.profiles.active=test
+java -jar springboot.jar --spring.profiles.active=prod
+```

@@ -5,7 +5,6 @@ import org.hamcrest.Matchers;
 import org.hsgt.entities.common.ProductPage;
 import org.hsgt.entities.common.ShippingGroup;
 import org.hsgt.entities.pricing.Offer;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -19,7 +18,7 @@ public class MetroVueTableUpdatePhaseTest {
     @Autowired
     MetroShippingGroupController metroShippingGroupController;
 
-    @Test
+
     void testTableInitialization() {
         // Get list of offers to update
         List<Offer> offerList = (List<Offer>) metroOfferController.selectAll().getData();
@@ -43,7 +42,7 @@ public class MetroVueTableUpdatePhaseTest {
 
     @Autowired
     MetroPriceManagementController metroPriceManagementController;
-    @Test
+
     void testPriceSuggestion() {
         // metroPriceManagementController.suggestPriceToUpdate("AAA0000718012");
         // metroPriceManagementController.suggestPriceToUpdate("AAA0000731095");

@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import org.net.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.utils.JwtsUtils;
 import org.utils.Logger;
 
 import java.util.List;
@@ -123,7 +124,7 @@ public class MetroPriceManagementService implements PriceManagementService {
     @Override
     public NewOffer pricing(NewOffer newOffer, JSONArray offerList, String ip) {
         boolean allowActualPricing = pricingConfig.isAllowActualPricing();
-        boolean isMocked = pricingConfig.isMocked();
+        boolean isAllowActualPricing = pricingConfig.isAllowActualPricing();
         SellerApi api = pricingConfig.getApiInstance();
         String shippingGroupId = newOffer.getShippingGroupId();
 
@@ -148,10 +149,17 @@ public class MetroPriceManagementService implements PriceManagementService {
         UpdatedOffer updatedOffer = new UpdatedOffer();
         updatedOffer.setIp(ip);
         updatedOffer.setOffer(newOffer);
-        if (isMocked)
-            updatedOffer.setNote("Staging");
+        String username;
+        try {
+            username = JwtsUtils.verify(newOffer.getToken()).getSubject();
+            updatedOffer.setUsername(username);
+        } catch (Exception e) {
+            updatedOffer.setUsername(ip);
+        }
+        if (isAllowActualPricing)
+            updatedOffer.setNote("Actual");
         else
-            updatedOffer.setNote("Production");
+            updatedOffer.setNote("Virtual");
         offerMapper.insertUpdatedPricingLog(updatedOffer);
         return newOffer;
     }

@@ -13,4 +13,5 @@ public class UpdatedOffer implements Serializable {
     private String datetime;
     private NewOffer offer;
     private String note;
+    private String username;
 }

@@ -39,7 +39,7 @@
 
     <insert id="insertUpdatedPricingLog" parameterType="org.hsgt.entities.pricing.UpdatedOffer">
         insert into t_updated_offer
-        (datetime, ip, productId, price, quantity, shippingGroupId, note) values
-        (NOW(), #{ip}, #{offer.productId}, #{offer.price}, #{offer.quantity}, #{offer.shippingGroupId}, #{note})
+        (datetime, ip, productId, price, quantity, shippingGroupId, note, username) values
+        (NOW(), #{ip}, #{offer.productId}, #{offer.price}, #{offer.quantity}, #{offer.shippingGroupId}, #{note}, #{username})
     </insert>
 </mapper>

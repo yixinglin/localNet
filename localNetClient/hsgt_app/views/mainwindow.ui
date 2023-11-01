@@ -41,6 +41,7 @@
     </widget>
     <addaction name="menuPricing"/>
     <addaction name="menuEmail"/>
+    <addaction name="actionlogin"/>
    </widget>
    <addaction name="menuEdit"/>
   </widget>
@@ -53,6 +54,11 @@
   <action name="actionBulk">
    <property name="text">
     <string>Bulk</string>
+   </property>
+  </action>
+  <action name="actionlogin">
+   <property name="text">
+    <string>login</string>
    </property>
   </action>
  </widget>

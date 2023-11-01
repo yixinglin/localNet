@@ -95,6 +95,7 @@ public class MetroPriceManagementController {
         if (ans instanceof User) {
             user = (User) ans;
         }
+
         if (user == null) {
             throw new RuntimeException("Rejected new offer. " + ip + newOffer.toString());
         }

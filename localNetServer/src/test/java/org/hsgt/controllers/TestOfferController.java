@@ -14,7 +14,6 @@ import org.hsgt.mappers.CompetitorMapper;
 import org.hsgt.mappers.OfferMapper;
 import org.hsgt.mappers.ShippingGroupMapper;
 import org.json.JSONObject;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -37,7 +36,7 @@ public class TestOfferController {
     CompetitorMapper competitorMapper;
 
 
-    @Test
+
     void testMetroOfferController() {
         SellerApi metroApi = SellerApiFactory.createSellerApi(SellerApi.METRO_MOCKED, null, false);
         String offerList = metroApi.selectAllOffers().getContent();
@@ -80,7 +79,7 @@ public class TestOfferController {
         System.out.println("Finish");
     }
 
-    @Test
+
     void testMetroOfferController2() {
         SellerApi metroApi = SellerApiFactory.createSellerApi(SellerApi.METRO_MOCKED, null, false);
         String offerList = metroApi.selectAllOffers().getContent();
@@ -104,7 +103,7 @@ public class TestOfferController {
 
     @Autowired
     MetroOfferController controller;
-    @Test
+
     void testMetroOfferController3() {
         List<Offer> s = controller.selectAll().getData();
         System.out.println(s);

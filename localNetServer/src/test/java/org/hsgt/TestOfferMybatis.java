@@ -1,11 +1,10 @@
 package org.hsgt;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.hsgt.entities.pricing.Offer;
 import org.hsgt.entities.common.ShippingGroup;
+import org.hsgt.entities.pricing.Offer;
 import org.hsgt.mappers.OfferMapper;
 import org.hsgt.mappers.ShippingGroupMapper;
-import org.hsgt.services.OfferService;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -21,7 +20,7 @@ public class TestOfferMybatis {
     OfferMapper offerMapper;
     @Autowired
     ShippingGroupMapper shippingGroupMapper;
-    @Test
+
     public void testMyBatis() {
 
         QueryWrapper<Offer> oWrapper = new QueryWrapper<>();

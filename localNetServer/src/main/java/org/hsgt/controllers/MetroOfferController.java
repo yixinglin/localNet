@@ -36,7 +36,7 @@ public class MetroOfferController {
     @GetMapping("/selectAll")
     public ControllerResponse<List<Offer>> selectAll() {
         List<Offer> offers = offerService.queryById((List<String>) null);
-        offers = offers.stream().filter(o -> !excluded(o)).collect(Collectors.toList());
+        offers = offers.stream().filter(o -> !excluded(o)).collect(Collectors.toList()); // Exclude offers with the given keywords
         ControllerResponse<List<Offer>> resp = ControllerResponse.ok().setData(offers).setLength(offers.size());
         return resp;
     }

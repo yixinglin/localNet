@@ -6,8 +6,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.net.HttpResponse;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.utils.IoUtils;
 
+@SpringBootTest
 class MetroSellerApiTest {
 
     SellerApi api;
@@ -16,7 +18,7 @@ class MetroSellerApiTest {
         String s = IoUtils.readFile("../data/config.json");
         JSONObject conf = new JSONObject(s);
         ApiKey apiKey = AccountConfig.generateApiKey(AccountConfig.METRO_KEY);
-        api = SellerApiFactory.createSellerApi(SellerApi.METRO, apiKey, false);
+        api = SellerApiFactory.createSellerApi(SellerApi.METRO_MOCKED, apiKey, false);
         mockedApi = SellerApiFactory.createSellerApi(SellerApi.METRO_MOCKED, apiKey, false);
     }
 
@@ -73,6 +75,7 @@ class MetroSellerApiTest {
         newOffer.setPrice(4.97f);
         newOffer.setQuantity(44);
         newOffer.setShippingGroupId("0");
+        // String a = getClass().getClassLoader().getResource("hsgt").getPath();
 
         this.api.updateOfferById(newOffer, offerList, false);
     }

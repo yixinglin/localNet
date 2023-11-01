@@ -13,6 +13,7 @@ public abstract class PricingConfig {
     private boolean enableDynamicPricing;
     private long dynamicTaskDelayMs;
     private long dynamicHttpDelayMs;
+    private long dynamicHttpDelayMax;
     private List<String> filterKeywords;
     private String note;
     private SellerApi api;

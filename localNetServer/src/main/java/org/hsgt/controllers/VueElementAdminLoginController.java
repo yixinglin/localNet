@@ -1,5 +1,6 @@
 package org.hsgt.controllers;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import org.hsgt.controllers.response.ControllerResponse;
 import org.hsgt.entities.common.User;
@@ -7,6 +8,7 @@ import org.hsgt.mappers.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.utils.JwtsUtils;
+import org.utils.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +19,7 @@ public class VueElementAdminLoginController {
 
     @Autowired
     UserMapper userMapper;
+    Logger logger = Logger.loggerBuilder(VueElementAdminLoginController.class);
     @PostMapping("/login")
     public ControllerResponse login(@RequestBody User user) {
         ControllerResponse resp;
@@ -57,8 +60,8 @@ public class VueElementAdminLoginController {
                     resp.setData(userinfo);
                 }
             }
-        } catch (MalformedJwtException e) {
-            e.printStackTrace();
+        } catch (MalformedJwtException | IllegalArgumentException | ExpiredJwtException e) {
+            logger.error(e.toString());
         }
         return resp;
     }

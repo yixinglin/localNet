@@ -35,10 +35,13 @@ class Ui_MainWindow(object):
         self.actionSettings.setObjectName("actionSettings")
         self.actionBulk = QtWidgets.QAction(MainWindow)
         self.actionBulk.setObjectName("actionBulk")
+        self.actionlogin = QtWidgets.QAction(MainWindow)
+        self.actionlogin.setObjectName("actionlogin")
         self.menuPricing.addAction(self.actionSettings)
         self.menuEmail.addAction(self.actionBulk)
         self.menuEdit.addAction(self.menuPricing.menuAction())
         self.menuEdit.addAction(self.menuEmail.menuAction())
+        self.menuEdit.addAction(self.actionlogin)
         self.menubar.addAction(self.menuEdit.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -52,3 +55,4 @@ class Ui_MainWindow(object):
         self.menuEmail.setTitle(_translate("MainWindow", "Email"))
         self.actionSettings.setText(_translate("MainWindow", "Settings"))
         self.actionBulk.setText(_translate("MainWindow", "Bulk"))
+        self.actionlogin.setText(_translate("MainWindow", "login"))

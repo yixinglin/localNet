@@ -48,7 +48,12 @@ public class MetroShippingGroupController {
         List<String> sgs = new ArrayList<>();
         sgs.add(id);
         ShippingGroup shippingGroup = shippingGroupService.queryById(sgs).get(0);
-        ControllerResponse<ShippingGroup> resp = ControllerResponse.ok().setData(shippingGroup);
+        ControllerResponse<ShippingGroup> resp;
+        if (shippingGroup == null) {
+            resp = ControllerResponse.err(new RuntimeException("ShippingGroup does not exist in the database."));
+        } else {
+            resp = ControllerResponse.ok().setData(shippingGroup);
+        }
         return resp;
     }
 

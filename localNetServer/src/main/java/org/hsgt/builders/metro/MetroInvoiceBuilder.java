@@ -17,7 +17,7 @@ public class MetroInvoiceBuilder {
     private final float generalTaxRate = 0.19f;
 
     public MetroInvoiceBuilder() {
-        String s = IoUtils.readFile("src/main/resources/hsgt/accountSettings.json");
+        String s = IoUtils.readFile("../data/accountSettings.json");
         this.accountSettings = new JSONObject(s);
         this.invoice = new Invoice();
         this.loadSellerInfo();

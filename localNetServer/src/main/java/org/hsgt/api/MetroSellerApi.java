@@ -10,7 +10,6 @@ import org.net.HttpResponse;
 import org.utils.IoUtils;
 import org.utils.Logger;
 
-import java.io.File;
 import java.util.*;
 
 
@@ -162,8 +161,8 @@ public class MetroSellerApi extends HttpRequest implements SellerApi {
      * @return JSONObject
      */
     private JSONObject getPostBodyForOfferUpdate(JSONObject offer)   {
-        String path = getClass().getClassLoader().getResource("hsgt/templatePostBodyOfferUpdate-Metro.json").getFile();
-        String s = IoUtils.readFile(new File(path));
+        // String path = getClass().getClassLoader().getResource("res/templatePostBodyOfferUpdate-Metro.json").getFile();
+        String s = IoUtils.readFile("res/templatePostBodyOfferUpdate-Metro.json");
         JSONObject template = new JSONObject(s);
 
         for (String key: template.keySet()) {

@@ -1,11 +1,15 @@
 import time
-
+import traceback
 from views.pricing.components.ui_newofferdialog import Ui_Dialog
 from PyQt5.QtCore import Qt, QThread, QObject, pyqtSignal
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialog, QMessageBox
 from jinja2 import Environment, FileSystemLoader
 from utils.general import findi, find
 from utils.log import *
+import utils.glo as glo
+from utils.exceptions import AuthenticationError
+from components.logindialog import LoginDialogLogic
+
 class NewOfferDialog(QDialog, Ui_Dialog):
 
     def __init__(self, parent=None):
@@ -14,10 +18,14 @@ class NewOfferDialog(QDialog, Ui_Dialog):
         self.setWindowTitle("Create New Offer")
         self.groupNameMap = {}  # GroupName: (GroupId, unitCost)
         self.lowestPrice = -1
+        self.productId = ""
 
     def addShippingGroupItem(self, groupName, groupId, unitCost):
         self.groupNameMap[groupName] = (groupId, unitCost)
         self.shippingGroup.addItem(groupName)
+
+    def setProductId(self, productId):
+        self.productId = productId
 
     def setNewOffer(self, price, quantity, shippingGroupId):
         self.unitPrice.setValue(price)
@@ -27,9 +35,8 @@ class NewOfferDialog(QDialog, Ui_Dialog):
         if i != -1:
             self.shippingGroup.setCurrentText(groupName)
 
-
     def getOfferFromUserInput(self):
-        unitPrice = self.unitPrice.text()
+        unitPrice = self.unitPrice.value()
         quantity = self.quantity.value()
         groupName = self.getShippingGroupName()
         groupId = self.groupNameMap[groupName][0]
@@ -109,7 +116,23 @@ class NewOfferDialogLogic(NewOfferDialog):
 
     def onClickButtonConfirm(self):
         unitPrice, quantity, groupId = self.getOfferFromUserInput()
-        print(unitPrice, quantity, groupId)
+        token = glo.getValue("token")
+        print("|".join((self.productId,
+                        str(unitPrice), str(quantity),
+                        groupId, token)))
+        payload = dict(productId=self.productId, price=unitPrice,
+                       quantity=quantity, shippingGroupId=groupId,
+                       token=token)
+        try:
+            self.api.postNewOffer(payload)
+            QMessageBox.information(self, "Info", "New offer has been updated.")
+        except AuthenticationError as e:
+            QMessageBox.critical(self, "Error", "Please login.")
+            log_stdout(e)
+            log_error(e)
+            dialog = LoginDialogLogic(self, self.api)
+            dialog.exec_()
+        pass
 
     def onChangedUnitPrice(self):
         if self.getShippingGroupName() != "":
@@ -118,8 +141,9 @@ class NewOfferDialogLogic(NewOfferDialog):
     def __getShippingGroupDetail(self):
         data = self.api.fetchShippingGroupById(self.getShippingGroupId())
         if data is not None:
-            sg = data['data']
-            self.groupNameMap[self.getShippingGroupName()] = (sg['id'], sg['unitCost'])
+            if data['code'] == 20000:
+                sg = data['data']
+                self.groupNameMap[self.getShippingGroupName()] = (sg['id'], sg['unitCost'])
         else:
             log_stdout("Network error")
         return self.groupNameMap[self.getShippingGroupName()]
@@ -134,7 +158,8 @@ class NewOfferDialogLogic(NewOfferDialog):
         template = env.get_template("assets/newofferdetails.html")
         content = template.render(lprice= f"{self.lowestPrice: .2f}",
                                   profit=f"{self.profit: .2f}",
-                                  total=f"{self.totalPrice: .2f}")
+                                  total=f"{self.totalPrice: .2f}",
+                                  productId=self.productId)
         self.setTextBrowser(content)
 
     def exec_(self) -> tuple:
