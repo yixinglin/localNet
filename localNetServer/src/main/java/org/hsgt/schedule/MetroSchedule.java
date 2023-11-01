@@ -1,15 +1,18 @@
 package org.hsgt.schedule;
 
+import org.hsgt.config.AccountConfig;
 import org.hsgt.config.MetroPricingConfig;
 import org.hsgt.controllers.MetroOfferController;
 import org.hsgt.controllers.MetroPriceManagementController;
 import org.hsgt.controllers.response.ConfigureResponse;
 import org.hsgt.controllers.response.NewOffer;
 import org.hsgt.controllers.response.SuggestedPrice;
+import org.hsgt.entities.common.Email;
 import org.hsgt.entities.common.ProductPage;
 import org.hsgt.entities.pricing.Competitor;
 import org.hsgt.entities.pricing.Offer;
 import org.hsgt.strategy.Strategy;
+import org.hsgt.utils.EmailClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +21,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.utils.IoUtils;
 import org.utils.Logger;
-
+import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,16 +32,13 @@ import java.util.stream.Collectors;
 @Component
 @EnableScheduling
 public class MetroSchedule {
-
     @Autowired
     MetroOfferController metroOfferController;
     @Autowired
     MetroPriceManagementController metroPriceManagementController;
     @Autowired
     MetroPricingConfig metroPricingConfig;
-
     public int rounds = 1;
-
     public List<String> skipProductIds = new ArrayList<>();
     Logger logger = Logger.loggerBuilder(MetroSchedule.class);
 
@@ -86,10 +88,9 @@ public class MetroSchedule {
                     if(!isMocked) IoUtils.delay(httpDelay, httpDelay+httpDelayMax);
                 } catch (Exception e) {
                     // Send  notification to email
-                    e.printStackTrace();
+                    this.notification("Fail to parse product page.", IoUtils.getStackTrace(e));
                 }
             }
-
             System.out.println("Pricing Preprocessing...");
             List<SuggestedPrice> sp0 = productListPage.stream()
                     .map(p -> metroPriceManagementController.suggestPriceToUpdate(p.getCode()).getData())
@@ -114,14 +115,33 @@ public class MetroSchedule {
                 metroPriceManagementController.pricing(newOffer, currentOfferList, null);
                 IoUtils.delay(200);
             }
-
-        } catch (AssertionError e) {
-            e.printStackTrace();
+        } catch (IndexOutOfBoundsException | NullPointerException e) {
+            notification("Fail to parse product page.", IoUtils.getStackTrace(e));
         } finally {
             rounds += 1;
             System.out.println("Metro Dynamic Pricing Task Finished.");
         }
+    }
 
+    public void notification(String title, String message)  {
+        if (this.metroPricingConfig.isEnableEmailNotification()) {
+            JSONObject config = AccountConfig.getConfigInstance();
+            JSONObject notification = config.getJSONObject("notification");
+            JSONObject outgoing = notification.getJSONObject("outgoing");
+            String receiver = notification.getJSONObject("receiver").getJSONArray("emails").getString(0);
+            Email sender = (Email) IoUtils.jsonToObject(outgoing, Email.class);
+            sender.setSubject(title);
+            sender.setBody(message);
+            EmailClient client = new EmailClient(sender);
+            client.applySmtpSession();
+            try {
+                client.send(InternetAddress.parse(receiver));
+            } catch (UnsupportedEncodingException | MessagingException e) {
+                this.logger.error("Failed to send email. " + message);
+            }
+        } else {
+            this.logger.error("Failed to send email. " + message);
+        }
     }
 
     @Scheduled(fixedDelay = 2* 3600 *1000)  // Time delay in milliseconds

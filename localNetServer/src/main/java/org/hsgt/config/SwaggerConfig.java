@@ -27,9 +27,9 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("HSGT RESTFUL API")
-                .description("HSGT project to manage orders and offers")
+                .description("HSGT project for order and offer management")
                 .termsOfServiceUrl("")
-                .version("1.0")
+                .version("1.0.0")
                 .build();
     }
 

@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import org.utils.IoUtils;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +24,7 @@ public class MetroOfferController {
     @Autowired
     private OfferService offerService;
     @Qualifier("metroProductPageService")
-    @Autowired()
+    @Autowired
     private ProductPageService productPageService;
     @Autowired
     private MetroPricingConfig metroPricingConfig;

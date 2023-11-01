@@ -14,6 +14,7 @@ public abstract class PricingConfig {
     private long dynamicTaskDelayMs;
     private long dynamicHttpDelayMs;
     private long dynamicHttpDelayMax;
+    private boolean enableEmailNotification;
     private List<String> filterKeywords;
     private String note;
     private SellerApi api;

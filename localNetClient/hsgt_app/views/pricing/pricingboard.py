@@ -341,10 +341,11 @@ class PricingBoardLogic(PricingBoard):
             self.reset()
             self.fetchPricingData()
 
-    def closeEvent(self, a0) -> None:
-        log_stdout("closePricingBoardWidget")
+    def destroy(self, destroyWindow: bool = ..., destroySubWindows: bool = ...) -> None:
+        super(PricingBoardLogic, self).destroy()
         if self.statDialog is not None:
             self.statDialog.destroy()
+            self.statDialog = None
 
     def __showNewOfferDialog(self, index):
         try:

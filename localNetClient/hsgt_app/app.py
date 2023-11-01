@@ -24,6 +24,7 @@ def testPricingBoard(path):
     w = MainWindow(parent=None, conf_path=path)
     w.show()
     sys.exit(app.exec())
+    pass
 
 def testSellerBoard(api):
     app = QApplication(sys.argv)

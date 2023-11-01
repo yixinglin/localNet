@@ -76,7 +76,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             ans = QMessageBox.critical(self, "Uncaught Errors", s)
 
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+        super(MainWindow, self).closeEvent(a0)
         save_app_settings(self.conf_path, self.settings)
+        self.mainpricingboard.destroy()
+
 
 
 

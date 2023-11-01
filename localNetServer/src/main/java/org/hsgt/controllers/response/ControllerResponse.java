@@ -45,6 +45,11 @@ public class ControllerResponse<T> {
         return this;
     }
 
+    public ControllerResponse setMessage(String message) {
+        this.message = message;
+        return  this;
+    }
+
     public ControllerResponse setLength(int length) {
         this.length = length;
         return this;

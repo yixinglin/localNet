@@ -2,15 +2,18 @@ package org.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 
 public class IoUtils {
 
@@ -95,13 +98,23 @@ public class IoUtils {
         return datetime;
     }
 
-    public static JSONObject beanToJson(Object bean)  {
+    public static JSONObject objectToJson(Object bean)  {
         if (bean == null) {
             return null;
         } else {
             // String s = new Gson().toJson(bean);
             String s = new GsonBuilder().serializeNulls().create().toJson(bean);
             return new JSONObject(s);
+        }
+    }
+
+    public static Object jsonToObject(JSONObject json, Class clazz) {
+        if (json == null) {
+            return null;
+        } else {
+            Gson g = new Gson();
+            Object obj = g.fromJson(json.toString(), clazz);
+            return obj;
         }
     }
 
@@ -128,5 +141,16 @@ public class IoUtils {
 
     public static String getStackTrace(Exception e) {
         return ExceptionUtils.getStackTrace(e);
+    }
+
+    public static String base64UrlEncode(String src) {
+        String dest = Base64.getUrlEncoder().encodeToString(src.getBytes());
+        return dest;
+    }
+
+    public static String base64UrlDecode(String src) {
+        byte[] b = Base64.getUrlDecoder().decode(src);
+        String dest = new String(b);
+        return dest;
     }
 }
