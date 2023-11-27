@@ -3,7 +3,7 @@
 Java8, Spring Boot, MySQL, MyBatis.
 
 ## Swagger
-Link: http://localhost:8088/swagger-ui.html#/
+Link: http://localhost:7188/swagger-ui.html#/
 
 ## Procedures
 ### Query data
@@ -27,4 +27,8 @@ Link: http://localhost:8088/swagger-ui.html#/
 java -jar springboot.jar --spring.profiles.active=dev 
 java -jar springboot.jar --spring.profiles.active=test
 java -jar springboot.jar --spring.profiles.active=prod
+```
+Install mysql via Docker
+```shell
+docker run -p 7306:3306 --name mysql-yx  -e MYSQL_ROOT_PASSWORD=123456 -d mysql/mysql-server:8.0.31
 ```

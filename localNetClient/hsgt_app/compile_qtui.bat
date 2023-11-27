@@ -16,6 +16,4 @@ pyuic5 -o %DIR%\ui_configurepricing.py %DIR%\configurepricing.ui
 pyuic5 -o %DIR%\ui_edititemdialog.py %DIR%\edititemdialog.ui
 pyuic5 -o %DIR%\ui_newofferdialog.py %DIR%\newofferdialog.ui
 
-
-
 pause

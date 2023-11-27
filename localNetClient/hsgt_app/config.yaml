@@ -1,11 +1,11 @@
 channel:
   metro:
-    shopname: HansaGT Medical
+    shopname: My ShopName
 server:
   host:
     options:
-    - http://192.168.4.140:8088
-    - http://excample:8089
+    - http://example:8089
     selected: 0
-  password: hsgt@123
-  username: yx.lin
+  username: admin
+  password: 123456
+

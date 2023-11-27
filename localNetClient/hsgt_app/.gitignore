@@ -12,8 +12,12 @@
 
 views/pricing/components/example/*
 *.log
+config-*.yaml
 
+build
 
+upload_app.bat
 
+*.spec
 
-
+/auto-py-to-exe.json

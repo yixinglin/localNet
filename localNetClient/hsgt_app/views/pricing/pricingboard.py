@@ -138,8 +138,8 @@ class FetchPricingDataThread(BasePricingThread):
                 except Exception:
                     log_stdout(traceback.format_exc())
                     log_error(traceback.format_exc())
-                if DEBUG and cnt >= 10:
-                    break
+                # if DEBUG and cnt >= 10:
+                #     break
         except Exception as e:
             self.parent.communication.sg_errormessage.emit(traceback.format_exc(), e)
         finally:

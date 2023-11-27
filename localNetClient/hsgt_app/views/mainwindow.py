@@ -22,6 +22,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.loadConfigFile()
         self.setupUi(self)
         self.setupPricingUi()
+        self.setFixedSize(self.width(), self.height())
         self.setupMenu()
         self.excepthook_ = sys.excepthook
         sys.excepthook = self.uncaught_exceptions
