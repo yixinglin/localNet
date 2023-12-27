@@ -1,0 +1,23 @@
+{
+  "shipperId": "",
+  "references": [""],
+  "addresses": {
+    "delivery": {
+      "name1": "Name 1",
+      "name2": "Name 2",
+      "name3": "Name 3",
+      "street1": "Street Name",
+      "country": "DE",
+      "zipCode": "10100",
+      "city": "Berlin",
+      "email": "test@example.de",
+      "phone": "01234567"
+    }
+  },
+  "parcels": [
+    {
+      "weight": 1.0,
+      "comment": "Note"
+    }
+  ]
+}

@@ -3,7 +3,7 @@ package org.utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.hsgt.entities.common.User;
+import org.hsgt.core.domain.User;
 
 import java.util.Date;
 

@@ -1,14 +1,15 @@
 package org.hsgt.utils;
 
 
-import org.hsgt.config.AccountConfig;
-import org.hsgt.entities.common.BulkEmailContact;
-import org.hsgt.entities.common.Email;
-import org.hsgt.services.impl.BulkEmailService;
+import org.hsgt.core.config.AccountConfig;
+import org.hsgt.pricing.domain.BulkEmailContact;
+import org.hsgt.core.domain.Email;
+import org.hsgt.pricing.services.impl.BulkEmailService;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.utils.EmailClient;
 import org.utils.IoUtils;
 
 import javax.mail.MessagingException;

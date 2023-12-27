@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.hsgt.pricing.mapper.ConfigureMapper">
+
+    <resultMap id="configureMap" type="org.hsgt.pricing.domain.pricing.Configure">
+        <id column="productId"></id>
+        <result column="enabled" property="enabled"></result>
+        <association property="offer" column="productId" javaType="org.hsgt.pricing.domain.Offer"
+        select="org.hsgt.pricing.mapper.OfferMapper.selectById" ></association>
+        <discriminator javaType="string" column="strategy">
+            <case value="TotalPriceStrategy">
+                <association property="strategy" javaType="org.hsgt.pricing.strategy.TotalPriceStrategy">
+                    <result column="reduce" property="reduce"></result>
+                    <result column="maxAdjust" property="maxAdjust"></result>
+                </association>
+            </case>
+            <case value="UnitPriceStrategy">
+                <association property="strategy" javaType="org.hsgt.pricing.strategy.UnitPriceStrategy">
+                    <result column="reduce" property="reduce"></result>
+                    <result column="maxAdjust" property="maxAdjust"></result>
+                </association>
+            </case>
+        </discriminator>
+    </resultMap>
+
+    <select id="selectList" resultMap="configureMap">
+        select * from t_configure
+    </select>
+
+    <select id="selectById" resultMap="configureMap" parameterType="String">
+        select * from t_configure where productId=#{id}
+    </select>
+
+    <insert id="insert">
+        insert into t_configure (productId, enabled, strategy, maxAdjust, reduce)
+        values (#{offer.id}, #{enabled}, #{strategy.id}, #{strategy.maxAdjust}, #{strategy.reduce})
+    </insert>
+
+    <update id="updateById" parameterType="org.hsgt.pricing.domain.pricing.Configure">
+        update t_configure set enabled=#{enabled}, maxAdjust=#{strategy.maxAdjust}, reduce=#{strategy.reduce}, strategy=#{strategy.id}
+            where productId=#{offer.id}
+    </update>
+
+    <delete id="deleteById>">
+        delete from t_configure where productId=#{id}
+    </delete>
+
+</mapper>

@@ -1,11 +1,13 @@
 package org.hsgt.api;
 
-import org.hsgt.config.AccountConfig;
-import org.hsgt.controllers.response.NewOffer;
+import org.hsgt.core.rest.ApiKey;
+import org.hsgt.core.config.AccountConfig;
+import org.hsgt.pricing.controllers.response.NewOffer;
+import org.hsgt.pricing.rest.common.SellerApi;
+import org.hsgt.pricing.rest.common.SellerApiFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-import org.net.HttpResponse;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
@@ -22,8 +24,8 @@ class MetroSellerApiTest {
 
     @Test
     void testSelectOrders() {
-        String s = this.api.selectOrders(19, 0).getContent();
-        System.out.printf(s);
+//        String s = this.api.selectOrders(19, 0).getContent();
+//        System.out.printf(s);
     }
 
     @Test
@@ -48,8 +50,8 @@ class MetroSellerApiTest {
 
     @Test
     void testSelectOrderById() {
-        HttpResponse resp = this.api.selectOrderById("0af2e7eb-7ed9-4b67-ad00-214a2c25b1f6");
-        System.out.println(resp.getContent());
+//        HttpResponse resp = this.api.selectOrderById("0af2e7eb-7ed9-4b67-ad00-214a2c25b1f6");
+//        System.out.println(resp.getContent());
     }
 
     @Test

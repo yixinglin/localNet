@@ -2,9 +2,12 @@ package org.hsgt.controllers;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.hsgt.entities.common.ProductPage;
-import org.hsgt.entities.common.ShippingGroup;
-import org.hsgt.entities.pricing.Offer;
+import org.hsgt.pricing.controllers.MetroOfferController;
+import org.hsgt.pricing.controllers.MetroPriceManagementController;
+import org.hsgt.pricing.controllers.MetroShippingGroupController;
+import org.hsgt.pricing.domain.ProductPage;
+import org.hsgt.pricing.domain.ShippingGroup;
+import org.hsgt.pricing.domain.Offer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hsgt.pricing.mapper.ShippingGroupMapper">
+
+    <resultMap id="shippingGroupMap" type="org.hsgt.pricing.domain.ShippingGroup">
+        <id column="id" property="id"></id>
+        <result column="name" property="groupName"></result>
+    </resultMap>
+
+    <select id="selectById" resultMap="shippingGroupMap">
+        select * from t_shippinggroup where id=#{id}
+    </select>
+
+    <select id="selectList" resultMap="shippingGroupMap">
+        select * from t_shippinggroup
+    </select>
+
+    <insert id="insert">
+        insert into t_shippinggroup
+        (id, name, unitCost, extraUnitCost, maxShippingCost,
+        freeFrom, minTransportDays, maxTransportDays, destCountry, platform, owner) values
+        (#{id}, #{groupName}, #{unitCost}, #{extraUnitCost}, #{maxShippingCost},
+        #{freeFrom}, #{minTransportDays}, #{maxTransportDays}, #{destCountry}, #{platform}, #{owner})
+    </insert>
+
+    <update id="updateById">
+        update t_shippinggroup set name=#{groupName}, unitCost=#{unitCost}, extraUnitCost=#{extraUnitCost},
+        maxShippingCost=#{maxShippingCost},freeFrom=#{freeFrom},minTransportDays=#{minTransportDays},
+        maxTransportDays=#{maxTransportDays},destCountry=#{destCountry}, owner=#{owner}, platform=#{platform} where id=#{id}
+    </update>
+
+</mapper>

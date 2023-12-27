@@ -1,10 +1,10 @@
 package org.hsgt;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.hsgt.entities.common.ShippingGroup;
-import org.hsgt.entities.pricing.Offer;
-import org.hsgt.mappers.OfferMapper;
-import org.hsgt.mappers.ShippingGroupMapper;
+import org.hsgt.pricing.domain.ShippingGroup;
+import org.hsgt.pricing.domain.Offer;
+import org.hsgt.pricing.mapper.OfferMapper;
+import org.hsgt.pricing.mapper.ShippingGroupMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
