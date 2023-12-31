@@ -1,10 +1,12 @@
 package org.hsgt.api;
 
-import org.hsgt.core.rest.ApiKey;
 import org.hsgt.core.config.AccountConfig;
+import org.hsgt.core.config.e.ApiKeyType;
+import org.hsgt.core.rest.ApiKey;
 import org.hsgt.pricing.controllers.response.NewOffer;
 import org.hsgt.pricing.rest.common.SellerApi;
-import org.hsgt.pricing.rest.common.SellerApiFactory;
+import org.hsgt.pricing.rest.metro.MetroMockSellerApi;
+import org.hsgt.pricing.rest.metro.MetroSellerApi;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -17,9 +19,11 @@ class MetroSellerApiTest {
     SellerApi mockedApi;
     public MetroSellerApiTest() {
         JSONObject conf = AccountConfig.getConfigInstance();
-        ApiKey apiKey = AccountConfig.generateApiKey(AccountConfig.METRO_KEY);
-        api = SellerApiFactory.createSellerApi(SellerApi.METRO_MOCKED, apiKey, false);
-        mockedApi = SellerApiFactory.createSellerApi(SellerApi.METRO_MOCKED, apiKey, false);
+        ApiKey apiKey = AccountConfig.generateApiKey(ApiKeyType.METRO_KEY);
+        // api = SellerApiFactory.createSellerApi(ChannelType.METRO_MOCKED, apiKey, false);
+        api = new MetroSellerApi(apiKey);
+        // mockedApi = SellerApiFactory.createSellerApi(ChannelType.METRO_MOCKED, apiKey, false);
+        mockedApi = new MetroMockSellerApi(apiKey);
     }
 
     @Test

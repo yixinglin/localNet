@@ -4,10 +4,16 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import org.json.JSONObject;
 
+import java.util.List;
+
 public class JSON {
     DocumentContext context;
     public JSON(String rawJsonData) {
         context = JsonPath.parse(rawJsonData);
+    }
+
+    public JSON(JSONObject json) {
+        context = JsonPath.parse(json.toString());
     }
 
     public JSON set(String jsonPath, Object value) {
@@ -17,6 +23,11 @@ public class JSON {
 
     public String read(String jsonPath) {
         String field = context.read(JsonPath.compile(jsonPath));
+        return field;
+    }
+
+    public List readArray(String jsonPath) {
+        List<Object> field = context.read(JsonPath.compile(jsonPath));
         return field;
     }
 

@@ -2,18 +2,18 @@ package org.hsgt.controllers;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.hsgt.pricing.controllers.MetroOfferController;
-import org.hsgt.pricing.rest.common.SellerApi;
-import org.hsgt.pricing.rest.common.SellerApiFactory;
-import org.hsgt.pricing.rest.builders.metro.MetroOfferBuilder;
-import org.hsgt.pricing.rest.builders.metro.MetroProductPageBuilder;
-import org.hsgt.pricing.rest.builders.metro.MetroShippingGroupBuilder;
+import org.hsgt.pricing.domain.Offer;
 import org.hsgt.pricing.domain.ProductPage;
 import org.hsgt.pricing.domain.ShippingGroup;
 import org.hsgt.pricing.domain.pricing.Competitor;
-import org.hsgt.pricing.domain.Offer;
 import org.hsgt.pricing.mapper.CompetitorMapper;
 import org.hsgt.pricing.mapper.OfferMapper;
 import org.hsgt.pricing.mapper.ShippingGroupMapper;
+import org.hsgt.pricing.rest.builders.metro.MetroOfferBuilder;
+import org.hsgt.pricing.rest.builders.metro.MetroProductPageBuilder;
+import org.hsgt.pricing.rest.builders.metro.MetroShippingGroupBuilder;
+import org.hsgt.pricing.rest.common.SellerApi;
+import org.hsgt.pricing.rest.metro.MetroMockSellerApi;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,7 +39,8 @@ public class TestOfferController {
 
 
     void testMetroOfferController() {
-        SellerApi metroApi = SellerApiFactory.createSellerApi(SellerApi.METRO_MOCKED, null, false);
+        // SellerApi metroApi = SellerApiFactory.createSellerApi(ChannelType.METRO_MOCKED, null, false);
+        SellerApi metroApi = new MetroMockSellerApi(null);
         String offerList = metroApi.selectAllOffers().getContent();
         String shippingGroupList = metroApi.selectAllShippingGroups().getContent();
         String productPage =  metroApi.selectProductPageById("5e284310-3551-40ba-981b-bb65161981e5").getContent();
@@ -82,7 +83,8 @@ public class TestOfferController {
 
 
     void testMetroOfferController2() {
-        SellerApi metroApi = SellerApiFactory.createSellerApi(SellerApi.METRO_MOCKED, null, false);
+        // SellerApi metroApi = SellerApiFactory.createSellerApi(ChannelType.METRO_MOCKED, null, false);
+        SellerApi metroApi = new MetroMockSellerApi(null);
         String offerList = metroApi.selectAllOffers().getContent();
         String shippingGroupList = metroApi.selectAllShippingGroups().getContent();
         Offer mOffer1, mOffer2;

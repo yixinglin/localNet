@@ -181,4 +181,9 @@ public class MetroSellerApi extends ExternalRestAPIMetro implements SellerApi {
         return resp;
     }
 
+    @Override
+    public String accountName() {
+        return this.getAccount_name();
+    }
+
 }

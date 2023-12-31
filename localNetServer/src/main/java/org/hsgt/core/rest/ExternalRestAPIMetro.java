@@ -2,21 +2,19 @@ package org.hsgt.core.rest;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.hash.Hashing;
-import org.net.HttpRequest;
 import org.utils.Logger;
 
 import java.util.*;
 
-public class ExternalRestAPIMetro extends HttpRequest {
+public class ExternalRestAPIMetro extends ExternalRestAPI {
 
     protected Logger logger = Logger.loggerBuilder(ExternalRestAPIMetro.class);
+    String id;
     String secret_key;
     String client_key;
     String account_name;
     public ExternalRestAPIMetro(ApiKey apiKey) {
-        this.secret_key = apiKey.getSecretKey();
-        this.client_key = apiKey.getClientKey();
-        this.account_name = apiKey.getAccountName();
+        super(apiKey);
     }
 
      private String signRequest(String method, String uri, String body, long timestamp)  {
@@ -35,11 +33,6 @@ public class ExternalRestAPIMetro extends HttpRequest {
                  "X-Signature", sign);
          return new HashMap(headers);
      }
-
-    public String accountName() {
-        return this.account_name;
-    }
-
 
 }
 

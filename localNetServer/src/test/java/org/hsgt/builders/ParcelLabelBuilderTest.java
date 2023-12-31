@@ -5,12 +5,16 @@ import org.hsgt.order.domain.ParcelLabel;
 import org.hsgt.order.domain.ShippingAddress;
 import org.hsgt.order.services.impl.CarrierService;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Arrays;
-import java.util.Map;
 
+@SpringBootTest
 public class ParcelLabelBuilderTest {
 
+    @Autowired
+    CarrierService carrierService;
     @Test
     public void makeGlsParcelLabelTest() {
         ParcelLabel label = new ParcelLabel();
@@ -36,8 +40,7 @@ public class ParcelLabelBuilderTest {
         label.setEmail("231@email.com");
         label.setShippingAddress(addr);
         label.setParcels(Arrays.asList(parcel));
-        CarrierService c = new CarrierService();
-        Map body = c.makeGlsParcelLabel(label);
+        ParcelLabel body = carrierService.makeGlsParcelLabel(label);
 
         System.out.println(body);
     }

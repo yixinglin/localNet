@@ -1,5 +1,6 @@
 package org.hsgt.core.config;
 
+import org.hsgt.order.config.CarrierConfig;
 import org.hsgt.order.config.MetroOrderConfig;
 import org.hsgt.pricing.config.MetroPricingConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class StartUpComponent implements CommandLineRunner {
     @Autowired
     MetroOrderConfig metroOrderConfig;
     @Autowired
+    CarrierConfig carrierConfig;
+    @Autowired
     MetroPricingConfig metroPricingConfig;
 
     @Override
@@ -31,6 +34,7 @@ public class StartUpComponent implements CommandLineRunner {
         createDirectory(metroOrderConfig.getPdfOutPath());
         File f = new File(metroOrderConfig.getTemplateDocFile());
         createDirectory(f.getParent());
+        createDirectory(carrierConfig.getCachePath());
     }
 
     private Path createDirectory(String path) {

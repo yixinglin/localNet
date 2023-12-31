@@ -14,5 +14,5 @@ public class ParcelLabel {
     String note;
     ShippingAddress shippingAddress;
     List<Parcel> parcels;
-    String b64Pdf;
+    List<String> b64Pdf;
 }
