@@ -1,11 +1,10 @@
 package org.hsgt.pricing.services.impl;
 
-import org.hsgt.pricing.rest.common.SellerApi;
-import org.hsgt.pricing.rest.builders.metro.MetroShippingGroupBuilder;
-import org.hsgt.pricing.config.MetroPricingConfig;
+import org.hsgt.core.mapper.SqlService;
 import org.hsgt.pricing.domain.ShippingGroup;
 import org.hsgt.pricing.mapper.ShippingGroupMapper;
-import org.hsgt.core.mapper.SqlService;
+import org.hsgt.pricing.rest.builders.metro.MetroShippingGroupBuilder;
+import org.hsgt.pricing.rest.common.SellerApi;
 import org.hsgt.pricing.services.ShippingGroupService;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -21,8 +20,11 @@ public class MetroShippingGroupService implements ShippingGroupService {
     @Autowired
     ShippingGroupMapper shippingGroupMapper;
 
+//    @Autowired
+//    private MetroPricingConfig pricingConfig;
+
     @Autowired
-    private MetroPricingConfig pricingConfig;
+    private SellerApi metroOfferSellerApi;
 
     public MetroShippingGroupService()  {
     }
@@ -37,7 +39,7 @@ public class MetroShippingGroupService implements ShippingGroupService {
      */
     @Override
     public List<ShippingGroup> queryAll() {
-        SellerApi api = pricingConfig.getApiInstance();
+        SellerApi api = metroOfferSellerApi;
         String s = api.selectAllShippingGroups().getContent();
         JSONArray jGroups = new JSONObject(s).getJSONArray("shippingGroups");
         List<ShippingGroup> shippingGroups = new ArrayList<>();
@@ -80,7 +82,7 @@ public class MetroShippingGroupService implements ShippingGroupService {
      */
     @Override
     public ShippingGroup queryById(String id) {
-        SellerApi api = pricingConfig.getApiInstance();
+        SellerApi api = metroOfferSellerApi;
         String s = api.selectShippingGroupById(id).getContent();
         MetroShippingGroupBuilder builder = new MetroShippingGroupBuilder();
         ShippingGroup shippingGroup = builder.web(new JSONObject(s)).build();

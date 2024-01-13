@@ -2,7 +2,7 @@ package org.hsgt.pricing.controllers;
 
 import io.swagger.annotations.Api;
 import org.hsgt.core.controllers.VueElementAdminLoginController;
-import org.hsgt.core.controllers.response.ControllerResponse;
+import org.hsgt.core.domain.ResponseResult;
 import org.hsgt.pricing.controllers.response.NewOffer;
 import org.hsgt.pricing.rest.common.SellerApi;
 import org.hsgt.pricing.config.MetroPricingConfig;
@@ -57,23 +57,23 @@ public class MetroPriceManagementController {
 
     // Suggest price based on the data from database.
     @GetMapping("/suggest")
-    public ControllerResponse<SuggestedPrice> suggestPriceToUpdate(String productId) {
+    public ResponseResult<SuggestedPrice> suggestPriceToUpdate(String productId) {
         SuggestedPrice suggestedPrice = priceManagementService.suggestPriceUpdate(productId);
-        ControllerResponse<SuggestedPrice> resp = ControllerResponse.ok().setData(suggestedPrice);
+        ResponseResult<SuggestedPrice> resp = ResponseResult.success().setData(suggestedPrice);
         return resp;
     }
 
     @GetMapping("/conf")
-    public ControllerResponse<List<ConfigureResponse>> getConfiguration() {
+    public ResponseResult<List<ConfigureResponse>> getConfiguration() {
         List<Configure> configureList = priceManagementService.queryAllConfigurations();
         configureList = configureList.stream().filter(c -> !excluded(c)).collect(Collectors.toList());
         List<ConfigureResponse> configureResponses = configureList.stream().map(o -> ConfigureResponse.build(o)).collect(Collectors.toList());
-        ControllerResponse<List<ConfigureResponse>> resp = ControllerResponse.ok().setData(configureResponses).setLength(configureResponses.size());
+        ResponseResult<List<ConfigureResponse>> resp = ResponseResult.success().setData(configureResponses).setLength(configureResponses.size());
         return resp;
     }
 
     @PostMapping("/conf")
-    public ControllerResponse updateConfiguration(@RequestBody List<ConfigureResponse> payload) {
+    public ResponseResult updateConfiguration(@RequestBody List<ConfigureResponse> payload) {
         List<Configure> conf = payload.stream().map(o -> ConfigureResponse.build(o)).collect(Collectors.toList());
         // Update t_configure
         priceManagementService.updateConfiguration(conf);
@@ -81,12 +81,12 @@ public class MetroPriceManagementController {
         for (Configure c: conf) {
             offerService.updateLowestPriceAndNote(c.getOffer());
         }
-        ControllerResponse resp = ControllerResponse.ok().setLength(conf.size());
+        ResponseResult resp = ResponseResult.success().setLength(conf.size());
         return resp;
     }
 
     @PostMapping("/edit")
-    public ControllerResponse pricing(@RequestBody NewOffer newOffer, Object offerList, HttpServletRequest httpRequest) {
+    public ResponseResult pricing(@RequestBody NewOffer newOffer, Object offerList, HttpServletRequest httpRequest) {
         String ip = httpRequest != null? httpRequest.getRemoteAddr(): "127.0.0.1";
         Object ans = this.loginController.userInfo(newOffer.getToken()).getData();
         User user = null;
@@ -102,7 +102,7 @@ public class MetroPriceManagementController {
         }
         JSONArray ol = offerList instanceof JSONArray? (JSONArray) offerList: null;
         NewOffer resp = priceManagementService.pricing(newOffer, ol, ip);
-        ControllerResponse<Offer> cr = ControllerResponse.ok().setData(resp);
+        ResponseResult<Offer> cr = ResponseResult.success().setData(resp);
         return cr;
     }
 

@@ -1,16 +1,16 @@
 package org.hsgt.order.rest.carriers;
 
-import org.hsgt.core.config.e.Env;
 import org.hsgt.core.rest.ApiKey;
 import org.hsgt.order.config.GlsConfig;
 import org.json.JSONObject;
+import org.net.HttpRequest;
 import org.net.HttpResponse;
 import org.utils.IoUtils;
 
-public class GlsMockApi extends GlsApi implements CarrierApi {
+public class GlsMockApi extends HttpRequest implements CarrierApi {
     String cachePath;
     public GlsMockApi(GlsConfig glsConfig, ApiKey key) {
-        super(key, Env.test);
+        // super(key, Env.test);
         this.cachePath = glsConfig.getCachePath();
     }
     @Override

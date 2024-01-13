@@ -2,7 +2,7 @@ package org.hsgt.pricing.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.hsgt.core.controllers.response.ControllerResponse;
+import org.hsgt.core.domain.ResponseResult;
 import org.hsgt.pricing.domain.ShippingGroup;
 import org.hsgt.pricing.services.ShippingGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,32 +27,32 @@ public class MetroShippingGroupController {
 
     @ApiOperation(value = "Get list of shipping groups", notes = "Get a list of shipping groups with group names and group IDs using Metro API.")
     @GetMapping("/groups")
-    public ControllerResponse<List<ShippingGroup>> getShippingGroupList() {
+    public ResponseResult<List<ShippingGroup>> getShippingGroupList() {
         List<ShippingGroup> shippingGroups = shippingGroupService.queryAll();
-        ControllerResponse<List<ShippingGroup>> resp =  ControllerResponse.ok().setData(shippingGroups);
+        ResponseResult<List<ShippingGroup>> resp =  ResponseResult.success().setData(shippingGroups);
         return resp;
     }
 
     // Get shipping group from api and store it to database
     @ApiOperation(value = "", notes = "Get shipping group by id using Metro API, and store it to the database.")
     @GetMapping("/groups/{id}")
-    public ControllerResponse<ShippingGroup> getShippingGroupById(@PathVariable String id) {
+    public ResponseResult<ShippingGroup> getShippingGroupById(@PathVariable String id) {
         ShippingGroup shippingGroup = shippingGroupService.queryById(id);
-        ControllerResponse<ShippingGroup> resp = ControllerResponse.ok().setData(shippingGroup);
+        ResponseResult<ShippingGroup> resp = ResponseResult.success().setData(shippingGroup);
         return resp;
     }
 
     @ApiOperation(value = "", notes = "Get shipping group from database by id.")
     @GetMapping("/groups/db-{id}")
-    public ControllerResponse<ShippingGroup> getShippingGroupById_DB(@PathVariable String id) {
+    public ResponseResult<ShippingGroup> getShippingGroupById_DB(@PathVariable String id) {
         List<String> sgs = new ArrayList<>();
         sgs.add(id);
         ShippingGroup shippingGroup = shippingGroupService.queryById(sgs).get(0);
-        ControllerResponse<ShippingGroup> resp;
+        ResponseResult<ShippingGroup> resp;
         if (shippingGroup == null) {
-            resp = ControllerResponse.err(new RuntimeException("ShippingGroup does not exist in the database."));
+            resp = ResponseResult.error(new RuntimeException("ShippingGroup does not exist in the database."));
         } else {
-            resp = ControllerResponse.ok().setData(shippingGroup);
+            resp = ResponseResult.success().setData(shippingGroup);
         }
         return resp;
     }

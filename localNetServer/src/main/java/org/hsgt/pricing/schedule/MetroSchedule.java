@@ -1,26 +1,27 @@
 package org.hsgt.pricing.schedule;
 
 import org.hsgt.core.config.AccountConfig;
+import org.hsgt.core.domain.Email;
 import org.hsgt.pricing.config.MetroPricingConfig;
 import org.hsgt.pricing.controllers.MetroOfferController;
 import org.hsgt.pricing.controllers.MetroPriceManagementController;
 import org.hsgt.pricing.controllers.response.ConfigureResponse;
 import org.hsgt.pricing.controllers.response.NewOffer;
 import org.hsgt.pricing.controllers.response.SuggestedPrice;
-import org.hsgt.core.domain.Email;
+import org.hsgt.pricing.domain.Offer;
 import org.hsgt.pricing.domain.ProductPage;
 import org.hsgt.pricing.domain.pricing.Competitor;
-import org.hsgt.pricing.domain.Offer;
 import org.hsgt.pricing.strategy.Strategy;
-import org.utils.EmailClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.utils.EmailClient;
 import org.utils.IoUtils;
 import org.utils.Logger;
+
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import java.io.UnsupportedEncodingException;
@@ -38,6 +39,7 @@ public class MetroSchedule {
     MetroPriceManagementController metroPriceManagementController;
     @Autowired
     MetroPricingConfig metroPricingConfig;
+
     public int rounds = 1;
     public List<String> skipProductIds = new ArrayList<>();
     Logger logger = Logger.loggerBuilder(MetroSchedule.class);

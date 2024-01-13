@@ -4,6 +4,7 @@ import org.hsgt.order.domain.Invoice;
 import org.hsgt.order.rest.builders.MetroInvoiceBuilder;
 import org.hsgt.order.rest.metro.SellerApi;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.utils.DocUtils;
 import org.utils.Logger;
@@ -15,9 +16,10 @@ import java.util.Map;
 @Service
 public class MetroOrderService extends BaseOrderService {
     Logger logger = Logger.loggerBuilder(MetroOrderService.class);
-
+    @Autowired
+    SellerApi metroOrderSellerApi;
     public Map<String, Object> makeOrderInvoice(String orderId, String lang) {
-        SellerApi api = this.metroOrderConfig.getApiInstance();
+        SellerApi api = metroOrderSellerApi;
         String s = api.selectOrderById(orderId).getContent();
         Invoice invoice =  new MetroInvoiceBuilder().parse(new JSONObject(s)).financing().build();
         String outpath = this.createInvoice(invoice, lang);

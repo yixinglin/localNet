@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import org.hsgt.order.config.GlsConfig;
 import org.hsgt.order.domain.ParcelLabel;
 import org.hsgt.order.domain.ShippingAddress;
+import org.hsgt.order.rest.carriers.CarrierApi;
 import org.hsgt.order.rest.carriers.GlsApi;
 import org.net.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +24,14 @@ public class CarrierService {
 
     @Autowired
     GlsConfig glsConfig;
+    @Autowired
+    CarrierApi glsApi;
     // Make GLS label from ParcelLabel class.
     public ParcelLabel makeGlsParcelLabel(ParcelLabel parcelLabel) {
         GLSParcelLabel glabel = new GLSParcelLabel(parcelLabel);
         // Post request to GLS api.
-        GlsApi api = (GlsApi) glsConfig.getApiInstance();
+        // GlsApi api = (GlsApi) glsConfig.getApiInstance();
+        GlsApi api = (GlsApi) glsApi;
         String cachePath = glsConfig.getCachePath();
         String postBody = glabel.getPostBody(api.getShippingId());
         HttpResponse resp = api.createParcelLabel(postBody);

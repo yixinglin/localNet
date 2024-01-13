@@ -1,15 +1,14 @@
 package org.hsgt.pricing.services.impl;
 
-import org.hsgt.pricing.rest.common.SellerApi;
-import org.hsgt.pricing.rest.builders.metro.MetroOfferBuilder;
-import org.hsgt.pricing.config.MetroPricingConfig;
+import org.hsgt.core.mapper.SqlService;
+import org.hsgt.pricing.domain.Offer;
 import org.hsgt.pricing.domain.ShippingGroup;
 import org.hsgt.pricing.domain.pricing.Configure;
-import org.hsgt.pricing.domain.Offer;
 import org.hsgt.pricing.mapper.ConfigureMapper;
 import org.hsgt.pricing.mapper.OfferMapper;
 import org.hsgt.pricing.mapper.ShippingGroupMapper;
-import org.hsgt.core.mapper.SqlService;
+import org.hsgt.pricing.rest.builders.metro.MetroOfferBuilder;
+import org.hsgt.pricing.rest.common.SellerApi;
 import org.hsgt.pricing.schedule.Cache;
 import org.hsgt.pricing.services.OfferService;
 import org.hsgt.pricing.strategy.TotalPriceStrategy;
@@ -36,8 +35,11 @@ public class MetroOfferService implements OfferService {
     @Autowired
     private ConfigureMapper configureMapper;
 
+//    @Autowired
+//    private MetroPricingConfig pricingConfig;
+
     @Autowired
-    private MetroPricingConfig pricingConfig;
+    private SellerApi metroOfferSellerApi;
 
     Logger logger = Logger.loggerBuilder(MetroOfferService.class);
     public MetroOfferService() {
@@ -52,7 +54,7 @@ public class MetroOfferService implements OfferService {
      * @date 16.Aug.2023 016 01:58
      */
     public List<Offer> queryById(List<String> ids) {
-        SellerApi api = pricingConfig.getApiInstance();
+        SellerApi api = metroOfferSellerApi;
         String s = api.selectAllOffers().getContent();
         Cache.currentMetroOfferList = s;
         this.logger.info("@@ Saved [currentMetroOfferList] to Cache");
@@ -123,7 +125,7 @@ public class MetroOfferService implements OfferService {
      * @date 16.Aug.2023 016 02:01
      */
     private void offerToDataBase(Offer offer) {
-        SellerApi api = pricingConfig.getApiInstance();
+        SellerApi api = metroOfferSellerApi;
         // Insert to t_shippinggroup
         ShippingGroup sg = offer.getShippingGroup();
         sg.setOwner(api.accountName());

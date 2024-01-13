@@ -1,13 +1,15 @@
 package org.hsgt.pricing.services.impl;
 
 import org.hsgt.core.mapper.SqlService;
-import org.hsgt.pricing.rest.builders.metro.MetroProductPageBuilder;
-import org.hsgt.pricing.config.MetroPricingConfig;
+import org.hsgt.pricing.domain.Offer;
 import org.hsgt.pricing.domain.ProductPage;
 import org.hsgt.pricing.domain.pricing.Competitor;
 import org.hsgt.pricing.domain.pricing.Configure;
-import org.hsgt.pricing.domain.Offer;
-import org.hsgt.pricing.mapper.*;
+import org.hsgt.pricing.mapper.CompetitorMapper;
+import org.hsgt.pricing.mapper.ConfigureMapper;
+import org.hsgt.pricing.mapper.OfferMapper;
+import org.hsgt.pricing.mapper.ShippingGroupMapper;
+import org.hsgt.pricing.rest.builders.metro.MetroProductPageBuilder;
 import org.hsgt.pricing.rest.common.SellerApi;
 import org.hsgt.pricing.services.ProductPageService;
 import org.json.JSONObject;
@@ -29,8 +31,10 @@ public class MetroProductPageService implements ProductPageService {
     @Autowired
     private ConfigureMapper configureMapper;
 
+//    @Autowired
+//    private MetroPricingConfig pricingConfig;
     @Autowired
-    private MetroPricingConfig pricingConfig;
+    private SellerApi metroOfferSellerApi;
 
     public MetroProductPageService() {
     }
@@ -45,7 +49,7 @@ public class MetroProductPageService implements ProductPageService {
      */
     @Override
     public ProductPage queryById(String id) {
-        SellerApi api = pricingConfig.getApiInstance();
+        SellerApi api = metroOfferSellerApi;
         // Product page data from API to database
         Offer offer = this.offerMapper.selectById(id);
         Configure configure = this.configureMapper.selectById(id);

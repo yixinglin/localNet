@@ -6,6 +6,6 @@ import org.hsgt.pricing.domain.pricing.UpdatedOffer;
 
 @Mapper
 public interface OfferMapper extends BaseMapperV2<Offer> {
-    public int updateLowestPriceAndNote(Offer offer);
-    public int insertUpdatedPricingLog(UpdatedOffer updatedOffer);
+     int updateLowestPriceAndNote(Offer offer);
+     int insertUpdatedPricingLog(UpdatedOffer updatedOffer);
 }

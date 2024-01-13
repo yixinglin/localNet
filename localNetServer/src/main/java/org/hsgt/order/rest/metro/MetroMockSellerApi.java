@@ -2,17 +2,18 @@ package org.hsgt.order.rest.metro;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.hsgt.core.rest.ApiKey;
-import org.hsgt.core.rest.ExternalRestAPIMetro;
+import org.net.HttpRequest;
 import org.net.HttpResponse;
 import org.utils.IoUtils;
+import org.utils.Logger;
 
-public class MetroMockSellerApi extends ExternalRestAPIMetro implements SellerApi {
+public class MetroMockSellerApi extends HttpRequest implements SellerApi {
 
+    protected Logger logger = Logger.loggerBuilder(MetroMockSellerApi.class);
     public static final String dataDir = "../data";
     private final ApiKey apiKey;
 
     public MetroMockSellerApi(ApiKey apiKey) {
-        super(apiKey);
         this.apiKey = apiKey;
     }
 

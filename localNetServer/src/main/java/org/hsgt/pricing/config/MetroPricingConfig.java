@@ -7,12 +7,14 @@ import org.hsgt.pricing.rest.common.SellerApi;
 import org.hsgt.pricing.rest.metro.MetroMockSellerApi;
 import org.hsgt.pricing.rest.metro.MetroSellerApi;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 @ConfigurationProperties(prefix = "pricing.metro")
 @Component
 public class MetroPricingConfig extends PricingConfig {
 
+    @Bean("metroOfferSellerApi")
     @Override
     public SellerApi getApiInstance() {
         SellerApi api = this.getApi();

@@ -36,6 +36,8 @@ public class MetroPriceManagementService implements PriceManagementService {
 
     @Autowired
     private MetroPricingConfig pricingConfig;
+    @Autowired
+    private SellerApi metroOfferSellerApi;
 
     Logger logger = Logger.loggerBuilder(MetroPriceManagementService.class);
 
@@ -70,7 +72,7 @@ public class MetroPriceManagementService implements PriceManagementService {
      * @date 25.Oct.2023 025 19:08
      */
     public SuggestedPrice suggestPriceUpdate(String productId) {
-        SellerApi api = pricingConfig.getApiInstance();
+        SellerApi api = metroOfferSellerApi;
         Offer offer = new Offer();
         offer.setId(productId);
         Configure configure = new Configure();
@@ -125,7 +127,7 @@ public class MetroPriceManagementService implements PriceManagementService {
     public NewOffer pricing(NewOffer newOffer, JSONArray offerList, String ip) {
         boolean allowActualPricing = pricingConfig.isAllowActualPricing();
         boolean isAllowActualPricing = pricingConfig.isAllowActualPricing();
-        SellerApi api = pricingConfig.getApiInstance();
+        SellerApi api = metroOfferSellerApi;
         String shippingGroupId = newOffer.getShippingGroupId();
 
         if (offerList == null) {

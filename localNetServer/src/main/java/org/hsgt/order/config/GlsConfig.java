@@ -8,6 +8,7 @@ import org.hsgt.order.rest.carriers.CarrierApi;
 import org.hsgt.order.rest.carriers.GlsApi;
 import org.hsgt.order.rest.carriers.GlsMockApi;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,6 +16,7 @@ public class GlsConfig extends CarrierConfig {
     @Value("${carrier.gls.env}")
     String env;
 
+    @Bean(name = "glsApi")
     @Override
     public CarrierApi getApiInstance() {
         CarrierApi api = null;

@@ -2,6 +2,11 @@ package org.hsgt.core.rest;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.hash.Hashing;
+import org.apache.commons.lang3.NotImplementedException;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.net.HttpResponse;
+import org.utils.IoUtils;
 import org.utils.Logger;
 
 import java.util.*;
@@ -13,6 +18,10 @@ public class ExternalRestAPIMetro extends ExternalRestAPI {
     String secret_key;
     String client_key;
     String account_name;
+
+    public final String baseurl_pim = "https://app-seller-pim.prod.de.metro-marketplace.cloud";
+    public final String baseurl_orders = "https://app-order-management.prod.de.metro-marketplace.cloud";
+    public final String baseurl_inventory = "https://app-seller-inventory.prod.de.metro-marketplace.cloud";
     public ExternalRestAPIMetro(ApiKey apiKey) {
         super(apiKey);
     }
@@ -33,6 +42,203 @@ public class ExternalRestAPIMetro extends ExternalRestAPI {
                  "X-Signature", sign);
          return new HashMap(headers);
      }
+
+    // Order Management  -----------------
+
+    public HttpResponse selectAllOrders() {
+        throw new NotImplementedException("selectOfferById");
+    }
+
+    public HttpResponse selectOrders(int limit, int offset) {
+        String status = null;
+        String baseurl = this.baseurl_orders + "/openapi/v2/orders";
+        String params = String.format("?limit=%d" + "&offset=%d", limit, offset);
+        params += "&sort%5BcreatedAt%5D=DESC";
+        if (status != null) {
+            params += "&filter%5Bstatus%5D%5B%5D=" + status;
+        }
+        String url = baseurl + params;
+        Map headers = this.getHttpHeaders("GET", url, "");
+
+        HttpResponse resp;
+        try {
+            resp = this.methodGetRequest(url, headers);
+        } catch (Exception e) {
+            this.logger.error(IoUtils.getStackTrace(e));
+            throw new RuntimeException("selectOrders");
+        }
+        return resp;
+    }
+
+    public HttpResponse selectOrderById(String id) {
+        String url = String.format("%s/openapi/v2/orders/%s", this.baseurl_orders, id);
+        Map headers = this.getHttpHeaders("GET", url, "");
+        HttpResponse resp;
+        try {
+            resp = this.methodGetRequest(url, headers);
+        } catch (Exception e) {
+            this.logger.error(IoUtils.getStackTrace(e));
+            throw new RuntimeException("selectDocById");
+        }
+        return resp;
+    }
+
+    public HttpResponse selectDocById(String id) {
+        return null;
+    }
+
+    // Offer Management  -----------------
+
+    public HttpResponse selectAllOffers() {
+        return this.selectOffers(1000, 0);
+    }
+
+    public HttpResponse selectOffers(int limit, int offset) {
+        String baseurl = this.baseurl_inventory + "/openapi/v2/offers";
+        String params = String.format("?limit=%d" + "&offset=%d", limit, offset);
+        params += "&sort%5BcreatedAt%5D=DESC";
+        String url = baseurl + params;
+        Map headers = this.getHttpHeaders("GET", url, "");
+        HttpResponse resp;
+        try {
+            resp = this.methodGetRequest(url, headers);
+        } catch (Exception e) {
+            this.logger.error(IoUtils.getStackTrace(e));
+            throw new RuntimeException("selectOffers");
+        }
+        return resp;
+    }
+
+    public HttpResponse selectAllShippingGroups() {
+        String url = this.baseurl_inventory + "/openapi/v1/shipping-groups";
+        Map headers = this.getHttpHeaders("GET",  url,"");
+        HttpResponse resp;
+        try {
+            resp = this.methodGetRequest(url, headers);
+        } catch (Exception e) {
+            this.logger.error(IoUtils.getStackTrace(e));
+            throw new RuntimeException("selectAllShippingGroups");
+        }
+        return resp;
+    }
+
+    public HttpResponse selectShippingGroups(int limit, int offset) {
+        return this.selectAllShippingGroups();
+    }
+
+    public HttpResponse selectOfferById(String id) {
+        throw new NotImplementedException("selectOfferById");
+    }
+
+    public HttpResponse selectShippingGroupById(String id) {
+        String url = this.baseurl_inventory + "/openapi/v1/shipping-groups/" + id;
+        Map headers = this.getHttpHeaders("GET", url, "");
+        HttpResponse resp;
+        try {
+            resp = this.methodGetRequest(url, headers);
+        } catch (Exception e) {
+            this.logger.error(IoUtils.getStackTrace(e));
+            throw new RuntimeException("selectShippingGroupById");
+        }
+        return resp;
+    }
+
+    public HttpResponse selectProductPageById(String id) {
+        String baseurl = "https://service-product-index.prod.de.metro-marketplace.cloud/api/public/products/%s?useReferencePriceAsBase=1";
+        String url = String.format(baseurl, id);
+        Map<String, String> headers = ImmutableMap.of("Accept", "application/json, text/plain, */*",
+                "Content-Type", "text",
+                //"accept-encoding", "gzip, deflate, br",
+                "accept-language", "de",
+                "content-language", "de",
+                "country-code", "de",
+                "origin", "https://www.metro.de",
+                "referer", "https://www.metro.de/",
+                "user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36");
+        HttpResponse resp;
+        try {
+            resp = this.methodGetRequest(url, headers);
+        } catch (Exception e) {
+            this.logger.error(IoUtils.getStackTrace(e));
+            throw new RuntimeException("selectProductPageById");
+        }
+        return resp;
+    }
+
+    private JSONObject getPostBodyForOfferUpdate(JSONObject offer)   {
+        // String path = getClass().getClassLoader().getResource("res/templatePostBodyOfferUpdate-Metro.json").getFile();
+        String s = IoUtils.readFile("res/templatePostBodyOfferUpdate-Metro.json");
+        JSONObject template = new JSONObject(s);
+
+        for (String key: template.keySet()) {
+            if(key.equals("shippingGroupId")) {
+                if (!offer.isNull("shippingGroup"))
+                    template.put(key, offer.getJSONObject("shippingGroup").getString("shippingGroupId"));
+                else
+                    template.put(key, JSONObject.NULL);
+            } else if(key.equals("businessModel")) {
+                int bm = offer.getInt(key);
+                String val = (bm == 2)? "B2B": "B2B/B2C";
+                template.put(key, val);
+            } else {
+                template.put(key, offer.get(key));
+            }
+        }
+        return template;
+    }
+
+    public HttpResponse updateOfferById(Object newOffer, Object offerList, boolean actualUpdate) {
+        HttpResponse resp = null;
+        JSONObject payload0 = new JSONObject(newOffer);
+        String productId = payload0.getString("productId");
+        float price = payload0.getFloat("price");
+        long quantity = payload0.getLong("quantity");
+        String shippingGroupId = payload0.getString("shippingGroupId");
+        if (shippingGroupId == null) {
+            throw new NoSuchFieldError("shippingGroupId cannot be null.");
+        }
+
+        JSONObject preOffer = null;
+        for (Object o: (JSONArray) offerList) {
+            if (((JSONObject)o).getString("mid").equals(productId)) {
+                preOffer = (JSONObject) o;
+                break;
+            }
+        }
+
+        if (preOffer != null) {
+            JSONObject payload = this.getPostBodyForOfferUpdate(preOffer);
+            payload.getJSONObject("netPrice").put("amount", price);
+            payload.put("quantity", quantity);
+            if (shippingGroupId.equals("0")) {
+                payload.put("shippingGroupId", JSONObject.NULL);
+            } else {
+                payload.put("shippingGroupId", shippingGroupId);
+            }
+
+            if (actualUpdate) {
+                String url = this.baseurl_inventory + "/openapi/v2/offers";
+                Map headers = this.getHttpHeaders("POST", url, payload.toString());
+                headers.put("Content-Type", "application/json");
+                try {
+                    resp = this.methodPostRequest(url, headers, payload.toString());
+                } catch (Exception e) {
+                    this.logger.error(IoUtils.getStackTrace(e));
+                    throw new RuntimeException("selectProductPageById");
+                }
+            } else {
+                resp = new HttpResponse(200, newOffer.toString());
+                System.out.println(payload.toString());
+            }
+        } else {
+            throw new RuntimeException("Offer not exist! " + productId);
+        }
+        return resp;
+    }
+
+    public String accountName() {
+        return this.account_name;
+    }
 
 }
 

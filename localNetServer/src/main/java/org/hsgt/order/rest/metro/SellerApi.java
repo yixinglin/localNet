@@ -4,9 +4,9 @@ import org.net.HttpResponse;
 
 public interface SellerApi {
 
-    public HttpResponse selectAllOrders();
-    public HttpResponse selectOrders(int limit, int offset);
-    public HttpResponse selectOrderById(String id);
+    HttpResponse selectAllOrders();
+    HttpResponse selectOrders(int limit, int offset);
+    HttpResponse selectOrderById(String id);
 
-    public HttpResponse selectDocById(String id);
+    HttpResponse selectDocById(String id);
 }

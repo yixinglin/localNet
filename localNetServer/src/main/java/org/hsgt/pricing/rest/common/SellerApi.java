@@ -6,14 +6,14 @@ public interface SellerApi {
 
 
 
-    public HttpResponse selectAllOffers();
-    public HttpResponse selectOffers(int limit, int offset);
-    public HttpResponse selectAllShippingGroups();
-    public HttpResponse selectShippingGroups(int limit, int offset);
+     HttpResponse selectAllOffers();
+     HttpResponse selectOffers(int limit, int offset);
+     HttpResponse selectAllShippingGroups();
+     HttpResponse selectShippingGroups(int limit, int offset);
 
-    public HttpResponse selectOfferById(String id);
-    public HttpResponse selectShippingGroupById(String id);
-    public HttpResponse selectProductPageById(String id);
+     HttpResponse selectOfferById(String id);
+     HttpResponse selectShippingGroupById(String id);
+     HttpResponse selectProductPageById(String id);
 
     /**
      * @param payload: Payload of new offer in JSON

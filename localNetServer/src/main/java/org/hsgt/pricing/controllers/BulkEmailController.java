@@ -3,7 +3,7 @@ package org.hsgt.pricing.controllers;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.javassist.NotFoundException;
-import org.hsgt.core.controllers.response.ControllerResponse;
+import org.hsgt.core.domain.ResponseResult;
 import org.hsgt.pricing.domain.BulkEmailContact;
 import org.hsgt.pricing.services.impl.BulkEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class BulkEmailController {
     @ApiOperation(value = "appendNewSubscribedEmailContact", notes = "Append new emails to the database. " +
             "Skip if emails exist")
     @PostMapping("/append")
-    public ControllerResponse<Integer> appendNewSubscribedEmailContact(
+    public ResponseResult<Integer> appendNewSubscribedEmailContact(
             @RequestBody List<BulkEmailContact> bulkEmailContactList) {
 
         Integer n = 0;
@@ -33,7 +33,7 @@ public class BulkEmailController {
             b.setSentAt(null);
             n += bulkEmailService.insertOrSkip(b);
         }
-        ControllerResponse response = ControllerResponse.ok().setData(n);
+        ResponseResult response = ResponseResult.success().setData(n);
         return response;
     }
 
@@ -87,27 +87,27 @@ public class BulkEmailController {
     @ApiOperation(value = "markAsSentToday", notes = "Mark the email as sent if it exists in the database." +
             "The given email should be encoded url-safe in base64 format")
     @GetMapping("/sent/{base64Email}")
-    public ControllerResponse<Integer> markAsSentToday(@PathVariable String base64Email) {
+    public ResponseResult<Integer> markAsSentToday(@PathVariable String base64Email) {
         String email = IoUtils.base64UrlDecode(base64Email);
         BulkEmailContact bulkEmailContact = bulkEmailService.queryById(email);
         int n = 0;
-        ControllerResponse ans;
+        ResponseResult ans;
         if (bulkEmailContact != null) {
             bulkEmailContact.setSentAt(IoUtils.currentDateTime());
             n = bulkEmailService.insertOrUpdate(bulkEmailContact);
-            ans = ControllerResponse.ok().setData(n);
+            ans = ResponseResult.success().setData(n);
         } else {
-            ans = ControllerResponse.err(new NotFoundException("Email not found")).setData(n);
+            ans = ResponseResult.error(new NotFoundException("Email not found")).setData(n);
         }
         return ans;
     }
 
     // Get the list of all email
     @GetMapping("/contacts")
-    public ControllerResponse<List<BulkEmailContact>> queryAllEmailContact() {
+    public ResponseResult<List<BulkEmailContact>> queryAllEmailContact() {
         List<BulkEmailContact> bulkEmailContacts = bulkEmailService.queryAll();
         bulkEmailContacts.stream().forEach(b -> this.addUnsubscribedLink(b));
-        return ControllerResponse.ok().setData(bulkEmailContacts);
+        return ResponseResult.success().setData(bulkEmailContacts);
     }
 
     private void addUnsubscribedLink(BulkEmailContact bulkEmailContact) {

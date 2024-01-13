@@ -2,7 +2,8 @@ package org.hsgt.core.controllers;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
-import org.hsgt.core.controllers.response.ControllerResponse;
+import org.hsgt.core.domain.ResponseCode;
+import org.hsgt.core.domain.ResponseResult;
 import org.hsgt.core.domain.User;
 import org.hsgt.core.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,19 +22,19 @@ public class VueElementAdminLoginController {
     UserMapper userMapper;
     Logger logger = Logger.loggerBuilder(VueElementAdminLoginController.class);
     @PostMapping("/login")
-    public ControllerResponse login(@RequestBody User user) {
-        ControllerResponse resp;
+    public ResponseResult login(@RequestBody User user) {
+        ResponseResult resp;
         User selectedUser = userMapper.selectByName(user.getUsername());
         if (selectedUser != null && selectedUser.getPassword().equals(user.getPassword())) {
-            resp = ControllerResponse.ok();
+            resp = ResponseResult.success();
             String token = JwtsUtils.token(selectedUser);
             Map<String, String> data = new HashMap<>();
             data.put("token", token);
             resp.setData(data);
             userMapper.updateTokenById(selectedUser.getId(), token);
         } else {
-            resp = new ControllerResponse(ControllerResponse.PW_INCORRECT,
-                    "Account or password is incorrect.", null) ;
+            resp = new ResponseResult(ResponseCode.PASSWD_ERROR,
+                    "Account or password is incorrect.") ;
         }
         return resp;
     }
@@ -41,13 +42,13 @@ public class VueElementAdminLoginController {
 
 
     @PostMapping("logout")
-    public ControllerResponse logout() {
-        return ControllerResponse.ok();
+    public ResponseResult logout() {
+        return ResponseResult.success();
     }
 
     @GetMapping("/info")
-    public ControllerResponse userInfo(String token) {
-        ControllerResponse resp = new ControllerResponse(ControllerResponse.PW_INCORRECT,
+    public ResponseResult userInfo(String token) {
+        ResponseResult resp = ResponseResult.error(ResponseCode.PASSWD_ERROR.getCode(),
                 "Login failed, unable to get user details.", token);
         try {
             if (token != null) {
@@ -56,7 +57,7 @@ public class VueElementAdminLoginController {
                 // User userinfo = userMapper.selectByToken(token);
                 userinfo = userMapper.selectByName(username);
                 if (userinfo != null) {
-                    resp = ControllerResponse.ok();
+                    resp = ResponseResult.success();
                     resp.setData(userinfo);
                 }
             }

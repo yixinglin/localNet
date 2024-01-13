@@ -1,6 +1,6 @@
 package org.hsgt.core.controllers;
 
-import org.hsgt.core.controllers.response.ControllerResponse;
+import org.hsgt.core.domain.ResponseResult;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -13,9 +13,9 @@ public class ErrorExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     @ResponseBody
-    public ControllerResponse<String> errorException(Exception e) {
+    public ResponseResult<String> errorException(Exception e) {
         logger.error(IoUtils.getStackTrace(e));
-        ControllerResponse<String> cr = ControllerResponse.err(e);
+        ResponseResult<String> cr = ResponseResult.error(e);
         return cr;
     }
 
