@@ -1,8 +1,8 @@
 package org.hsgt.pricing.rest.builders.metro;
 
-import org.hsgt.pricing.domain.ProductPage;
-import org.hsgt.pricing.domain.ShippingGroup;
-import org.hsgt.pricing.domain.pricing.Competitor;
+import org.hsgt.pricing.BO.ProductPage;
+import org.hsgt.pricing.BO.ShippingGroup;
+import org.hsgt.pricing.BO.Competitor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;

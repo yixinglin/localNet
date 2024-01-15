@@ -5,10 +5,10 @@
 
 <mapper namespace="org.hsgt.pricing.mapper.ConfigureMapper">
 
-    <resultMap id="configureMap" type="org.hsgt.pricing.domain.pricing.Configure">
+    <resultMap id="configureMap" type="org.hsgt.pricing.BO.Configure">
         <id column="productId"></id>
         <result column="enabled" property="enabled"></result>
-        <association property="offer" column="productId" javaType="org.hsgt.pricing.domain.Offer"
+        <association property="offer" column="productId" javaType="org.hsgt.pricing.BO.Offer"
         select="org.hsgt.pricing.mapper.OfferMapper.selectById" ></association>
         <discriminator javaType="string" column="strategy">
             <case value="TotalPriceStrategy">
@@ -39,7 +39,7 @@
         values (#{offer.id}, #{enabled}, #{strategy.id}, #{strategy.maxAdjust}, #{strategy.reduce})
     </insert>
 
-    <update id="updateById" parameterType="org.hsgt.pricing.domain.pricing.Configure">
+    <update id="updateById" parameterType="org.hsgt.pricing.BO.Configure">
         update t_configure set enabled=#{enabled}, maxAdjust=#{strategy.maxAdjust}, reduce=#{strategy.reduce}, strategy=#{strategy.id}
             where productId=#{offer.id}
     </update>

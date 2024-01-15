@@ -2,6 +2,7 @@ package org.utils;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -10,6 +11,10 @@ public class JSON {
     DocumentContext context;
     public JSON(String rawJsonData) {
         context = JsonPath.parse(rawJsonData);
+    }
+
+    public JSON(Object json) {
+        context = JsonPath.parse(json);
     }
 
     public JSON(JSONObject json) {
@@ -22,8 +27,20 @@ public class JSON {
     }
 
     public String read(String jsonPath) {
-        String field = context.read(JsonPath.compile(jsonPath));
-        return field;
+        try {
+            return context.read(JsonPath.compile(jsonPath));
+        } catch (PathNotFoundException e) {
+            return null;
+        }
+    }
+
+    public <T> T read(String jsonPath, Class<T> type) {
+        try {
+            return  context.read(JsonPath.compile(jsonPath), type);
+        } catch (PathNotFoundException e) {
+            return null;
+        }
+
     }
 
     public List readArray(String jsonPath) {

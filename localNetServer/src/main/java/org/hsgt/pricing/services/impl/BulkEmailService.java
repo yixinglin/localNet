@@ -1,6 +1,6 @@
 package org.hsgt.pricing.services.impl;
 
-import org.hsgt.pricing.domain.BulkEmailContact;
+import org.hsgt.pricing.BO.BulkEmailContact;
 import org.hsgt.pricing.mapper.BulkEmailMapper;
 import org.hsgt.core.mapper.SqlService;
 import org.hsgt.pricing.services.CommonService;

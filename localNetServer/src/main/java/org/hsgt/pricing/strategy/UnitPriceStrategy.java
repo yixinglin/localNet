@@ -2,11 +2,12 @@ package org.hsgt.pricing.strategy;
 
 import lombok.Data;
 import org.apache.commons.lang3.SerializationUtils;
-import org.hsgt.pricing.domain.pricing.Competitor;
-import org.hsgt.pricing.domain.pricing.Configure;
+import org.hsgt.pricing.BO.Competitor;
+import org.hsgt.pricing.BO.Configure;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
 public class UnitPriceStrategy extends Strategy {
@@ -65,6 +66,9 @@ public class UnitPriceStrategy extends Strategy {
     @Override
     public List<Competitor> sort(List<Competitor> sellers) {
         sellers.sort(Comparator.comparing(o -> o.getPrice2()));
+        AtomicInteger index= new AtomicInteger();
+        sellers.stream().forEach(competitor ->
+                        competitor.setRank(index.getAndIncrement()));
         return sellers;
     }
 

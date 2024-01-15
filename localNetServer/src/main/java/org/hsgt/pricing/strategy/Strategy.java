@@ -1,8 +1,8 @@
 package org.hsgt.pricing.strategy;
 
 import lombok.Data;
-import org.hsgt.pricing.domain.pricing.Competitor;
-import org.hsgt.pricing.domain.pricing.Configure;
+import org.hsgt.pricing.BO.Competitor;
+import org.hsgt.pricing.BO.Configure;
 
 import java.util.List;
 

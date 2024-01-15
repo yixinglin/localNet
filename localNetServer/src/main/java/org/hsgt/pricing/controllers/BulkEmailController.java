@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.javassist.NotFoundException;
 import org.hsgt.core.domain.ResponseResult;
-import org.hsgt.pricing.domain.BulkEmailContact;
+import org.hsgt.pricing.BO.BulkEmailContact;
 import org.hsgt.pricing.services.impl.BulkEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

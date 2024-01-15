@@ -1,8 +1,8 @@
 package org.hsgt.pricing.controllers.response;
 
 import lombok.Data;
-import org.hsgt.pricing.domain.pricing.Competitor;
-import org.hsgt.pricing.domain.Offer;
+import org.hsgt.pricing.BO.Competitor;
+import org.hsgt.pricing.BO.Offer;
 import org.hsgt.pricing.strategy.Strategy;
 
 @Data

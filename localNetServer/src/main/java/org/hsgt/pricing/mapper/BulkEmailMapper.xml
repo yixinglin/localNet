@@ -4,11 +4,11 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.hsgt.pricing.mapper.BulkEmailMapper">
-    <select id="selectList" resultType="org.hsgt.pricing.domain.BulkEmailContact">
+    <select id="selectList" resultType="org.hsgt.pricing.BO.BulkEmailContact">
         select * from t_bulk_email order by email
     </select>
 
-    <select id="selectById" resultType="org.hsgt.pricing.domain.BulkEmailContact">
+    <select id="selectById" resultType="org.hsgt.pricing.BO.BulkEmailContact">
         select * from t_bulk_email where email=#{email}
     </select>
 
@@ -18,13 +18,13 @@
         (#{email}, #{firstName}, #{lastName}, #{subscribed}, #{sentAt})
     </insert>
 
-    <update id="updateById" parameterType="org.hsgt.pricing.domain.BulkEmailContact">
+    <update id="updateById" parameterType="org.hsgt.pricing.BO.BulkEmailContact">
         update t_bulk_email set
             email=#{email}, firstName=#{firstName}, lastName=#{lastName}, subscribed=#{subscribed}, sentAt=#{sentAt}
             where email=#{email}
     </update>
 
-    <delete id="deleteById" parameterType="org.hsgt.pricing.domain.BulkEmailContact">
+    <delete id="deleteById" parameterType="org.hsgt.pricing.BO.BulkEmailContact">
         delete from t_bulk_email where email=#{email}
     </delete>
 

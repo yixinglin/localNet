@@ -1,7 +1,6 @@
-package org.hsgt.pricing.domain;
+package org.hsgt.pricing.BO;
 
 import lombok.Data;
-import org.hsgt.pricing.domain.pricing.Competitor;
 
 import java.io.Serializable;
 import java.util.List;
@@ -15,4 +14,5 @@ public class ProductPage implements Serializable {
     private String productName;
     private Competitor self;  // My Shop
     private List<Competitor> competitors;  // Product pages of competitors
+
 }

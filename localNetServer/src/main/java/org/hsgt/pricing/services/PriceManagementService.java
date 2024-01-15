@@ -2,7 +2,7 @@ package org.hsgt.pricing.services;
 
 import org.hsgt.pricing.controllers.response.NewOffer;
 import org.hsgt.pricing.controllers.response.SuggestedPrice;
-import org.hsgt.pricing.domain.pricing.Configure;
+import org.hsgt.pricing.BO.Configure;
 import org.json.JSONArray;
 
 import java.util.List;

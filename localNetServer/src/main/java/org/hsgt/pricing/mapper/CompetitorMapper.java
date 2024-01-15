@@ -1,7 +1,7 @@
 package org.hsgt.pricing.mapper;
 
 import org.hsgt.core.mapper.BaseMapperV2;
-import org.hsgt.pricing.domain.pricing.Competitor;
+import org.hsgt.pricing.BO.Competitor;
 
 import java.util.List;
 

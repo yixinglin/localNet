@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="org.hsgt.pricing.mapper.ShippingGroupMapper">
 
-    <resultMap id="shippingGroupMap" type="org.hsgt.pricing.domain.ShippingGroup">
+    <resultMap id="shippingGroupMap" type="org.hsgt.pricing.BO.ShippingGroup">
         <id column="id" property="id"></id>
         <result column="name" property="groupName"></result>
     </resultMap>

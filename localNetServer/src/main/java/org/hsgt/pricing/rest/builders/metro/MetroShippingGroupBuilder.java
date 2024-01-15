@@ -1,7 +1,7 @@
 package org.hsgt.pricing.rest.builders.metro;
 
 import org.hsgt.pricing.rest.common.SellerApi;
-import org.hsgt.pricing.domain.ShippingGroup;
+import org.hsgt.pricing.BO.ShippingGroup;
 import org.hsgt.pricing.mapper.ShippingGroupMapper;
 import org.json.JSONObject;
 import org.net.HttpResponse;

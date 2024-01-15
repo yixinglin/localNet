@@ -1,7 +1,7 @@
 package org.hsgt.pricing.controllers.response;
 
 import lombok.Data;
-import org.hsgt.pricing.domain.Offer;
+import org.hsgt.pricing.BO.Offer;
 
 @Data
 public class NewOffer {

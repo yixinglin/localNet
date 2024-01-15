@@ -8,7 +8,7 @@ public enum ResponseCode {
     /**
      * 枚举为状态码和错误信息
      */
-    SUCCESS(200, null),
+    SUCCESS(200, "success"),
 
     SUCCESS_HEART(202, null),
 

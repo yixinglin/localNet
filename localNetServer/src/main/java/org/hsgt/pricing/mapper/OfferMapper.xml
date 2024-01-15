@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="org.hsgt.pricing.mapper.OfferMapper">
 
-    <resultMap id="offerMap" type="org.hsgt.pricing.domain.Offer">
+    <resultMap id="offerMap" type="org.hsgt.pricing.BO.Offer">
         <id property="id" column="productId"/>
-        <association property="shippingGroup" column="shippingGroupId" javaType="org.hsgt.pricing.domain.ShippingGroup"
+        <association property="shippingGroup" column="shippingGroupId" javaType="org.hsgt.pricing.BO.ShippingGroup"
             select="org.hsgt.pricing.mapper.ShippingGroupMapper.selectById"/>
     </resultMap>
 
@@ -37,7 +37,7 @@
         delete from t_offer where productId=#{id}
     </delete>
 
-    <insert id="insertUpdatedPricingLog" parameterType="org.hsgt.pricing.domain.pricing.UpdatedOffer">
+    <insert id="insertUpdatedPricingLog" parameterType="org.hsgt.pricing.BO.UpdatedOffer">
         insert into t_updated_offer
         (datetime, ip, productId, price, quantity, shippingGroupId, note, username) values
         (NOW(), #{ip}, #{offer.productId}, #{offer.price}, #{offer.quantity}, #{offer.shippingGroupId}, #{note}, #{username})

@@ -1,7 +1,7 @@
 package org.hsgt.pricing.services.impl;
 
 import org.hsgt.core.mapper.SqlService;
-import org.hsgt.pricing.domain.ShippingGroup;
+import org.hsgt.pricing.BO.ShippingGroup;
 import org.hsgt.pricing.mapper.ShippingGroupMapper;
 import org.hsgt.pricing.rest.builders.metro.MetroShippingGroupBuilder;
 import org.hsgt.pricing.rest.common.SellerApi;

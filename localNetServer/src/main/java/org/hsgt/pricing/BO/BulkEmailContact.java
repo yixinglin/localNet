@@ -1,4 +1,4 @@
-package org.hsgt.pricing.domain;
+package org.hsgt.pricing.BO;
 
 import lombok.Data;
 

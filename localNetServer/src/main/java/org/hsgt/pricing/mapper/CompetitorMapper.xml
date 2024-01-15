@@ -4,13 +4,13 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.hsgt.pricing.mapper.CompetitorMapper">
-    <resultMap id="competitorMap" type="org.hsgt.pricing.domain.pricing.Competitor" autoMapping="true">
+    <resultMap id="competitorMap" type="org.hsgt.pricing.BO.Competitor" autoMapping="true">
         <id column="productId" property="productId"></id>
         <id column="shopName" property="shopName"></id>
         <result column="price" property="price1"></result>
         <result column="price" property="price2"></result>
 <!--        <result column="datetime" property="datetime"></result>-->
-        <association property="shippingGroup" javaType="org.hsgt.pricing.domain.ShippingGroup"
+        <association property="shippingGroup" javaType="org.hsgt.pricing.BO.ShippingGroup"
                      column="shippingGroupId"
                      select="org.hsgt.pricing.mapper.ShippingGroupMapper.selectById">
         </association>
@@ -20,7 +20,7 @@
         select * from t_competition order by shopName
     </select>
 
-    <select id="selectById" resultMap="competitorMap" parameterType="org.hsgt.pricing.domain.pricing.Competitor">
+    <select id="selectById" resultMap="competitorMap" parameterType="org.hsgt.pricing.BO.Competitor">
         select * from t_competition where productId=#{productId} and shopName=#{shopName}
     </select>
 
@@ -35,7 +35,7 @@
         #{quantity},#{label}, #{shippingGroup.id}, #{datetime})
     </insert>
 
-    <update id="updateById" parameterType="org.hsgt.pricing.domain.pricing.Competitor">
+    <update id="updateById" parameterType="org.hsgt.pricing.BO.Competitor">
         update t_competition set
             productId=#{productId}, shopName=#{shopName}, rank_=#{rank}, price=#{price2}, shipment=#{shippingGroup.unitCost},
             quantity=#{quantity}, label=#{label}, datetime=NOW() where productId=#{productId} and shopName=#{shopName}

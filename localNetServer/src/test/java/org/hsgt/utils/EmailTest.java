@@ -2,7 +2,7 @@ package org.hsgt.utils;
 
 
 import org.hsgt.core.config.AccountConfig;
-import org.hsgt.pricing.domain.BulkEmailContact;
+import org.hsgt.pricing.BO.BulkEmailContact;
 import org.hsgt.core.domain.Email;
 import org.hsgt.pricing.services.impl.BulkEmailService;
 import org.json.JSONObject;

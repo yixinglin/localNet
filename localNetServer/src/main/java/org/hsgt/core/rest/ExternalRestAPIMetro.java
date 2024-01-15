@@ -15,9 +15,6 @@ public class ExternalRestAPIMetro extends ExternalRestAPI {
 
     protected Logger logger = Logger.loggerBuilder(ExternalRestAPIMetro.class);
     String id;
-    String secret_key;
-    String client_key;
-    String account_name;
 
     public final String baseurl_pim = "https://app-seller-pim.prod.de.metro-marketplace.cloud";
     public final String baseurl_orders = "https://app-order-management.prod.de.metro-marketplace.cloud";

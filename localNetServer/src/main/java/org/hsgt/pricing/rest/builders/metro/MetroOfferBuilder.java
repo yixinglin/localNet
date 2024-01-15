@@ -1,8 +1,8 @@
 package org.hsgt.pricing.rest.builders.metro;
 
 import org.apache.ibatis.javassist.NotFoundException;
-import org.hsgt.pricing.domain.ShippingGroup;
-import org.hsgt.pricing.domain.Offer;
+import org.hsgt.pricing.BO.ShippingGroup;
+import org.hsgt.pricing.BO.Offer;
 import org.hsgt.pricing.mapper.OfferMapper;
 import org.hsgt.pricing.mapper.ShippingGroupMapper;
 import org.json.JSONObject;

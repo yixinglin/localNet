@@ -181,6 +181,13 @@
             <artifactId>mybatis-plus-boot-starter</artifactId>
             <version>3.5.3</version>
         </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.github.jeffreyning</groupId>-->
+<!--            <artifactId>mybatisplus-plus</artifactId>-->
+<!--           <version>1.5.1-RELEASE</version>-->
+<!--        </dependency>-->
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

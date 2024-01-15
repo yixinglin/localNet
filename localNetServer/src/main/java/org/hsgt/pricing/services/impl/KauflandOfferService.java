@@ -1,6 +1,6 @@
 package org.hsgt.pricing.services.impl;
 
-import org.hsgt.pricing.domain.Offer;
+import org.hsgt.pricing.BO.Offer;
 import org.hsgt.pricing.services.OfferService;
 import org.springframework.stereotype.Service;
 

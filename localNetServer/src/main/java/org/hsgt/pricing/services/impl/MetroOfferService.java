@@ -1,9 +1,9 @@
 package org.hsgt.pricing.services.impl;
 
 import org.hsgt.core.mapper.SqlService;
-import org.hsgt.pricing.domain.Offer;
-import org.hsgt.pricing.domain.ShippingGroup;
-import org.hsgt.pricing.domain.pricing.Configure;
+import org.hsgt.pricing.BO.Offer;
+import org.hsgt.pricing.BO.ShippingGroup;
+import org.hsgt.pricing.BO.Configure;
 import org.hsgt.pricing.mapper.ConfigureMapper;
 import org.hsgt.pricing.mapper.OfferMapper;
 import org.hsgt.pricing.mapper.ShippingGroupMapper;
