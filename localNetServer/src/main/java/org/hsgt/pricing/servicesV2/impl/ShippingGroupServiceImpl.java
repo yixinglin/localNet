@@ -2,7 +2,6 @@ package org.hsgt.pricing.servicesV2.impl;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.baomidou.mybatisplus.core.toolkit.Assert;
@@ -48,8 +47,7 @@ public class ShippingGroupServiceImpl  extends ServiceImpl<ShippingGroupMapperMP
     @Override
     public List<ShippingGroup> listMyCurrentActivatedShippingGroups() {
         LambdaQueryWrapper<ShippingGroupDO> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(ShippingGroupDO::getOwner, metroOfferSellerApi.accountName())
-                .eq(ShippingGroupDO::getLogicDel, false);
+        wrapper.eq(ShippingGroupDO::getOwner, metroOfferSellerApi.accountName());
         return listAllLogicExistDetails(wrapper);
     }
 
@@ -74,6 +72,7 @@ public class ShippingGroupServiceImpl  extends ServiceImpl<ShippingGroupMapperMP
 
     @Override
     public boolean saveOrUpdateBatchByApi() {
+        ShippingGroupMapperMP shippingGroupMapperMP = super.getBaseMapper();
         SellerApi api = metroOfferSellerApi;
         HttpResponse httpResponse = api.selectAllShippingGroups();
         String content = httpResponse.getContent();
@@ -82,18 +81,14 @@ public class ShippingGroupServiceImpl  extends ServiceImpl<ShippingGroupMapperMP
         List<ShippingGroupDO> sgdo = items.stream().map(m -> {
                     JSON jp0 = new JSON(m);
                     ShippingGroupDO sg = new ShippingGroupDO();
-                    sg.setLogicDel(false);
                     sg.setPlatform("metro");
                     sg.setOwner(api.accountName());
                     sg.setName(jp0.read("$.shippingGroupName"));
                     sg.setId(jp0.read("$.shippingGroupId"));
+                    shippingGroupMapperMP.recoverById(sg.getId());
                     return sg;
                 }).collect(Collectors.toList());
 
-        LambdaUpdateWrapper<ShippingGroupDO> wrapper = new LambdaUpdateWrapper<>();
-        wrapper.set(ShippingGroupDO::getLogicDel, true)
-        .eq(ShippingGroupDO::getOwner, api.accountName());
-        super.update(wrapper);
         // Todo Save to database
         return super.saveOrUpdateBatch(sgdo);
     }

@@ -1,20 +1,23 @@
 package org.hsgt.pricing.servicesV2.impl;
 
-import org.hsgt.pricing.BO.Competitor;
-import org.hsgt.pricing.BO.Configure;
-import org.hsgt.pricing.BO.Offer;
-import org.hsgt.pricing.BO.ProductPage;
+import org.hsgt.pricing.BO.*;
+import org.hsgt.pricing.config.MetroPricingConfig;
 import org.hsgt.pricing.controllers.response.NewOffer;
 import org.hsgt.pricing.controllers.response.SuggestedPrice;
+import org.hsgt.pricing.domain.PricingHistoryDo;
 import org.hsgt.pricing.enu.StrategyType;
+import org.hsgt.pricing.mapper.PricingHistoryMapperMP;
 import org.hsgt.pricing.rest.common.SellerApi;
 import org.hsgt.pricing.servicesV2.ICompetitionService;
 import org.hsgt.pricing.servicesV2.IPriceManagementService;
 import org.hsgt.pricing.servicesV2.IPricingConfigureService;
 import org.hsgt.pricing.strategy.Strategy;
 import org.json.JSONArray;
+import org.json.JSONObject;
+import org.net.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.utils.JwtsUtils;
 import org.utils.Logger;
 
 import java.util.List;
@@ -29,11 +32,17 @@ public class PriceManagementServiceImpl implements IPriceManagementService {
     ICompetitionService competitionService;
     @Autowired
     IPricingConfigureService configureService;
+    @Autowired
+    private MetroPricingConfig pricingConfig;
+    @Autowired
+    private SellerApi metroOfferSellerApi;
+    @Autowired
+    private PricingHistoryMapperMP pricingHistoryMapperMP;
 
     Logger logger = Logger.loggerBuilder(PriceManagementServiceImpl.class);
 
     @Override
-    public SuggestedPrice suggestPriceUpdate(String productId) {
+    public SuggestedPrice  suggestPriceUpdate(String productId) {
         SellerApi api = metroSellerApi;
         Configure configure = configureService.getDetailsById(productId);
         Offer offer = configure.getOffer();
@@ -82,8 +91,52 @@ public class PriceManagementServiceImpl implements IPriceManagementService {
         return suggestedPrice;
     }
 
+    // Todo 测试
     @Override
     public NewOffer pricing(NewOffer latestOffer, JSONArray offerList, String ip) {
-        return null;
+        boolean allowActualPricing = pricingConfig.isAllowActualPricing();
+        boolean isAllowActualPricing = pricingConfig.isAllowActualPricing();
+        SellerApi api = metroOfferSellerApi;
+        String shippingGroupId = latestOffer.getShippingGroupId();
+
+        if (offerList == null) {
+            String s = api.selectAllOffers().getContent();
+            offerList = (new JSONObject(s)).getJSONArray("items");
+        }
+
+        // Update price via API
+        HttpResponse response;
+        if (allowActualPricing) {
+            this.logger.info("Actual Pricing: " + latestOffer);
+            response = api.updateOfferById(latestOffer, offerList, true);
+        } else {
+            this.logger.info("@@ Virtual Pricing: " + latestOffer);
+            response = api.updateOfferById(latestOffer, offerList, false);
+        }
+        if (response.getStateCode() != 200) {
+            throw new RuntimeException("Fail to update offer. " + latestOffer.toString() + response.toString());
+        }
+
+        // Add pricing log to database
+        PricingHistoryDo pricingHistoryDo = new PricingHistoryDo();
+        pricingHistoryDo.setPrice(latestOffer.getPrice());
+        pricingHistoryDo.setIp(ip);
+        pricingHistoryDo.setQuantity(latestOffer.getQuantity());
+        pricingHistoryDo.setShippingGroupId(latestOffer.getShippingGroupId());
+
+        String username;
+        try {
+            username = JwtsUtils.verify(latestOffer.getToken()).getSubject();
+            pricingHistoryDo.setUsername(username);
+        } catch (Exception e) {
+            pricingHistoryDo.setUsername(ip);
+        }
+        if (isAllowActualPricing)
+            pricingHistoryDo.setNote("Actual");
+        else
+            pricingHistoryDo.setNote("Virtual");
+
+        pricingHistoryMapperMP.insert(pricingHistoryDo);
+        return latestOffer;
     }
 }

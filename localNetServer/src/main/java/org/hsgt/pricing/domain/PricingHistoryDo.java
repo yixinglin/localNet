@@ -20,4 +20,5 @@ public class PricingHistoryDo {
     private String shippingGroupId;
     private String note;
     private String username;
+
 }

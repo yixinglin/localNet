@@ -77,6 +77,7 @@ public class OfferServiceImpl extends ServiceImpl<OfferMapperMP, OfferDO> implem
      * @description TODO Get offer data via api and save it to database.
      * @date 14.Jan.2024 014 14:23
      */
+
     @Override
     public boolean saveOrUpdateByApi() {
         SellerApi api = metroOfferSellerApi;
@@ -89,20 +90,25 @@ public class OfferServiceImpl extends ServiceImpl<OfferMapperMP, OfferDO> implem
 
         // Parse offer data from json, and save it to database (t_offer, t_configure, t_shippinggroup)
         List<OfferDO> offerDOS = jofferArray.stream().map(js -> {
-                            OfferDO odo = builder.fromJson(js).build();
-                            odo.setActive(true);
-                            return odo;
-                        }).collect(Collectors.toList());
+            OfferDO odo = builder.fromJson(js).build();
+            return odo;
+        }).collect(Collectors.toList());
+
         // Filtering offers of quantity 0;
         offerDOS = offerDOS.stream()
                 .filter(o -> o.getQuantity() > 0)
                 .collect(Collectors.toList());
-        // Deactivating all offers
-        int n = getBaseMapper().deactivateAll();
+
+        // Delete all offers;
+        int n = getBaseMapper().delete(null);
         // Initialize and update to database
         offerDOS.stream().forEach(odo-> initBeforeSaveToDatabase(odo));
-        // Initialize lowestprice and amount and save it to database
+        // Initialize lowestPrice and amount and save it to database
         List<String> ids = offerDOS.stream().map(o -> o.getProductId()).collect(Collectors.toList());
+        if (ids == null || ids.size() == 0) {
+            return false;
+        }
+
         List<OfferDO> savedOffers = super.listByIds(ids);
         for (OfferDO so: savedOffers) {
             if (StringUtils.isEmpty(so.getNote())) {
@@ -118,17 +124,19 @@ public class OfferServiceImpl extends ServiceImpl<OfferMapperMP, OfferDO> implem
         return super.updateBatchById(savedOffers);
     }
 
+
     private void initBeforeSaveToDatabase(OfferDO offerDO) {
         // Initialize the shipping group and insert it to t_shippinggroup (Offer data does not contain concrete data of shipment).
         String shippingGroupId = offerDO.getShippingGroupId();
         ShippingGroupDO sg = ShippingGroup.convertToDO(ShippingGroup.free());
         sg.setId(shippingGroupId);
         sg.setName("unknown");
-        // sg.setLogicDel(false);
+        shippingGroupMapperMP.recoverById(sg.getId());
         SqlService.sqlInsertOrSkip(sg, shippingGroupMapperMP);
-        shippingGroupMapperMP.setLogicalExist(shippingGroupId);
         // Update or insert offer to database.
-        super.saveOrUpdate(offerDO);
+        OfferMapperMP offerMapperMP = getBaseMapper();
+        offerMapperMP.recoverById(offerDO.getProductId());
+        SqlService.sqlInsertOrUpdate(offerDO, offerMapperMP);
         // Initialize the configuration and insert it to t_configure if it does not exist.
         ConfigureDO configureDO = new ConfigureDO();
         configureDO.setProductId(offerDO.getProductId());

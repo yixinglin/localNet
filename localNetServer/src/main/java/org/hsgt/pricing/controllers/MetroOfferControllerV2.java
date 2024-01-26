@@ -1,13 +1,11 @@
 package org.hsgt.pricing.controllers;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.hsgt.core.domain.ResponseResult;
 import org.hsgt.pricing.BO.Offer;
 import org.hsgt.pricing.BO.ProductPage;
 import org.hsgt.pricing.config.MetroPricingConfig;
-import org.hsgt.pricing.domain.OfferDO;
 import org.hsgt.pricing.servicesV2.ICompetitionService;
 import org.hsgt.pricing.servicesV2.IOfferService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +30,9 @@ public class MetroOfferControllerV2 {
             "Note that the concrete shipping groups are just acquired from database. So they are not up-to-date.")
     @GetMapping("/selectAll")
     public ResponseResult<List<Offer>> selectAll() {
-        LambdaQueryWrapper<OfferDO> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(OfferDO::getActive, true);
-        List<Offer> offers = offerService.listDetails(wrapper, metroPricingConfig.getFilterKeywords());
+        // LambdaQueryWrapper<OfferDO> wrapper = new LambdaQueryWrapper<>();
+        // wrapper.eq(OfferDO::getActive, true);
+        List<Offer> offers = offerService.listDetails(null, metroPricingConfig.getFilterKeywords());
         ResponseResult<List<Offer>> resp = ResponseResult.success().setData(offers).setLength(offers.size());
         return resp;
     }

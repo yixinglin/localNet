@@ -1,7 +1,6 @@
 package org.hsgt.services;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import org.hsgt.pricing.BO.Competitor;
 import org.hsgt.pricing.BO.Configure;
 import org.hsgt.pricing.BO.Offer;
 import org.hsgt.pricing.BO.ProductPage;
@@ -40,7 +39,6 @@ public class ServiceTest {
         System.out.println(list);
         List<Offer> offerList = offerService.listDetails(null);
         Offer offer = offerService.getByIdDetails("AAA0000982685");
-
         boolean b1 = offerService.saveOrUpdateByApi();
 
         OfferDO offerDO = new OfferDO();
@@ -51,8 +49,8 @@ public class ServiceTest {
         List<Configure> configures = pricingConfigureService.listDetails(null);
         System.out.println(configures);
 
-        List<Competitor> competitors = competitionService.listDetails(null);
-        System.out.println(competitors);
+//        List<Competitor> competitors = competitionService.listDetails(null);
+//        System.out.println(competitors);
 
 //        boolean orUpdateByApi = shippingGroupService.saveOrUpdateByApi("2150d27b-7c08-4699-a04c-ace84fb38750");
 //        System.out.println(orUpdateByApi);
@@ -72,8 +70,8 @@ public class ServiceTest {
         // iOfferService.saveOrUpdateByApi();
         boolean b = offerService.saveOrUpdateByApi();
         LambdaQueryWrapper<OfferDO> wrapper = new LambdaQueryWrapper();
-        wrapper.eq(OfferDO::getActive, true);
-        List<Offer> offers = offerService.listDetails(wrapper);
+        // wrapper.eq(OfferDO::getActive, true);
+        List<Offer> offers = offerService.listDetails(null);
 
         offers.stream().forEach(o -> {
             competitionService.saveProductPageByApi(o.getProductKey());

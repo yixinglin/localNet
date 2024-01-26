@@ -72,7 +72,7 @@ public class ShippingGroup implements Serializable {
     }
 
 
-    public static ShippingGroupDO convertToDO(ShippingGroup item, Boolean logicDel) {
+    public static ShippingGroupDO convertToDO(ShippingGroup item, Boolean delFlag) {
         if (item == null) {
             return null;
         }
@@ -88,7 +88,7 @@ public class ShippingGroup implements Serializable {
         result.setDestCountry(item.getDestCountry());
         result.setPlatform(item.getPlatform());
         result.setOwner(item.getOwner());
-        result.setLogicDel(logicDel);
+        result.setDelFlag(delFlag);
         return result;
     }
 

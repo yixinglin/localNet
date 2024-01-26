@@ -28,6 +28,8 @@ public class PricingConfigureServiceImpl extends ServiceImpl<ConfigureMapperMP, 
     IOfferService offerService;
 
     Logger logger = Logger.loggerBuilder(PricingConfigureServiceImpl.class);
+
+    @Override
     public List<Configure> listDetails(Wrapper<ConfigureDO> queryWrapper) {
         List<ConfigureDO> configureDOList = super.list(queryWrapper);
         List<Configure> ans = configureDOList.stream()
@@ -36,28 +38,7 @@ public class PricingConfigureServiceImpl extends ServiceImpl<ConfigureMapperMP, 
         return ans;
     }
 
-    private Configure convertToConfigureBO(ConfigureDO cdo) {
-        String productId = cdo.getProductId();
-        String strategyStr = cdo.getStrategy();
-        // OfferDO offerDO = offerMapperMP.selectById(productId);
-        Offer offer = offerService.getByIdDetails(productId);
-
-        Configure configure = new Configure();
-        configure.setOffer(offer);
-        configure.setEnabled(cdo.getEnabled());
-        Strategy strategy = null;
-        switch (StrategyType.valueOf(strategyStr)) {
-            case TotalPriceStrategy:
-                strategy = new TotalPriceStrategy(cdo.getReduce(), cdo.getMaxAdjust());
-                break;
-            case UnitPriceStrategy:
-                strategy = new UnitPriceStrategy(cdo.getReduce(), cdo.getMaxAdjust());
-        }
-        configure.setStrategy(strategy);
-        return configure;
-    }
-
-
+    @Override
     public Configure getDetailsById(Serializable id) {
         ConfigureDO configureDO = super.getById(id);
         return convertToConfigureBO(configureDO);
@@ -75,7 +56,27 @@ public class PricingConfigureServiceImpl extends ServiceImpl<ConfigureMapperMP, 
         return super.updateBatchById(dos);
     }
 
-    public static ConfigureDO convertToConfigureDO(Configure item) {
+    private Configure convertToConfigureBO(ConfigureDO cdo) {
+        String productId = cdo.getProductId();
+        String strategyStr = cdo.getStrategy();
+        Offer offer = offerService.getByIdDetails(productId);
+
+        Configure configure = new Configure();
+        configure.setOffer(offer);
+        configure.setEnabled(cdo.getEnabled());
+        Strategy strategy = null;
+        switch (StrategyType.valueOf(strategyStr)) {
+            case TotalPriceStrategy:
+                strategy = new TotalPriceStrategy(cdo.getReduce(), cdo.getMaxAdjust());
+                break;
+            case UnitPriceStrategy:
+                strategy = new UnitPriceStrategy(cdo.getReduce(), cdo.getMaxAdjust());
+        }
+        configure.setStrategy(strategy);
+        return configure;
+    }
+
+    private static ConfigureDO convertToConfigureDO(Configure item) {
         if (item == null) {
             return null;
         }

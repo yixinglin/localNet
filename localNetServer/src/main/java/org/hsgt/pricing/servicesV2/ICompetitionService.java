@@ -15,5 +15,13 @@ public interface ICompetitionService extends IService<CompetitionDO> {
      List<ProductPage> listProductPageDetailsByIds(Collection<? extends Serializable> idList);
 
      ProductPage getProductPageDetailsById(Serializable id);
+
+     /**
+      * @param id:
+      * @return boolean
+      * @author Lin
+      * @description Fetch data from API and save it to database.
+      * @date 26.Jan.2024 026 21:11
+      */
     boolean saveProductPageByApi(String id);
 }

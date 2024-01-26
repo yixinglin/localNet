@@ -1,9 +1,6 @@
 package org.hsgt.pricing.domain;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -26,6 +23,8 @@ public class OfferDO {
     private String productKey;
     private String shippingGroupId;
     private String unit;
-    private Boolean active;
+    // private Boolean active;
+    @TableLogic
+    private Boolean delFlag;
 
 }

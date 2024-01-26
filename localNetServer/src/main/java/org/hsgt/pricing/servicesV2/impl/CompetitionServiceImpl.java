@@ -144,6 +144,8 @@ public class CompetitionServiceImpl extends ServiceImpl<CompetitionMapperMP, Com
     }
 
     public boolean saveOrUpdateByMultiId(CompetitionDO entity) {
+        CompetitionMapperMP competitionMapperMP = getBaseMapper();
+        competitionMapperMP.recoverById(entity.getProductId());
         Wrapper<CompetitionDO> wrapper = getMultiIdUpdateWrapper(entity);
         entity.setDatetime(LocalDateTime.now());
         return super.update(entity, wrapper) || super.save(entity);

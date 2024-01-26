@@ -22,7 +22,7 @@ public class Offer implements Serializable {
     private String manufacturer;
     private ShippingGroup shippingGroup;
     private String platform;
-    private Boolean active;
+    // private Boolean active;
 
 //    public Offer(OfferDO offerDO) {
 //        this.id = offerDO.getProductId();
@@ -58,7 +58,8 @@ public class Offer implements Serializable {
         result.setProductKey(item.getProductKey());
         result.setShippingGroupId(item.getShippingGroup().getId());
         result.setUnit(item.getUnit());
-        result.setActive(item.getActive());
+       // result.setActive(item.getActive());
+        result.setDelFlag(false);
         return result;
     }
 
@@ -80,7 +81,7 @@ public class Offer implements Serializable {
         result.setManufacturer(item.getManufacturer());
         // result.setShippingGroup();
         result.setPlatform(item.getPlatform());
-        result.setActive(item.getActive());
+        // result.setActive(item.getActive());
         return result;
     }
 

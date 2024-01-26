@@ -46,7 +46,7 @@ public class MetroPriceManagementService implements PriceManagementService {
 
     public List<Configure> queryAllConfigurations() {
         List<Configure> configureList = configureMapper.selectList(null);
-        configureList = configureList.stream().filter(c -> c.getOffer().getActive()).collect(Collectors.toList());
+       // configureList = configureList.stream().filter(c -> c.getOffer().getActive()).collect(Collectors.toList());
         return configureList;
     }
 

@@ -65,7 +65,7 @@ public class MetroOfferService implements OfferService {
         for (int i = 0; i < jOfferList.length(); i++) {
             // Convert JSON to Offer object
             Offer o = builder.offer(jOfferList.getJSONObject(i)).build();
-            o.setActive(true);
+            // o.setActive(true);
             // Update offer to database
             this.offerToDataBase(o);
             o.setShippingGroup(null);
@@ -87,7 +87,7 @@ public class MetroOfferService implements OfferService {
         List<Offer> deactivatedOffer = offersFromDB0.stream().filter(o -> !idSet.contains(o.getId())).collect(Collectors.toList());
         if (deactivatedOffer.size() > 0) {
             for (Offer o: deactivatedOffer) {
-                o.setActive(false);
+               // o.setActive(false);
                 this.offerToDataBase(o);
             }
         }
