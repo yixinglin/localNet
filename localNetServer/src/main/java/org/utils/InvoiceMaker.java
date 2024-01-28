@@ -4,7 +4,7 @@ import com.deepoove.poi.XWPFTemplate;
 import com.deepoove.poi.config.Configure;
 import com.deepoove.poi.plugin.table.LoopRowTableRenderPolicy;
 import lombok.Data;
-import org.hsgt.order.domain.*;
+import org.hsgt.order.BO.*;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

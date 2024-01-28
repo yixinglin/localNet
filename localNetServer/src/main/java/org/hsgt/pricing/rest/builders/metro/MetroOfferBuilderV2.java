@@ -12,6 +12,13 @@ public class MetroOfferBuilderV2 {
         this.offerDO = new OfferDO();
     }
 
+    /**
+     * @param json: An object of map
+     * @return MetroOfferBuilderV2
+     * @author Lin
+     * @description
+     * @date 27.Jan.2024 027 23:25
+     */
     public MetroOfferBuilderV2 fromJson(Object json) {
         JSON jp = new JSON(json);
         offerDO.setProductId(jp.read("$.mid"));

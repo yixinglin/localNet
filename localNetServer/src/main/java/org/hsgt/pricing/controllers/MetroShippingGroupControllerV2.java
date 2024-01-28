@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.hsgt.core.domain.ResponseResult;
 import org.hsgt.pricing.BO.ShippingGroup;
-import org.hsgt.pricing.servicesV2.IShippingGroupService;
+import org.hsgt.pricing.services.IShippingGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

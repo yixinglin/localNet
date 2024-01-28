@@ -1,7 +1,7 @@
 package org.hsgt.pricing.config;
 
 import org.hsgt.core.config.AccountConfig;
-import org.hsgt.core.config.e.ApiKeyType;
+import org.hsgt.core.enu.ApiKeyType;
 import org.hsgt.core.rest.ApiKey;
 import org.hsgt.pricing.rest.common.SellerApi;
 import org.hsgt.pricing.rest.metro.MetroMockSellerApi;

@@ -7,7 +7,7 @@ import org.hsgt.pricing.config.MetroPricingConfig;
 import org.hsgt.pricing.controllers.response.ConfigureResponse;
 import org.hsgt.pricing.controllers.response.SuggestedPrice;
 import org.hsgt.pricing.domain.OfferDO;
-import org.hsgt.pricing.servicesV2.*;
+import org.hsgt.pricing.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;

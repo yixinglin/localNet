@@ -1,6 +1,6 @@
 package org.hsgt.core.config;
 
-import org.hsgt.core.config.e.ApiKeyType;
+import org.hsgt.core.enu.ApiKeyType;
 import org.hsgt.core.rest.ApiKey;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;

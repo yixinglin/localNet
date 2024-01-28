@@ -36,9 +36,9 @@ public class MapperTestDP {
         System.out.println(offerDO);
         ConfigureDO configureDO = configureMapperMP.selectById("AAA0000863160");
         System.out.println(configureDO);
-        QueryWrapper<PricingHistoryDo> queryWrapper = new QueryWrapper();
+        QueryWrapper<PricingHistoryDO> queryWrapper = new QueryWrapper();
         queryWrapper.eq("productId", "AAA0000982683");
-        List<PricingHistoryDo> pricingHistoryDos = pricingHistoryMapperMP.selectList(queryWrapper);
+        List<PricingHistoryDO> pricingHistoryDos = pricingHistoryMapperMP.selectList(queryWrapper);
         System.out.println(pricingHistoryDos);
         ShippingGroupDO shippingGroupDO = shippingGroupMapperMP.selectById("395553e6-a712-455d-a6fc-c7f88c3fd908");
         System.out.println(shippingGroupDO);

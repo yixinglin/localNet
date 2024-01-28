@@ -1,8 +1,8 @@
 package org.hsgt.builders;
 
-import org.hsgt.order.domain.Parcel;
-import org.hsgt.order.domain.ParcelLabel;
-import org.hsgt.order.domain.ShippingAddress;
+import org.hsgt.order.BO.Parcel;
+import org.hsgt.order.BO.ParcelLabel;
+import org.hsgt.order.BO.ShippingAddress;
 import org.hsgt.order.services.impl.CarrierService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

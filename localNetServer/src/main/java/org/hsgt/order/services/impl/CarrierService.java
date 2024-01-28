@@ -2,8 +2,8 @@ package org.hsgt.order.services.impl;
 
 import com.google.common.collect.ImmutableMap;
 import org.hsgt.order.config.GlsConfig;
-import org.hsgt.order.domain.ParcelLabel;
-import org.hsgt.order.domain.ShippingAddress;
+import org.hsgt.order.BO.ParcelLabel;
+import org.hsgt.order.BO.ShippingAddress;
 import org.hsgt.order.rest.carriers.CarrierApi;
 import org.hsgt.order.rest.carriers.GlsApi;
 import org.net.HttpResponse;

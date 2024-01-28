@@ -3,8 +3,8 @@ package org.hsgt.order.controllers;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import org.hsgt.order.controllers.response.InvoiceResponse;
-import org.hsgt.order.domain.Invoice;
-import org.hsgt.order.services.impl.MetroOrderService;
+import org.hsgt.order.BO.Invoice;
+import org.hsgt.order.services.impl.MetroOrderServiceOld;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +19,7 @@ import java.util.Map;
 public class MetroOrderController {
 
     @Autowired
-    MetroOrderService metroOrderService;
+    MetroOrderServiceOld metroOrderService;
 
     @GetMapping("/invoice")
     public InvoiceResponse getOrderInvoice(

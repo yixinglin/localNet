@@ -1,0 +1,18 @@
+package org.hsgt.order.BO;
+
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+public class ParcelLabel {
+    String id;  // Label ID
+    String shipperId;
+    String reference;
+    String phone;
+    String email;
+    String note;
+    ShippingAddress shippingAddress;
+    List<Parcel> parcels;
+    List<String> b64Pdf;
+}

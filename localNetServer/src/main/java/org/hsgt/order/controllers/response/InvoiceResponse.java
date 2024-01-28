@@ -1,7 +1,7 @@
 package org.hsgt.order.controllers.response;
 
 import lombok.Data;
-import org.hsgt.order.domain.Invoice;
+import org.hsgt.order.BO.Invoice;
 
 import java.io.Serializable;
 

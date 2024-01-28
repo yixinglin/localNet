@@ -1,14 +1,14 @@
 package org.hsgt.order.services.impl;
 
 import org.hsgt.order.config.MetroOrderConfig;
-import org.hsgt.order.domain.Invoice;
-import org.hsgt.order.services.OrderService;
+import org.hsgt.order.BO.Invoice;
+import org.hsgt.order.services.OrderServiceOld;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.utils.InvoiceMaker;
 
 @Service
-public abstract class BaseOrderService implements OrderService {
+public abstract class BaseOrderService implements OrderServiceOld {
 
     @Autowired
     protected MetroOrderConfig metroOrderConfig;

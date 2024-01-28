@@ -1,6 +1,6 @@
 package org.hsgt.order.rest.builders;
 
-import org.hsgt.order.domain.*;
+import org.hsgt.order.BO.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.utils.IoUtils;
