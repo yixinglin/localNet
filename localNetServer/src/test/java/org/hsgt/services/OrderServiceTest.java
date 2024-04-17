@@ -1,7 +1,8 @@
 package org.hsgt.services;
 
-import org.hsgt.order.rest.metro.SellerApi;
-import org.hsgt.order.services.impl.MetroOrderService;
+import org.hsgt.order.BO.Order;
+import org.hsgt.order.services.impl.OrderService;
+import org.hsgt.order.services.impl.RestOrderService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,13 +11,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class OrderServiceTest {
 
     @Autowired
-    SellerApi metroOrderSellerApi;
+    RestOrderService restOrderService;
     @Autowired
-    MetroOrderService metroOrderService;
+    OrderService orderService;
 
     @Test
     public void test() {
-        metroOrderService.saveOrUpdateByApi("1d7aa259-df27-45ef-a58c-9991072de595");
+        restOrderService.saveOrUpdateByMetroAPI("1d3961f5-a6a6-4877-a9cd-38b7171dcbaf");
+        Order order = orderService.getDetailsBySerialNumber("O22-575464603627");
         System.out.println();
     }
 }

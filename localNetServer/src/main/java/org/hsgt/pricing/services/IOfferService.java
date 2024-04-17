@@ -21,5 +21,5 @@ public interface IOfferService extends IService<OfferDO> {
      * @description Fetch data from API and save it to database.
      * @date 26.Jan.2024 026 21:08
      */
-    boolean saveOrUpdateByApi();
+    // boolean saveOrUpdateByApi();
 }

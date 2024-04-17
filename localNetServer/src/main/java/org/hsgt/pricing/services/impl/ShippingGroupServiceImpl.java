@@ -12,15 +12,12 @@ import org.hsgt.pricing.domain.ShippingGroupDO;
 import org.hsgt.pricing.mapper.ShippingGroupMapperMP;
 import org.hsgt.pricing.rest.common.SellerApi;
 import org.hsgt.pricing.services.IShippingGroupService;
-import org.net.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.utils.JSON;
 import org.utils.Logger;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -67,42 +64,6 @@ public class ShippingGroupServiceImpl  extends ServiceImpl<ShippingGroupMapperMP
         }
         return false;
     }
-
-    @Override
-    public boolean saveOrUpdateBatchByApi() {
-        ShippingGroupMapperMP shippingGroupMapperMP = super.getBaseMapper();
-        SellerApi api = metroOfferSellerApi;
-        HttpResponse httpResponse = api.selectAllShippingGroups();
-        String content = httpResponse.getContent();
-        JSON jp = new JSON(content);
-        List<Map> items = jp.read("$.shippingGroups", List.class);
-        List<ShippingGroupDO> sgdo = items.stream().map(m -> {
-                    JSON jp0 = new JSON(m);
-                    ShippingGroupDO sg = new ShippingGroupDO();
-                    sg.setPlatform("metro");
-                    sg.setOwner(api.accountName());
-                    sg.setName(jp0.read("$.shippingGroupName"));
-                    sg.setId(jp0.read("$.shippingGroupId"));
-                    shippingGroupMapperMP.recoverById(sg.getId());
-                    return sg;
-                }).collect(Collectors.toList());
-
-        // Todo Save to database
-        return super.saveOrUpdateBatch(sgdo);
-    }
-
-
-    @Override
-    public boolean saveOrUpdateByApi(String id) {
-//        SellerApi api = this.metroOfferSellerApi;
-//        String s = api.selectShippingGroupById(id).getContent();  // Not supported anymore
-//        MetroShippingGroupBuilderV2 builder = new MetroShippingGroupBuilderV2();
-//        ShippingGroup shippingGroup = builder.web(new JSONObject(s)).build();
-//        shippingGroup.setOwner(api.accountName());
-//        return super.saveOrUpdate(convertToShippingGroupDO(shippingGroup));
-        return false;
-    }
-
 
 
     private ShippingGroupDO convertToShippingGroupDO(ShippingGroup shippingGroup) {

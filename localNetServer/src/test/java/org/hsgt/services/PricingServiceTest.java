@@ -29,7 +29,8 @@ public class PricingServiceTest {
     private IShippingGroupService shippingGroupService;
     @Autowired
     private IPriceManagementService priceManagementService;
-
+    @Autowired
+    private IRestPricingService restPricingService;
     @Autowired
     private SellerApi metroSellerApi;
 
@@ -39,7 +40,7 @@ public class PricingServiceTest {
         System.out.println(list);
         List<Offer> offerList = offerService.listDetails(null);
         Offer offer = offerService.getByIdDetails("AAA0000982685");
-        boolean b1 = offerService.saveOrUpdateByApi();
+        boolean b1 = restPricingService.saveOrUpdateOfferByMetroAPI();
 
         OfferDO offerDO = new OfferDO();
         offerDO.setProductId("AAA0000982685");
@@ -55,12 +56,12 @@ public class PricingServiceTest {
 //        boolean orUpdateByApi = shippingGroupService.saveOrUpdateByApi("2150d27b-7c08-4699-a04c-ace84fb38750");
 //        System.out.println(orUpdateByApi);
 
-        boolean b2 = shippingGroupService.saveOrUpdateBatchByApi();
+        boolean b2 = restPricingService.saveOrUpdateShippingGroupListByMetroApi();
         System.out.println(b2);
 
         List<ProductPage> productPages = competitionService.listProductPageDetailsByIds(Arrays.asList("AAA0000900214"));
 
-        boolean b = competitionService.saveProductPageByApi("b9da5e88-8e8c-49bd-a3a6-8802954cc260");
+        boolean b = restPricingService.saveOrUpdateProductPageByMetroAPI("b9da5e88-8e8c-49bd-a3a6-8802954cc260");
 
         System.out.println();
     }
@@ -68,13 +69,13 @@ public class PricingServiceTest {
     @Test
     public void testOfferApi() {
         // iOfferService.saveOrUpdateByApi();
-        boolean b = offerService.saveOrUpdateByApi();
+        boolean b = restPricingService.saveOrUpdateOfferByMetroAPI();
         LambdaQueryWrapper<OfferDO> wrapper = new LambdaQueryWrapper();
         // wrapper.eq(OfferDO::getActive, true);
         List<Offer> offers = offerService.listDetails(null);
 
         offers.stream().forEach(o -> {
-            competitionService.saveProductPageByApi(o.getProductKey());
+            restPricingService.saveOrUpdateProductPageByMetroAPI(o.getProductKey());
         });
         System.out.println();
     }
@@ -82,12 +83,12 @@ public class PricingServiceTest {
     @Test
     public void testPricingSuggest() {
         // Update offer via api
-        boolean b = offerService.saveOrUpdateByApi();
+        boolean b = restPricingService.saveOrUpdateOfferByMetroAPI();
         // Update product page via api
         String id = "AAA0001094368";
         Offer offer = offerService.getByIdDetails(id);
         
-        boolean b1 = competitionService.saveProductPageByApi(offer.getProductKey());// AAA0001094370    AAA0001029983 AAA0001094368
+        boolean b1 = restPricingService.saveOrUpdateProductPageByMetroAPI(offer.getProductKey());// AAA0001094370    AAA0001029983 AAA0001094368
         // Get suggestions
         SuggestedPrice newPrice = priceManagementService.suggestPriceUpdate(id);
         System.out.println(newPrice);

@@ -47,7 +47,7 @@ public class MetroPriceManagementControllerV2 {
         configureList = configureList.stream().filter(c -> !excluded(c)).collect(Collectors.toList());
         List<ConfigureResponse> configureResponses = configureList.stream().map(o -> ConfigureResponse.build(o)).collect(Collectors.toList());
 
-        ResponseResult<List<ConfigureResponse>> resp =
+        ResponseResult resp =
                 ResponseResult.success().setData(configureResponses)
                         .setLength(configureResponses.size());
         return resp;
@@ -68,8 +68,8 @@ public class MetroPriceManagementControllerV2 {
 
     private boolean excluded(Configure configure) {
         List<String> filterKeywords = pricingConfig.getFilterKeywords();
-        return filterKeywords.stream().filter(s -> configure.getOffer().getProductName().toLowerCase().contains(s)).findFirst().isPresent();
-
+        // return filterKeywords.stream().filter(s -> configure.getOffer().getProductName().toLowerCase().contains(s)).findFirst().isPresent();
+        return filterKeywords.stream().anyMatch(s -> configure.getOffer().getProductName().toLowerCase().contains(s));
     }
 
     private OfferDO convertOfferToDO_LowestPrice_Note(Offer offer) {

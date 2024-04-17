@@ -34,6 +34,7 @@ public class PricingConfigureServiceImpl extends ServiceImpl<ConfigureMapperMP, 
         List<ConfigureDO> configureDOList = super.list(queryWrapper);
         List<Configure> ans = configureDOList.stream()
                 .map(cdo -> convertToConfigureBO(cdo))
+                .filter(cdo -> cdo.getOffer() != null)
                 .collect(Collectors.toList());
         return ans;
     }

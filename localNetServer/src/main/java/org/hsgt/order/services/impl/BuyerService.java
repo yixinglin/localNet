@@ -3,6 +3,7 @@ package org.hsgt.order.services.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.hsgt.order.BO.Buyer;
 import org.hsgt.order.domain.BuyerDO;
 import org.hsgt.order.mapper.BuyerMapper;
 import org.hsgt.order.services.IBuyer;
@@ -33,5 +34,12 @@ public class BuyerService extends ServiceImpl<BuyerMapper, BuyerDO> implements I
         } else {
             return list.get(0);
         }
+    }
+
+    @Override
+    public Buyer getDetailsById(Long id) {
+        BuyerDO buyerDO = this.getById(id);
+        Buyer buyer = Buyer.converToBO(buyerDO);
+        return buyer;
     }
 }

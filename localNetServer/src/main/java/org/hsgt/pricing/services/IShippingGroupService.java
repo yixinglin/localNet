@@ -39,13 +39,13 @@ public interface IShippingGroupService extends IService<ShippingGroupDO> {
      *  will be logically deleted.
      * @date 15.Jan.2024 015 01:39
      */
-    boolean saveOrUpdateBatchByApi();
+   // boolean saveOrUpdateBatchByApi();
 
     /*
      * @param id: Shipping group id
       * @return boolean
      * @description Get shipping group by id via API.
      */
-    boolean saveOrUpdateByApi(String id);
+    //boolean saveOrUpdateByApi(String id);
 
 }

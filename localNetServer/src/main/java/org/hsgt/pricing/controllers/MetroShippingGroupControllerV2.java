@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.hsgt.core.domain.ResponseResult;
 import org.hsgt.pricing.BO.ShippingGroup;
+import org.hsgt.pricing.services.IRestPricingService;
 import org.hsgt.pricing.services.IShippingGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,11 +22,13 @@ public class MetroShippingGroupControllerV2 {
 
     @Autowired
     IShippingGroupService shippingGroupService;
+    @Autowired
+    IRestPricingService restPricingService;
 
     @ApiOperation(value = "Get list of shipping groups", notes = "Get a list of shipping groups with group names and group IDs using Metro API.")
     @GetMapping("/groups")
     public ResponseResult<List<ShippingGroup>> getShippingGroupList() {
-        shippingGroupService.saveOrUpdateBatchByApi();
+        restPricingService.saveOrUpdateShippingGroupListByMetroApi();
         List<ShippingGroup> shippingGroups = shippingGroupService.listMyCurrentActivatedShippingGroups();
         ResponseResult<List<ShippingGroup>> resp =  ResponseResult.success().setData(shippingGroups);
         return resp;

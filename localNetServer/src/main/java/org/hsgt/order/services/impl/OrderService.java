@@ -1,33 +1,24 @@
 package org.hsgt.order.services.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.hsgt.order.BO.Order;
+import org.hsgt.order.BO.*;
 import org.hsgt.order.domain.AddressDO;
 import org.hsgt.order.domain.BuyerDO;
 import org.hsgt.order.domain.OrderDO;
 import org.hsgt.order.domain.OrderLineDO;
 import org.hsgt.order.mapper.OrderMapper;
-import org.hsgt.order.rest.builders.MetroOrderBuilder;
-import org.hsgt.order.rest.metro.SellerApi;
 import org.hsgt.order.services.IOrderService;
-import org.json.JSONObject;
-import org.net.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 @Service
-public class MetroOrderService extends ServiceImpl<OrderMapper, OrderDO> implements IOrderService {
+public class OrderService extends ServiceImpl<OrderMapper, OrderDO> implements IOrderService {
     @Autowired
-    SellerApi metroOrderSellerApi;
-    @Autowired
-    MetroOrderLineService metroOrderLineService;
+    OrderLineService orderLineService;
     @Autowired
     AddressService addressService;
     @Autowired
@@ -43,13 +34,21 @@ public class MetroOrderService extends ServiceImpl<OrderMapper, OrderDO> impleme
     }
 
     @Override
-    public List<Order> getByIdDetails(Wrapper<OrderDO> queryWrapper) {
-        return null;
-    }
+    public Order getDetailsBySerialNumber(String serialNumber) {
+        OrderDO orderDO = this.getBySerialNumber(serialNumber);
 
-    @Override
-    public Order getByIdDetails(Serializable id) {
-        return null;
+        BuyerDO buyerDO = buyerService.getById(orderDO.getBuyerId());
+        BillingAddress billingAddress = addressService.getBillingAddressDetailsById(buyerDO.getBillingAddrId());
+        ShippingAddress shippingAddress = addressService.getShippingAddressDetailsById(buyerDO.getShippingAddrId());
+        Buyer buyer = buyerService.getDetailsById(orderDO.getBuyerId());
+
+        Order order = Order.convertToBO(orderDO);
+        List<OrderLine> orderLineList = orderLineService.getDetailsByOrderId(orderDO.getId());
+        order.setOrderLines(orderLineList);
+        order.setBillingAddress(billingAddress);
+        order.setShippingAddress(shippingAddress);
+        order.setBuyer(buyer);
+        return order;
     }
 
     @Override
@@ -64,30 +63,6 @@ public class MetroOrderService extends ServiceImpl<OrderMapper, OrderDO> impleme
         }
     }
 
-    @Override
-    public boolean saveOrUpdateByApi(Serializable id) {
-        // Get order from API
-        SellerApi api = metroOrderSellerApi;
-        HttpResponse httpResponse = api.selectOrderById((String) id);
-        String content = httpResponse.getContent();
-        Map jm = new JSONObject(content).toMap();
-        MetroOrderBuilder builder = new MetroOrderBuilder();
-        builder.parseOrder(jm).parseOrderLines(jm).parseBillingAddress(jm).parseShippingAddress(jm).parseBuyer(jm);
-
-        OrderDO order = builder.buildOrder();
-        List<OrderLineDO> orderLines = builder.buildOrderLines();
-        AddressDO billingAddress = builder.buildBillingAddress();
-        AddressDO shippingAddress = builder.buildShippingAddress();
-        BuyerDO buyer = builder.buildBuyer();
-
-        //  Firstly, save buyer and addresses to database
-        BuyerDO buyerFromDB = this.saveOrUpdateBuyerToDatabase(buyer, shippingAddress, billingAddress);
-        // Secondly, save order information to database;
-        order.setBuyerId(buyerFromDB.getId());
-        OrderDO orderDO = this.saveOrUpdateOrderToDatabase(order, orderLines);
-        return true;
-    }
-
     /**
      * @param buyerDO:
      * @param shippingAddress:
@@ -97,7 +72,7 @@ public class MetroOrderService extends ServiceImpl<OrderMapper, OrderDO> impleme
      * @description Save or update buyer information to Database;
      * @date 28.Jan.2024 028 21:44
      */
-    private BuyerDO saveOrUpdateBuyerToDatabase(BuyerDO buyerDO, AddressDO shippingAddress, AddressDO billingAddress) {
+    protected BuyerDO saveOrUpdateBuyerToDatabase(BuyerDO buyerDO, AddressDO shippingAddress, AddressDO billingAddress) {
         // Check if buyer exists in database
         BuyerDO buyerFromDB = buyerService.getByCode(buyerDO.getCode());
         if (buyerFromDB == null) {
@@ -122,7 +97,7 @@ public class MetroOrderService extends ServiceImpl<OrderMapper, OrderDO> impleme
         return buyerFromDB;
     }
 
-    private OrderDO saveOrUpdateOrderToDatabase(OrderDO orderDO, List<OrderLineDO> orderLineDOList) {
+    protected OrderDO saveOrUpdateOrderToDatabase(OrderDO orderDO, List<OrderLineDO> orderLineDOList) {
         // Check if order exists in database
         this.saveOrUpdate(orderDO);
         // Get order information from database after updating;
@@ -130,7 +105,7 @@ public class MetroOrderService extends ServiceImpl<OrderMapper, OrderDO> impleme
         // Save order lines to database;
         orderLineDOList.stream().forEach(o -> {
             o.setOrderId(orderFromDB.getId());
-            metroOrderLineService.saveOrUpdate(o);
+            orderLineService.saveOrUpdate(o);
         });
         return orderFromDB;
     }

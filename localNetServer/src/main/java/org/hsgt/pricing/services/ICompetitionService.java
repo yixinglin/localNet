@@ -23,5 +23,5 @@ public interface ICompetitionService extends IService<CompetitionDO> {
       * @description Fetch data from API and save it to database.
       * @date 26.Jan.2024 026 21:11
       */
-    boolean saveProductPageByApi(String id);
+   // boolean saveProductPageByApi(String id);
 }
